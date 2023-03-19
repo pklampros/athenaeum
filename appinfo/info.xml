@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<info xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance"
+	  xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+	<!--
+	SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
+	SPDX-License-Identifier: CC0-1.0
+	-->
+	<id>athenaeum</id>
+	<name>Athenaeum</name>
+	<summary>Atheneaum is a library app for Nextcloud</summary>
+	<description><![CDATA[library type thing]]></description>
+	<version>0.1</version>
+	<licence>agpl</licence>
+	<author mail="commits@pklampros.io" >Petros Koutsolampros</author>
+	<namespace>Athenaeum</namespace>
+	<category>multimedia</category>
+	<category>office</category>
+	<bugs>https://github.com/pklampros/athenaeum</bugs>
+	<dependencies>
+		<nextcloud min-version="24.0.8" max-version="24.0.8"/>
+	</dependencies>
+	<navigations>
+		<navigation>
+			<name>Athenaeum</name>
+			<route>athenaeum.page.index</route>
+		</navigation>
+	</navigations>
+	<repair-steps>
+		<install>
+			<step>OCA\Athenaeum\Migration\DefaultDataRepairStep</step>
+		</install>
+	</repair-steps>
+</info>
