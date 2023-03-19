@@ -99,7 +99,8 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 				'length' => 200
 			]);
 			$table->addColumn('first_name_is_full_name', 'boolean', [
-				'notnull' => false # null is used for false
+				'notnull' => false, # null is used for false
+				'default' => false
 			]);
 			
 			$table->setPrimaryKey(['id']);
@@ -216,7 +217,8 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 				'default' => 0
 			]);
 			$table->addColumn('importanceDecided', 'boolean', [
-				'notnull' => false # null is used for false
+				'notnull' => false, # null is used for false
+				'default' => false
 			]);
 
 			$table->setPrimaryKey(['id']);
@@ -302,14 +304,16 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 				'length' => 200,
 			]);
 			$table->addColumn('read', 'boolean', [
-				'notnull' => false # null is used for false
+				'notnull' => false, # null is used for false
+				'default' => false
 			]);
 			$table->addColumn('importance', 'integer', [
 				'notnull' => true,
 				'default' => 0
 			]);
 			$table->addColumn('needs_review', 'boolean', [
-				'notnull' => false # null is used for false
+				'notnull' => false, # null is used for false
+				'default' => false
 			]);
 			$table->addColumn('user_id', 'string', [
 				'notnull' => true,

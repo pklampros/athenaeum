@@ -184,7 +184,7 @@ export default {
 		}
 		try {
 			const response = await axios.get(generateUrl('/apps/athenaeum/scholar_items'))
-			this.items = response.data
+			this.scholarItems = response.data
 		} catch (e) {
 			console.error(e)
 			showError(t('athenaeum', 'Could not fetch items (route mounting failed)'))

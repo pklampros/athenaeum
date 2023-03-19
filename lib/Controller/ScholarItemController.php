@@ -51,10 +51,9 @@ class ScholarItemController extends Controller {
 		$needsReview = false;
 		
 		$res = $this->service->create($url, $title, $authors,
-								$journal, $published, $read,
-								$importance, $needsReview, $this->userId);
+								      $journal, $published, $read,
+								      $importance, $needsReview, $this->userId);
 		
-
 		return new DataResponse($res);
 	}
 
