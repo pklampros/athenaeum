@@ -13,29 +13,33 @@ use OCP\AppFramework\Db\Entity;
  * @method getId(): int
  * @method getUserId(string $userId): string
  * 
- * @method getScholarId(): string
- * @method setScholarId(string $scholarId): void
- * @method getTerm(): string
- * @method setTerm(string $term): void
- * @method getImportance(): string
+ * @method getUrl(): string
+ * @method setUrl(string $url): void
+ * @method getTitle(): string
+ * @method setTitle(string $title): void
+ * @method getAuthors(): string
+ * @method setAuthors(string $authors): void
+ * @method getJournal(): string
+ * @method setJournal(string $journal): void
+ * @method getPublished(): string
+ * @method setPublished(string $published): void
+ * @method getRead(): bool
+ * @method setRead(bool $read): void
+ * @method getImportance(): int
  * @method setImportance(int $importance): void
- * @method getImportanceDecided(): bool
- * @method setImportanceDecided(bool $importanceDecided): void
+ * @method getNeedsReview(): bool
+ * @method setNeedsReview(bool $needsReview): void
  */
 class ScholarItem extends Entity implements JsonSerializable {
 	protected string $url = '';
 	protected string $title = '';
 	protected string $authors = '';
 	protected string $journal = '';
-	protected $published;
-	protected bool $read = 0;
+	protected string $published = '';
+	protected bool $read = false;
 	protected int $importance = 0;
 	protected bool $needsReview = false;
 	protected string $userId = '';
-	
-	public function __construct() {
-		$this->addType('published', 'datetime');
-	}
 
 	public function jsonSerialize(): array {
 		return [

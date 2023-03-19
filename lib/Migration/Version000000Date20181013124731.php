@@ -295,19 +295,20 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 				'length' => 200,
 			]);
 			$table->addColumn('journal', 'string', [
-				'notnull' => true,
 				'length' => 200,
 			]);
-			$table->addColumn('published', 'datetime', [
-				'notnull' => true
+			$table->addColumn('published', 'string', [
+				'notnull' => true,
+				'length' => 200,
 			]);
 			$table->addColumn('read', 'boolean', [
 				'notnull' => false # null is used for false
 			]);
 			$table->addColumn('importance', 'integer', [
-				'notnull' => true
+				'notnull' => true,
+				'default' => 0
 			]);
-			$table->addColumn('needsReview', 'boolean', [
+			$table->addColumn('needs_review', 'boolean', [
 				'notnull' => false # null is used for false
 			]);
 			$table->addColumn('user_id', 'string', [

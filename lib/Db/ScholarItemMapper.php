@@ -12,23 +12,24 @@ use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 
 /**
- * @template-extends QBMapper<ScholarAlert>
+ * @template-extends QBMapper<ScholarItem>
  */
-class ScholarAlertMapper extends QBMapper {
+class ScholarItemMapper extends QBMapper {
 	public function __construct(IDBConnection $db) {
-		parent::__construct($db, 'athm_schlr_items', ScholarAlert::class);
+		parent::__construct($db, 'athm_schlr_items', ScholarItem::class);
 	}
 
 	/**
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function find(int $id): ScholarAlert {
+	public function find(int $id, string $userId): ScholarItem {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
 			->from('athm_schlr_items')
-			->where($qb->expr()->eq('id', $qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
+			->where($qb->expr()->eq('id', $qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()->eq('user_id', $qb->createNamedParameter($userId)));
 		return $this->findEntity($qb);
 	}
 

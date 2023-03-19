@@ -6,19 +6,19 @@ declare(strict_types=1);
 namespace OCA\Athenaeum\Controller;
 
 use OCA\Athenaeum\AppInfo\Application;
-use OCA\Athenaeum\Service\ItemService;
+use OCA\Athenaeum\Service\ScholarItemService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\IRequest;
 
-class ItemController extends Controller {
-	private ItemService $service;
+class ScholarItemController extends Controller {
+	private ScholarItemService $service;
 	private ?string $userId;
 
 	use Errors;
 
 	public function __construct(IRequest $request,
-								ItemService $service,
+								ScholarItemService $service,
 								?string $userId) {
 		parent::__construct(Application::APP_ID, $request);
 		$this->service = $service;
@@ -44,21 +44,32 @@ class ItemController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 */
-	public function create(string $title, int $itemTypeId): DataResponse {
-		$currentTime = new \DateTime;
-		return new DataResponse($this->service->create($title, $itemTypeId,
-								$currentTime, $currentTime, $this->userId));
+	public function create(string $url, string $title, string $authors, string $journal,
+						   string $published): DataResponse {
+		$read = false;
+		$importance = 0;
+		$needsReview = false;
+		
+		$res = $this->service->create($url, $title, $authors,
+								$journal, $published, $read,
+								$importance, $needsReview, $this->userId);
+		
+
+		return new DataResponse($res);
 	}
 
 	/**
 	 * @NoAdminRequired
 	 */
-	public function update(int $id, string $title, int $itemTypeId, \DateTime $dateAdded,
-						   \DateTime $dateModified): DataResponse {
-		return $this->handleNotFound(function () use ($id, $title, $itemTypeId, $dateAdded,
-													  $dateModified) {
-			return $this->service->update($id, $title, $itemTypeId, $dateAdded,
-										  $dateModified, $this->userId);
+	public function update(int $id, string $url, string $title, string $authors, string $journal,
+						   string $published, bool $read = false, int $importance = 0,
+						   bool $needsReview = false): DataResponse {
+		return $this->handleNotFound(function () use ($id, $url, $title, $authors, $journal,
+													  $published, $read, $importance,
+													  $needsReview) {
+			return $this->service->update($id, $url, $title, $authors,
+										  $journal, $published, $read,
+										  $importance, $needsReview, $this->userId);
 		});
 	}
 

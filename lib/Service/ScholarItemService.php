@@ -52,25 +52,29 @@ class ScholarItemService {
 		}
 	}
 
-	public function create(string $url, string $title, string $authors, string $journal,
-						   \DateTime $published, bool $read, int $importance, bool $needsReview,
-						   string $userId): ScholarItem {
-		$item = new ScholarItem();
-		$item->setUrl($url);
-		$item->setTitle($title);
-		$item->setAuthors($authors);
-		$item->setJournal($journal);
-		$item->setPublished($published);
-		$item->setRead($read);
-		$item->setImportance($importance);
-		$item->setNeedsReview($needsReview);
-		$item->setUserId($userId);
-		return $this->mapper->insert($item);
+	public function create(string $url, string $title, string $authors,
+						   string $journal, string $published, bool $read,
+						   int $importance, bool $needsReview, string $userId): ScholarItem {
+		try {
+			$item = new ScholarItem();
+			$item->setUrl($url);
+			$item->setTitle($title);
+			$item->setAuthors($authors);
+			$item->setJournal($journal);
+			$item->setPublished($published);
+			$item->setRead($read);
+			$item->setImportance($importance);
+			$item->setNeedsReview($needsReview);
+			$item->setUserId($userId);
+			return $this->mapper->insert($item);
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
 	}
 
-	public function update(int $id, string $url, string $title, string $authors, string $journal,
-						   \DateTime $published, bool $read, int $importance, bool $needsReview,
-						   string $userId): ScholarItem {
+	public function update(int $id, string $url, string $title, string $authors,
+						   string $journal, string $published, bool $read,
+						   int $importance, bool $needsReview, string $userId): ScholarItem {
 		try {
 			$item = $this->mapper->find($id, $userId);
 			$item->setUrl($url);
@@ -81,6 +85,7 @@ class ScholarItemService {
 			$item->setRead($read);
 			$item->setImportance($importance);
 			$item->setNeedsReview($needsReview);
+			$item->setUserId($userId);
 			return $this->mapper->update($item);
 		} catch (Exception $e) {
 			$this->handleException($e);

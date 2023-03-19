@@ -15,6 +15,7 @@ return [
 	'resources' => [
 		'item' => ['url' => '/items'],
 		'item_api' => ['url' => '/api/0.1/items'],
+		'scholar_item' => ['url' => '/scholar_items'],
 	],
 	'routes' => [
 		['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],

@@ -5,5 +5,5 @@ declare(strict_types=1);
 
 namespace OCA\Athenaeum\Service;
 
-class ItemNotFound extends \Exception {
+class ScholarItemNotFound extends \Exception {
 }

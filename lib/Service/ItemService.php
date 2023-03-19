@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-// SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
+// SPDX-FileCopyrightText: Petros <email@email.email>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 namespace OCA\Athenaeum\Service;
@@ -53,19 +53,23 @@ class ItemService {
 	}
 
 	public function create(string $title, int $itemTypeId, \DateTime $dateAdded,
-						   \DateTime $dateModified, string $userId): Item {
-		$item = new Item();
-		$item->setTitle($title);
-		$item->setItemTypeId($itemTypeId);
-		$currentDate = new \DateTime;
-		$item->setDateAdded($currentDate);
-		$item->setDateModified($currentDate);
-		$item->setUserId($userId);
-		return $this->mapper->insert($item);
+	                       \DateTime $dateModified, string $userId): Item {
+		try {
+			$item = new Item();
+			$item->setTitle($title);
+			$item->setItemTypeId($itemTypeId);
+			$currentDate = new \DateTime;
+			$item->setDateAdded($currentDate);
+			$item->setDateModified($currentDate);
+			$item->setUserId($userId);
+			return $this->mapper->insert($item);
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
 	}
 
 	public function update(int $id, string $title, int $itemTypeId, \DateTime $dateAdded,
-						   \DateTime $dateModified, string $userId): Item {
+	                       \DateTime $dateModified, string $userId): Item {
 		try {
 			$item = $this->mapper->find($id, $userId);
 			$item->setTitle($title);
@@ -74,7 +78,6 @@ class ItemService {
 			$item->setDateModified($currentDate);
 			$item->setUserId($userId);
 			return $this->mapper->update($item);
-		$item->setUserId($userId);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}
