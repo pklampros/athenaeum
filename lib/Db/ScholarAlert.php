@@ -11,7 +11,6 @@ use OCP\AppFramework\Db\Entity;
 
 /**
  * @method getId(): int
- * @method getUserId(string $userId): string
  * 
  * @method getScholarId(): string
  * @method setScholarId(string $scholarId): void
@@ -23,10 +22,10 @@ use OCP\AppFramework\Db\Entity;
  * @method setImportanceDecided(bool $importanceDecided): void
  */
 class ScholarAlert extends Entity implements JsonSerializable {
-	protected string $scholarId = 0;
-	protected string $term = 0;
+	protected string $scholarId = '';
+	protected string $term = '';
 	protected int $importance = 0;
-	protected bool $importanceDecided = 0;
+	protected bool $importanceDecided = false;
 
 	public function jsonSerialize(): array {
 		return [

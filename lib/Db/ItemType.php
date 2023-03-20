@@ -11,6 +11,7 @@ use OCP\AppFramework\Db\Entity;
 
 /**
  * @method getId(): int
+ * 
  * @method getName(): string
  * @method setName(string $name): void
  */

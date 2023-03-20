@@ -204,7 +204,7 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 				'autoincrement' => true,
 				'notnull' => true,
 			]);
-			$table->addColumn('scholarId', 'string', [
+			$table->addColumn('scholar_id', 'string', [
 				'notnull' => true,
 				'length' => 200,
 			]);
@@ -216,7 +216,7 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 				'notnull' => true,
 				'default' => 0
 			]);
-			$table->addColumn('importanceDecided', 'boolean', [
+			$table->addColumn('importance_decided', 'boolean', [
 				'notnull' => false, # null is used for false
 				'default' => false
 			]);
@@ -237,11 +237,11 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			$table->addColumn('received', 'datetime', [
 				'notnull' => true
 			]);
-			$table->addColumn('fromAddress', 'string', [
+			$table->addColumn('from_address', 'string', [
 				'notnull' => true,
 				'length' => 200,
 			]);
-			$table->addColumn('toAddress', 'string', [
+			$table->addColumn('to_address', 'string', [
 				'notnull' => true,
 				'length' => 200,
 			]);
@@ -273,9 +273,9 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 
 			$table->setPrimaryKey(['id']);
 			$table->addForeignKeyConstraint('athm_schlr_emails', ['scholar_email_id'], ['id'], [],
-											'email_id_fk');
+											'scholar_email_id_fk');
 			$table->addForeignKeyConstraint('athm_schlr_items', ['scholar_item_id'], ['id'], [],
-											'item_id_fk');
+											'scholar_item_id_fk');
 		}
 
 		if (!$schema->hasTable('athm_schlr_items')) {

@@ -11,23 +11,24 @@ use OCP\AppFramework\Db\Entity;
 
 /**
  * @method getId(): int
- * @method getTitle(): string
- * @method setTitle(string $title): void
- * @method getContent(): string
- * @method setContent(string $content): void
- * @method getUserId(): string
- * @method setUserId(string $userId): void
+ * 
+ * @method getScholarEmailId(): int
+ * @method setScholarEmailId(int $scholarEmailId): void
+ * @method getScholarItemId(): int
+ * @method setScholarItemId(int $scholarItemId): void
+ * @method getExcerpt(): string
+ * @method setExcerpt(string $excerpt): void
  */
 class ScholarEmailItem extends Entity implements JsonSerializable {
-	protected int $emailId = 0;
-	protected int $itemId = 0;
+	protected int $scholarEmailId = 0;
+	protected int $scholarItemId = 0;
 	protected string $excerpt = '';
 
 	public function jsonSerialize(): array {
 		return [
 			'id' => $this->id,
-			'emailId' => $this->emailId,
-			'itemId' => $this->itemId,
+			'scholarEmailId' => $this->scholarEmailId,
+			'scholarItemId' => $this->scholarItemId,
 			'excerpt' => $this->excerpt
 		];
 	}

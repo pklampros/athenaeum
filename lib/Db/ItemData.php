@@ -11,6 +11,7 @@ use OCP\AppFramework\Db\Entity;
 
 /**
  * @method getId(): int
+ * 
  * @method getItemId(): int
  * @method setItemId(int $itemId): void
  * @method getFieldId(): int

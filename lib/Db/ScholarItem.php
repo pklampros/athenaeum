@@ -11,7 +11,6 @@ use OCP\AppFramework\Db\Entity;
 
 /**
  * @method getId(): int
- * @method getUserId(string $userId): string
  * 
  * @method getUrl(): string
  * @method setUrl(string $url): void
@@ -29,6 +28,8 @@ use OCP\AppFramework\Db\Entity;
  * @method setImportance(int $importance): void
  * @method getNeedsReview(): bool
  * @method setNeedsReview(bool $needsReview): void
+ * @method getUserId(): string
+ * @method setUserId(string $userId): void
  */
 class ScholarItem extends Entity implements JsonSerializable {
 	protected string $url = '';

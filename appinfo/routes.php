@@ -16,6 +16,10 @@ return [
 		'item' => ['url' => '/items'],
 		'item_api' => ['url' => '/api/0.1/items'],
 		'scholar_item' => ['url' => '/scholar_items'],
+		'scholar_item_api' => ['url' => '/api/0.1/scholar_items'],
+		'scholar_alert_api' => ['url' => '/api/0.1/scholar_alerts'],
+		'scholar_email_api' => ['url' => '/api/0.1/scholar_emails'],
+		'scholar_email_item_api' => ['url' => '/api/0.1/scholar_email_items'],
 	],
 	'routes' => [
 		['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],

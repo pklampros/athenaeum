@@ -11,19 +11,24 @@ use OCP\AppFramework\Db\Entity;
 
 /**
  * @method getId(): int
- * @method getTitle(): string
- * @method setTitle(string $title): void
- * @method getContent(): string
- * @method setContent(string $content): void
- * @method getUserId(): string
- * @method setUserId(string $userId): void
+ * 
+ * @method getSubject(): string
+ * @method setSubject(string $title): void
+ * @method getReceived(): \DateTime
+ * @method setReceived(\DateTime $received): void
+ * @method getFromAddress(): string
+ * @method setFromAddress(string $fromAddress): void
+ * @method getToAddress(): string
+ * @method setToAddress(string $toAddress): void
+ * @method getAlertId(): int
+ * @method setAlertId(int $alertId): void
  */
 class ScholarEmail extends Entity implements JsonSerializable {
 	protected string $subject = '';
 	protected $received;
 	protected string $fromAddress = '';
 	protected string $toAddress = '';
-	protected int $alertId = 0;
+	protected int $scholarAlertId = 0;
 
 	public function __construct() {
 		$this->addType('received', 'datetime');
@@ -36,7 +41,7 @@ class ScholarEmail extends Entity implements JsonSerializable {
 			'received' => $this->received,
 			'fromAddress' => $this->fromAddress,
 			'toAddress' => $this->toAddress,
-			'alertId' => $this->alertId
+			'scholarAlertId' => $this->scholarAlertId
 		];
 	}
 }

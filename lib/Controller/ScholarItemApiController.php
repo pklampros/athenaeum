@@ -7,11 +7,11 @@ namespace OCA\Athenaeum\Controller;
 
 use OCA\Athenaeum\AppInfo\Application;
 use OCA\Athenaeum\Service\ScholarItemService;
-use OCP\AppFramework\Controller;
+use OCP\AppFramework\ApiController;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\IRequest;
 
-class ScholarItemController extends Controller {
+class ScholarItemApiController extends ApiController {
 	private ScholarItemService $service;
 	private ?string $userId;
 
@@ -26,6 +26,8 @@ class ScholarItemController extends Controller {
 	}
 
 	/**
+	 * @CORS
+	 * @NoCSRFRequired
 	 * @NoAdminRequired
 	 */
 	public function index(): DataResponse {
@@ -33,6 +35,8 @@ class ScholarItemController extends Controller {
 	}
 
 	/**
+	 * @CORS
+	 * @NoCSRFRequired
 	 * @NoAdminRequired
 	 */
 	public function show(int $id): DataResponse {
@@ -42,35 +46,38 @@ class ScholarItemController extends Controller {
 	}
 
 	/**
+	 * @CORS
+	 * @NoCSRFRequired
 	 * @NoAdminRequired
 	 */
 	public function create(string $url, string $title, string $authors, string $journal,
-						   string $published): DataResponse {
-		$read = false;
-		$importance = 0;
-		$needsReview = false;
-		
+						   string $published, $read = false, $importance = 0,
+						   $needsReview = false): DataResponse {
 		return new DataResponse($this->service->create($url, $title, $authors,
 								$journal, $published, $read, $importance,
 								$needsReview, $this->userId));
 	}
 
 	/**
+	 * @CORS
+	 * @NoCSRFRequired
 	 * @NoAdminRequired
 	 */
 	public function update(int $id, string $url, string $title, string $authors, string $journal,
 						   string $published, bool $read = false, int $importance = 0,
 						   bool $needsReview = false): DataResponse {
 		return $this->handleNotFound(function () use ($id, $url, $title, $authors, $journal,
-													  $published, $read, $importance,
-													  $needsReview) {
+									$published, $read, $importance,
+									$needsReview) {
 			return $this->service->update($id, $url, $title, $authors,
-										  $journal, $published, $read,
-										  $importance, $needsReview, $this->userId);
+							$journal, $published, $read,
+							$importance, $needsReview, $this->userId);
 		});
 	}
 
 	/**
+	 * @CORS
+	 * @NoCSRFRequired
 	 * @NoAdminRequired
 	 */
 	public function destroy(int $id): DataResponse {
