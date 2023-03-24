@@ -12,12 +12,10 @@ use OCP\AppFramework\Db\Entity;
 /**
  * @method getId(): int
  * 
- * @method getTitle(): string
- * @method setTitle(string $title): void
- * @method getContent(): string
- * @method setContent(string $content): void
- * @method getUserId(): string
- * @method setUserId(string $userId): void
+ * @method getName(): string
+ * @method setName(string $name): void
+ * @method getTypeHint(): string
+ * @method setTypeHint(string $typeHint): void
  */
 class Field extends Entity implements JsonSerializable {
 	protected string $name = '';

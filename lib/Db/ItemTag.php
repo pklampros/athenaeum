@@ -12,12 +12,10 @@ use OCP\AppFramework\Db\Entity;
 /**
  * @method getId(): int
  * 
- * @method getTitle(): string
- * @method setTitle(string $title): void
- * @method getContent(): string
- * @method setContent(string $content): void
- * @method getUserId(): string
- * @method setUserId(string $userId): void
+ * @method getItemId(): int
+ * @method setItemId(int $itemId): void
+ * @method getTagId(): int
+ * @method setTagId(int $tagId): void
  */
 class ItemTag extends Entity implements JsonSerializable {
 	protected int $itemId = 0;
