@@ -52,16 +52,24 @@ class ScholarEmailService {
 		}
 	}
 
+	public function findBySubjectReceived(string $subject, \DateTime $received): ScholarEmail {
+		try {
+			return $this->mapper->findBySubjectReceived($subject, $received);
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
+	}
+
 	public function create(string $subject, \DateTime $received, string $fromAddress,
 						   string $toAddress, int $scholarAlertId): ScholarEmail {
 		try {
-			$item = new ScholarEmail();
-			$item->setSubject($subject);
-			$item->setReceived($received);
-			$item->setFromAddress($fromAddress);
-			$item->setToAddress($toAddress);
-			$item->setScholarAlertId($scholarAlertId);
-			return $this->mapper->insert($item);
+			$entity = new ScholarEmail();
+			$entity->setSubject($subject);
+			$entity->setReceived($received);
+			$entity->setFromAddress($fromAddress);
+			$entity->setToAddress($toAddress);
+			$entity->setScholarAlertId($scholarAlertId);
+			return $this->mapper->insert($entity);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}
@@ -70,13 +78,13 @@ class ScholarEmailService {
 	public function update(int $id, string $subject, \DateTime $received, string $fromAddress,
 						   string $toAddress, int $scholarAlertId): ScholarEmail {
 		try {
-			$item = $this->mapper->find($id);
-			$item->setSubject($subject);
-			$item->setReceived($received);
-			$item->setFromAddress($fromAddress);
-			$item->setToAddress($toAddress);
-			$item->setScholarAlertId($scholarAlertId);
-			return $this->mapper->update($item);
+			$entity = $this->mapper->find($id);
+			$entity->setSubject($subject);
+			$entity->setReceived($received);
+			$entity->setFromAddress($fromAddress);
+			$entity->setToAddress($toAddress);
+			$entity->setScholarAlertId($scholarAlertId);
+			return $this->mapper->update($entity);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}
@@ -84,9 +92,9 @@ class ScholarEmailService {
 
 	public function delete(int $id): ScholarEmail {
 		try {
-			$item = $this->mapper->find($id);
-			$this->mapper->delete($item);
-			return $item;
+			$entity = $this->mapper->find($id);
+			$this->mapper->delete($entity);
+			return $entity;
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}

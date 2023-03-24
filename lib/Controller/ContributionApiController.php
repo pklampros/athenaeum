@@ -6,20 +6,20 @@ declare(strict_types=1);
 namespace OCA\Athenaeum\Controller;
 
 use OCA\Athenaeum\AppInfo\Application;
-use OCA\Athenaeum\Service\ScholarEmailItemService;
+use OCA\Athenaeum\Service\ContributionService;
 use OCP\AppFramework\ApiController;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Http;
 use OCP\IRequest;
 
-class ScholarEmailItemApiController extends ApiController {
-	private ScholarEmailItemService $service;
+class ContributionApiController extends ApiController {
+	private ContributionService $service;
 	private ?string $userId;
 
 	use Errors;
 
 	public function __construct(IRequest $request,
-								ScholarEmailItemService $service,
+								ContributionService $service,
 								?string $userId) {
 		parent::__construct(Application::APP_ID, $request);
 		$this->service = $service;
@@ -40,11 +40,10 @@ class ScholarEmailItemApiController extends ApiController {
 	 * @NoCSRFRequired
 	 * @NoAdminRequired
 	 */
-	public function findByEmailItem(int $scholarEmailId, int $scholarItemId): DataResponse {
-        // GET /emailId/<id>/itemId/<id>
-		return $this->handleNotFound(function () use ($scholarEmailId, $scholarItemId) {
-            return new DataResponse($this->service->findByEmailItem($scholarEmailId, $scholarItemId));
-        
+	public function findByItemContributor(string $itemId, string $contributorId): DataResponse {
+		// GET /itemId/<itemId>/contributorId/<contributorId>
+		return $this->handleNotFound(function () use ($itemId, $contributorId) {
+			return $this->service->findByItemContributor($itemId, $contributorId);
 		});
 	}
 
@@ -64,10 +63,12 @@ class ScholarEmailItemApiController extends ApiController {
 	 * @NoCSRFRequired
 	 * @NoAdminRequired
 	 */
-	public function create(int $scholarEmailId, int $scholarItemId,
-						   string $excerpt): DataResponse {
-		return new DataResponse($this->service->create($scholarEmailId,
-								$scholarItemId, $excerpt));
+	public function create(int $itemId, int $contributorId,
+						   string $contributorNameDisplay, int $contributionTypeId,
+						   int $contributionOrder): DataResponse {
+		return new DataResponse($this->service->create($itemId, $contributorId,
+								$contributorNameDisplay, $contributionTypeId,
+								$contributionOrder));
 	}
 
 	/**
@@ -75,12 +76,14 @@ class ScholarEmailItemApiController extends ApiController {
 	 * @NoCSRFRequired
 	 * @NoAdminRequired
 	 */
-	public function update(int $id, int $scholarEmailId, int $scholarItemId,
-						   string $excerpt): DataResponse {
-		return $this->handleNotFound(function () use ($id, $scholarEmailId,
-									 $scholarItemId, $excerpt) {
-			return $this->service->update($id, $scholarEmailId, $scholarItemId,
-										  $excerpt);
+	public function update(int $id, int $itemId, int $contributorId,
+						   string $contributorNameDisplay, int $contributionTypeId,
+						   int $contributionOrder): DataResponse {
+		return $this->handleNotFound(function () use ($id, $itemId, $contributorId,
+									 $contributorNameDisplay, $contributionTypeId) {
+			return $this->service->update($id, $itemId, $contributorId,
+										  $contributorNameDisplay, $contributionTypeId,
+										  $contributionOrder);
 		});
 	}
 

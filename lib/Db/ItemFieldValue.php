@@ -16,12 +16,15 @@ use OCP\AppFramework\Db\Entity;
  * @method setItemId(int $itemId): void
  * @method getFieldId(): int
  * @method setFieldId(int $itemId): void
+ * @method getOrder(): int
+ * @method setOrder(int $itemId): void
  * @method getValue(): string
  * @method setValue(string $value): void
  */
-class ItemData extends Entity implements JsonSerializable {
+class ItemFieldValue extends Entity implements JsonSerializable {
 	protected int $itemId = 0;
 	protected int $fieldId = 0;
+	protected int $order = 0;
 	protected string $value = '';
 
 	public function jsonSerialize(): array {

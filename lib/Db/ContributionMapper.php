@@ -16,7 +16,7 @@ use OCP\IDBConnection;
  */
 class ContributionMapper extends QBMapper {
 	public function __construct(IDBConnection $db) {
-		parent::__construct($db, 'athenaeum', Contribution::class);
+		parent::__construct($db, 'athm_contributions', Contribution::class);
 	}
 
 	/**
@@ -27,8 +27,40 @@ class ContributionMapper extends QBMapper {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
-			->from('athenaeum')
-			->where($qb->expr()->eq('id', $qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
+			->from('athm_contributions')
+			->where($qb->expr()->eq('id',
+					$qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
 		return $this->findEntity($qb);
+	}
+
+	/**
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws DoesNotExistException
+	 */
+	public function findByItemContributor(string $itemId, string $contributorId): Contribution {
+		/* @var $qb IQueryBuilder */
+		$qb = $this->db->getQueryBuilder();
+		$qb->select('*')
+			->from('athm_contributions')
+			->where($qb->expr()
+					   ->eq('item_id',
+							$qb->createNamedParameter($itemId,
+													  IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()
+						  ->eq('contributor_id',
+							   $qb->createNamedParameter($contributorId,
+														 IQueryBuilder::PARAM_INT)));
+		return $this->findEntity($qb);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function findAll(): array {
+		/* @var $qb IQueryBuilder */
+		$qb = $this->db->getQueryBuilder();
+		$qb->select('*')
+			->from('athm_contributions');
+		return $this->findEntities($qb);
 	}
 }

@@ -52,15 +52,23 @@ class ScholarAlertService {
 		}
 	}
 
+	public function findByScholarId(string $scholarId): ScholarAlert {
+		try {
+			return $this->mapper->findByScholarId($scholarId);
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
+	}
+
 	public function create(string $scholarId, string $term, int $importance,
 						   bool $importanceDecided): ScholarAlert {
 		try {
-			$item = new ScholarAlert();
-			$item->setScholarId($scholarId);
-			$item->setTerm($term);
-			$item->setImportance($importance);
-			$item->setImportanceDecided($importanceDecided);
-			return $this->mapper->insert($item);
+			$entity = new ScholarAlert();
+			$entity->setScholarId($scholarId);
+			$entity->setTerm($term);
+			$entity->setImportance($importance);
+			$entity->setImportanceDecided($importanceDecided);
+			return $this->mapper->insert($entity);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}
@@ -69,12 +77,12 @@ class ScholarAlertService {
 	public function update(int $id, string $scholarId, string $term, int $importance,
 						   bool $importanceDecided): ScholarAlert {
 		try {
-			$item = $this->mapper->find($id);
-			$item->setScholarId($scholarId);
-			$item->setTerm($term);
-			$item->setImportance($importance);
-			$item->setImportanceDecided($importanceDecided);
-			return $this->mapper->update($item);
+			$entity = $this->mapper->find($id);
+			$entity->setScholarId($scholarId);
+			$entity->setTerm($term);
+			$entity->setImportance($importance);
+			$entity->setImportanceDecided($importanceDecided);
+			return $this->mapper->update($entity);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}
@@ -82,9 +90,9 @@ class ScholarAlertService {
 
 	public function delete(int $id): ScholarAlert {
 		try {
-			$item = $this->mapper->find($id);
-			$this->mapper->delete($item);
-			return $item;
+			$entity = $this->mapper->find($id);
+			$this->mapper->delete($entity);
+			return $entity;
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}

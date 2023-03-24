@@ -9,6 +9,7 @@ use OCA\Athenaeum\AppInfo\Application;
 use OCA\Athenaeum\Service\ScholarItemService;
 use OCP\AppFramework\ApiController;
 use OCP\AppFramework\Http\DataResponse;
+use OCP\AppFramework\Http;
 use OCP\IRequest;
 
 class ScholarItemApiController extends ApiController {
@@ -39,6 +40,19 @@ class ScholarItemApiController extends ApiController {
 	 * @NoCSRFRequired
 	 * @NoAdminRequired
 	 */
+	public function findByUrl(string $url): DataResponse {
+        // GET /scholarId/<id>
+		$decodedURL = urldecode(urldecode($url));
+		return $this->handleNotFound(function () use ($decodedURL) {
+            return new DataResponse($this->service->findByUrl($decodedURL));
+		});
+	}
+
+	/**
+	 * @CORS
+	 * @NoCSRFRequired
+	 * @NoAdminRequired
+	 */
 	public function show(int $id): DataResponse {
 		return $this->handleNotFound(function () use ($id) {
 			return $this->service->find($id, $this->userId);
@@ -53,7 +67,8 @@ class ScholarItemApiController extends ApiController {
 	public function create(string $url, string $title, string $authors, string $journal,
 						   string $published, $read = false, $importance = 0,
 						   $needsReview = false): DataResponse {
-		return new DataResponse($this->service->create($url, $title, $authors,
+		$decodedURL = urldecode(urldecode($url));
+		return new DataResponse($this->service->create($decodedURL, $title, $authors,
 								$journal, $published, $read, $importance,
 								$needsReview, $this->userId));
 	}
@@ -66,10 +81,11 @@ class ScholarItemApiController extends ApiController {
 	public function update(int $id, string $url, string $title, string $authors, string $journal,
 						   string $published, bool $read = false, int $importance = 0,
 						   bool $needsReview = false): DataResponse {
-		return $this->handleNotFound(function () use ($id, $url, $title, $authors, $journal,
+		$decodedURL = urldecode(urldecode($url));
+		return $this->handleNotFound(function () use ($id, $decodedURL, $title, $authors, $journal,
 									$published, $read, $importance,
 									$needsReview) {
-			return $this->service->update($id, $url, $title, $authors,
+			return $this->service->update($id, $decodedURL, $title, $authors,
 							$journal, $published, $read,
 							$importance, $needsReview, $this->userId);
 		});

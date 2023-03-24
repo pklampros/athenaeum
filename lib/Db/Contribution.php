@@ -12,18 +12,22 @@ use OCP\AppFramework\Db\Entity;
 /**
  * @method getId(): int
  * 
- * @method getTitle(): string
- * @method setTitle(string $title): void
- * @method getContent(): string
- * @method setContent(string $content): void
- * @method getUserId(): string
- * @method setUserId(string $userId): void
+ * @method getItemId(): int
+ * @method setItemId(int $itemId): void
+ * @method getContributionId(): int
+ * @method setContributionId(int $contributorId): void
+ * @method getContributorNameDisplay(): string
+ * @method setContributorNameDisplay(string $contributorNameDisplay): void
+ * @method getContributionTypeId(): int
+ * @method setContributionTypeId(int $contributionTypeId): void
+ * @method getContributionOrder(): int
+ * @method setContributionOrder(int $contributionOrder): void
  */
 class Contribution extends Entity implements JsonSerializable {
 	protected int $itemId = 0;
 	protected int $contributorId = 0;
 	protected string $contributorNameDisplay = '';
-	protected string $contributionTypeId = 0;
+	protected int $contributionTypeId = 0;
 	protected int $contributionOrder = -1;
 
 	public function jsonSerialize(): array {

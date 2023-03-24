@@ -35,6 +35,7 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			]);
 
 			$table->setPrimaryKey(['id']);
+			$table->addUniqueConstraint(['name']);
 		}
 
 		if (!$schema->hasTable('athm_item_types')) {
@@ -48,6 +49,7 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			]);
 
 			$table->setPrimaryKey(['id']);
+			$table->addUniqueConstraint(['name']);
 		}
 
 		if (!$schema->hasTable('athm_contributions')) {
@@ -70,7 +72,8 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 				'notnull' => true
 			]);
 			$table->addColumn('contribution_order', 'integer', [
-				'notnull' => true
+				'notnull' => true,
+				'default' => 0
 			]);
 
 			$table->setPrimaryKey(['id']);
@@ -81,6 +84,7 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 											'contributor_id_fk');
 			$table->addForeignKeyConstraint('athm_contribn_types', ['contribution_type_id'], ['id'], [],
 											'contribution_type_id_fk');
+			$table->addUniqueConstraint(['item_id', 'contributor_id', 'contribution_type_id']);
 
 		}
 
@@ -95,7 +99,7 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 				'length' => 200
 			]);
 			$table->addColumn('last_name', 'string', [
-				'notnull' => true,
+				'notnull' => false,
 				'length' => 200
 			]);
 			$table->addColumn('first_name_is_full_name', 'boolean', [
@@ -123,6 +127,7 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			]);
 
 			$table->setPrimaryKey(['id']);
+			$table->addUniqueConstraint(['name']);
 		}
 
 		if (!$schema->hasTable('athm_items')) {
@@ -154,8 +159,8 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			//								'item_type_id_fk');
 		}
 
-		if (!$schema->hasTable('athm_item_data')) {
-			$table = $schema->createTable('athm_item_data');
+		if (!$schema->hasTable('athm_item_field_values')) {
+			$table = $schema->createTable('athm_item_field_values');
 			$table->addColumn('id', 'integer', [
 				'autoincrement' => true,
 				'notnull' => true,
@@ -165,6 +170,10 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			]);
 			$table->addColumn('field_id', 'integer', [
 				'notnull' => true
+			]);
+			$table->addColumn('order', 'integer', [
+				'notnull' => true,
+				'default' => 0
 			]);
 			$table->addColumn('value', 'text', [
 				'notnull' => true,
@@ -176,6 +185,7 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 											'item_id_fk');
 			$table->addForeignKeyConstraint('athm_fields', ['field_id'], ['id'], [],
 											'field_id_fk');
+			$table->addUniqueConstraint(['item_id', 'field_id', 'order']);
 		}
 
 		if (!$schema->hasTable('athm_item_tags')) {
@@ -196,6 +206,7 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 											'item_id_fk');
 			$table->addForeignKeyConstraint('athm_tags', ['tag_id'], ['id'], [],
 											'tag_id_fk');
+			$table->addUniqueConstraint(['item_id', 'tag_id']);
 		}
 
 		if (!$schema->hasTable('athm_schlr_alerts')) {
@@ -267,7 +278,7 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 				'notnull' => true
 			]);
 			$table->addColumn('excerpt', 'string', [
-				'notnull' => true,
+				'notnull' => false,
 				'length' => 200,
 			]);
 
@@ -276,6 +287,7 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 											'scholar_email_id_fk');
 			$table->addForeignKeyConstraint('athm_schlr_items', ['scholar_item_id'], ['id'], [],
 											'scholar_item_id_fk');
+			$table->addUniqueConstraint(['scholar_email_id', 'scholar_item_id']);
 		}
 
 		if (!$schema->hasTable('athm_schlr_items')) {
@@ -293,14 +305,15 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 				'length' => 200,
 			]);
 			$table->addColumn('authors', 'string', [
-				'notnull' => true,
+				'notnull' => false,
 				'length' => 200,
 			]);
 			$table->addColumn('journal', 'string', [
+				'notnull' => false,
 				'length' => 200,
 			]);
 			$table->addColumn('published', 'string', [
-				'notnull' => true,
+				'notnull' => false,
 				'length' => 200,
 			]);
 			$table->addColumn('read', 'boolean', [

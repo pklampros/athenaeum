@@ -34,9 +34,9 @@ use OCP\AppFramework\Db\Entity;
 class ScholarItem extends Entity implements JsonSerializable {
 	protected string $url = '';
 	protected string $title = '';
-	protected string $authors = '';
-	protected string $journal = '';
-	protected string $published = '';
+	protected ?string $authors = '';
+	protected ?string $journal = '';
+	protected ?string $published = '';
 	protected bool $read = false;
 	protected int $importance = 0;
 	protected bool $needsReview = false;

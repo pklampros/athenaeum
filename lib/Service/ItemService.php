@@ -42,11 +42,14 @@ class ItemService {
 	public function find(int $id, string $userId): Item {
 		try {
 			return $this->mapper->find($id, $userId);
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
+	}
 
-			// in order to be able to plug in different storage backends like files
-		// for instance it is a good idea to turn storage related exceptions
-		// into service related exceptions so controllers and service users
-		// have to deal with only one type of exception
+	public function findByFieldValue(string $fieldName, string $fieldValue, string $userId): Item {
+		try {
+			return $this->mapper->findByFieldValue($fieldName, $fieldValue, $userId);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}
@@ -55,29 +58,46 @@ class ItemService {
 	public function create(string $title, int $itemTypeId, \DateTime $dateAdded,
 	                       \DateTime $dateModified, string $userId): Item {
 		try {
-			$item = new Item();
-			$item->setTitle($title);
-			$item->setItemTypeId($itemTypeId);
+			$entity = new Item();
+			$entity->setTitle($title);
+			$entity->setItemTypeId($itemTypeId);
 			$currentDate = new \DateTime;
-			$item->setDateAdded($currentDate);
-			$item->setDateModified($currentDate);
-			$item->setUserId($userId);
-			return $this->mapper->insert($item);
+			$entity->setDateAdded($currentDate);
+			$entity->setDateModified($currentDate);
+			$entity->setUserId($userId);
+			return $this->mapper->insert($entity);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}
 	}
 
+	public function createWithUrl(string $title, int $itemTypeId, \DateTime $dateAdded,
+	                       \DateTime $dateModified, string $url, string $userId): Item {
+		try {
+			$entity = new Item();
+			$entity->setTitle($title);
+			$entity->setItemTypeId($itemTypeId);
+			$currentDate = new \DateTime;
+			$entity->setDateAdded($currentDate);
+			$entity->setDateModified($currentDate);
+			$entity->setUserId($userId);
+			return $this->mapper->insertWithUrl($entity, $url);
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
+	}
+	
+
 	public function update(int $id, string $title, int $itemTypeId, \DateTime $dateAdded,
 	                       \DateTime $dateModified, string $userId): Item {
 		try {
-			$item = $this->mapper->find($id, $userId);
-			$item->setTitle($title);
-			$item->setItemTypeId($itemTypeId);
+			$entity = $this->mapper->find($id, $userId);
+			$entity->setTitle($title);
+			$entity->setItemTypeId($itemTypeId);
 			$currentDate = new \DateTime;
-			$item->setDateModified($currentDate);
-			$item->setUserId($userId);
-			return $this->mapper->update($item);
+			$entity->setDateModified($currentDate);
+			$entity->setUserId($userId);
+			return $this->mapper->update($entity);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}
@@ -85,9 +105,9 @@ class ItemService {
 
 	public function delete(int $id, string $userId): Item {
 		try {
-			$item = $this->mapper->find($id, $userId);
-			$this->mapper->delete($item);
-			return $item;
+			$entity = $this->mapper->find($id, $userId);
+			$this->mapper->delete($entity);
+			return $entity;
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}

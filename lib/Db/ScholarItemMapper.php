@@ -34,6 +34,18 @@ class ScholarItemMapper extends QBMapper {
 	}
 
 	/**
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws DoesNotExistException
+	 */
+	public function findByUrl(string $url): ScholarItem {
+		$qb = $this->db->getQueryBuilder();
+		$qb->select('*')
+			->from('athm_schlr_items')
+			->where($qb->expr()->eq('url', $qb->createNamedParameter($url)));
+		return $this->findEntity($qb);
+	}
+
+	/**
 	 * @param string $userId
 	 * @return array
 	 */

@@ -24,7 +24,7 @@ use OCP\AppFramework\Db\Entity;
  * @method setUserId(string $userId): void
  */
 class Item extends Entity implements JsonSerializable {
-	protected string $title = '';
+	public string $title = '';
 	protected int $itemTypeId = 0;
 	//protected ?\DateTime $dateAdded = NULL; # not possible to set a default DateTime as it's an object
 	//protected ?\DateTime $dateModified = NULL; # not possible to set a default DateTime as it's an object

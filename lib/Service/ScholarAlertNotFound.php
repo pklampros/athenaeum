@@ -5,5 +5,5 @@ declare(strict_types=1);
 
 namespace OCA\Athenaeum\Service;
 
-class ScholarAlertNotFound extends \Exception {
+class ScholarAlertNotFound extends EntityNotFound {
 }

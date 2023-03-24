@@ -31,6 +31,18 @@ class ScholarAlertMapper extends QBMapper {
 			->where($qb->expr()->eq('id', $qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
 		return $this->findEntity($qb);
 	}
+	
+	/**
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws DoesNotExistException
+	 */
+	public function findByScholarId(string $scholarId): ScholarAlert {
+		$qb = $this->db->getQueryBuilder();
+		$qb->select('*')
+			->from('athm_schlr_alerts')
+			->where($qb->expr()->eq('scholar_id', $qb->createNamedParameter($scholarId)));
+		return $this->findEntity($qb);
+	}
 
 	/**
 	 * @return array

@@ -22,7 +22,7 @@ use OCP\AppFramework\Db\Entity;
 class ScholarEmailItem extends Entity implements JsonSerializable {
 	protected int $scholarEmailId = 0;
 	protected int $scholarItemId = 0;
-	protected string $excerpt = '';
+	protected ?string $excerpt = '';
 
 	public function jsonSerialize(): array {
 		return [

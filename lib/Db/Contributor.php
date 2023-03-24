@@ -12,24 +12,24 @@ use OCP\AppFramework\Db\Entity;
 /**
  * @method getId(): int
  * 
- * @method getTitle(): string
- * @method setTitle(string $title): void
- * @method getContent(): string
- * @method setContent(string $content): void
- * @method getUserId(): string
- * @method setUserId(string $userId): void
+ * @method getFirstName(): string
+ * @method setFirstName(string $firstName): void
+ * @method getFirstNameIsFullName(): bool
+ * @method setFirstNameIsFullName(bool $firstNameIsFullName): void
+ * @method getLastName(): string
+ * @method setLastName(string $lastName): void
  */
 class Contributor extends Entity implements JsonSerializable {
 	protected string $firstName = '';
-	protected string $lastName = '';
-	protected boolean $firstNameIsFullName = 0;
+	protected bool $firstNameIsFullName = false;
+	protected ?string $lastName = '';
 
 	public function jsonSerialize(): array {
 		return [
 			'id' => $this->id,
 			'firstName' => $this->firstName,
-			'lastName' => $this->lastName,
-			'firstNameIsFullName' => $this->firstNameIsFullName
+			'firstNameIsFullName' => $this->firstNameIsFullName,
+			'lastName' => $this->lastName
 		];
 	}
 }

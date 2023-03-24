@@ -52,21 +52,29 @@ class ScholarItemService {
 		}
 	}
 
+	public function findByUrl(string $url): ScholarItem {
+		try {
+			return $this->mapper->findByUrl($url);
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
+	}
+
 	public function create(string $url, string $title, string $authors,
 						   string $journal, string $published, bool $read,
 						   int $importance, bool $needsReview, string $userId): ScholarItem {
 		try {
-			$item = new ScholarItem();
-			$item->setUrl($url);
-			$item->setTitle($title);
-			$item->setAuthors($authors);
-			$item->setJournal($journal);
-			$item->setPublished($published);
-			$item->setRead($read);
-			$item->setImportance($importance);
-			$item->setNeedsReview($needsReview);
-			$item->setUserId($userId);
-			return $this->mapper->insert($item);
+			$entity = new ScholarItem();
+			$entity->setUrl($url);
+			$entity->setTitle($title);
+			$entity->setAuthors($authors);
+			$entity->setJournal($journal);
+			$entity->setPublished($published);
+			$entity->setRead($read);
+			$entity->setImportance($importance);
+			$entity->setNeedsReview($needsReview);
+			$entity->setUserId($userId);
+			return $this->mapper->insert($entity);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}
@@ -76,17 +84,17 @@ class ScholarItemService {
 						   string $journal, string $published, bool $read,
 						   int $importance, bool $needsReview, string $userId): ScholarItem {
 		try {
-			$item = $this->mapper->find($id, $userId);
-			$item->setUrl($url);
-			$item->setTitle($title);
-			$item->setAuthors($authors);
-			$item->setJournal($journal);
-			$item->setPublished($published);
-			$item->setRead($read);
-			$item->setImportance($importance);
-			$item->setNeedsReview($needsReview);
-			$item->setUserId($userId);
-			return $this->mapper->update($item);
+			$entity = $this->mapper->find($id, $userId);
+			$entity->setUrl($url);
+			$entity->setTitle($title);
+			$entity->setAuthors($authors);
+			$entity->setJournal($journal);
+			$entity->setPublished($published);
+			$entity->setRead($read);
+			$entity->setImportance($importance);
+			$entity->setNeedsReview($needsReview);
+			$entity->setUserId($userId);
+			return $this->mapper->update($entity);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}
@@ -94,9 +102,9 @@ class ScholarItemService {
 
 	public function delete(int $id, string $userId): ScholarItem {
 		try {
-			$item = $this->mapper->find($id, $userId);
-			$this->mapper->delete($item);
-			return $item;
+			$entity = $this->mapper->find($id, $userId);
+			$this->mapper->delete($entity);
+			return $entity;
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}

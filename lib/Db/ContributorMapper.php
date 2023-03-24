@@ -16,7 +16,7 @@ use OCP\IDBConnection;
  */
 class ContributorMapper extends QBMapper {
 	public function __construct(IDBConnection $db) {
-		parent::__construct($db, 'athenaeum', Contributor::class);
+		parent::__construct($db, 'athm_contributors', Contributor::class);
 	}
 
 	/**
@@ -27,8 +27,35 @@ class ContributorMapper extends QBMapper {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
-			->from('athenaeum')
+			->from('athm_contributors')
 			->where($qb->expr()->eq('id', $qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
 		return $this->findEntity($qb);
+	}
+
+	/**
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws DoesNotExistException
+	 */
+	public function findByFirstLastName(string $firstName, string $lastName): Contributor {
+		/* @var $qb IQueryBuilder */
+		$qb = $this->db->getQueryBuilder();
+		$qb->select('*')
+			->from('athm_contributors')
+			->where($qb->expr()
+					   ->eq('first_name', $qb->createNamedParameter($firstName)))
+			->andWhere($qb->expr()
+						  ->eq('last_name', $qb->createNamedParameter($lastName)));
+		return $this->findEntity($qb);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function findAll(): array {
+		/* @var $qb IQueryBuilder */
+		$qb = $this->db->getQueryBuilder();
+		$qb->select('*')
+			->from('athm_contributors');
+		return $this->findEntities($qb);
 	}
 }

@@ -38,5 +38,19 @@ class DefaultDataRepairStep implements IRepairStep {
 		$query->executeStatement();
 		$query->setParameter('new_item_type', 'editor');
 		$query->executeStatement();
+
+		$query->insert('athm_fields')
+			  ->setValue('name', $query->createParameter('new_field_name'))
+			  ->setValue('type_hint', $query->createParameter('new_field_type_hint'));
+
+		$query->setParameter('new_field_name', 'url');
+		$query->setParameter('new_field_type_hint', 'string');
+		$query->executeStatement();
+
+		$query->insert('athm_contribution_types')
+			  ->setValue('name', $query->createParameter('new_field_name'))
+
+		$query->setParameter('new_field_name', 'author');
+		$query->executeStatement();
 	}
 }

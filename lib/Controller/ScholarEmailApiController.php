@@ -9,6 +9,7 @@ use OCA\Athenaeum\AppInfo\Application;
 use OCA\Athenaeum\Service\ScholarEmailService;
 use OCP\AppFramework\ApiController;
 use OCP\AppFramework\Http\DataResponse;
+use OCP\AppFramework\Http;
 use OCP\IRequest;
 
 class ScholarEmailApiController extends ApiController {
@@ -32,6 +33,20 @@ class ScholarEmailApiController extends ApiController {
 	 */
 	public function index(): DataResponse {
 		return new DataResponse($this->service->findAll());
+	}
+
+	/**
+	 * @CORS
+	 * @NoCSRFRequired
+	 * @NoAdminRequired
+	 */
+	public function findBySubjectReceived(string $subject, string $received): DataResponse {
+        // GET /scholarId/<id>
+		$receivedDT = new \DateTime($received);
+		return $this->handleNotFound(function () use ($subject, $receivedDT) {
+            return $this->service->findBySubjectReceived($subject, $receivedDT);
+        
+		});
 	}
 
 	/**

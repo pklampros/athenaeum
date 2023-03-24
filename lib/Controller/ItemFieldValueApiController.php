@@ -6,22 +6,22 @@ declare(strict_types=1);
 namespace OCA\Athenaeum\Controller;
 
 use OCA\Athenaeum\AppInfo\Application;
-use OCA\Athenaeum\Service\ItemService;
+use OCA\Athenaeum\Service\ItemFieldValueService;
 use OCP\AppFramework\ApiController;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\IRequest;
 
-class ItemApiController extends ApiController {
-	private ItemService $service;
+class ItemFieldValueApiController extends ApiController {
+	private ItemFieldValueService $service;
 	private ?string $userId;
 
 	use Errors;
 
 	public function __construct(IRequest $request,
-								ItemService $service,
+								ItemFieldValueService $service,
 								?string $userId) {
 		parent::__construct(Application::APP_ID, $request);
-		$this->itemService = $service;
+		$this->service = $service;
 		$this->userId = $userId;
 	}
 
@@ -31,7 +31,7 @@ class ItemApiController extends ApiController {
 	 * @NoAdminRequired
 	 */
 	public function index(): DataResponse {
-		return new DataResponse($this->itemService->findAll($this->userId));
+		return new DataResponse($this->service->findAll($this->userId));
 	}
 
 	/**
@@ -39,11 +39,20 @@ class ItemApiController extends ApiController {
 	 * @NoCSRFRequired
 	 * @NoAdminRequired
 	 */
-	public function findByUrl(string $url): DataResponse {
-        // GET /url/<id>
-		$decodedURL = urldecode(urldecode($url));
-		return $this->handleNotFound(function () use ($decodedURL) {
-            return $this->itemService->findByFieldValue("url", $decodedURL, $this->userId);
+	public function findByFieldId(int $itemId, int $fieldId, int $order): DataResponse {
+		return $this->handleNotFound(function () use ($itemId, $fieldId, $order) {
+            return $this->service->findByFieldId($itemId, $fieldId, $order);
+		});
+	}
+
+	/**
+	 * @CORS
+	 * @NoCSRFRequired
+	 * @NoAdminRequired
+	 */
+	public function findByFieldName(int $itemId, string $fieldName, int $order): DataResponse {
+		return $this->handleNotFound(function () use ($itemId, $fieldName, $order) {
+			return $this->service->findByFieldName($itemId, $fieldName, $order);
 		});
 	}
 
@@ -54,7 +63,7 @@ class ItemApiController extends ApiController {
 	 */
 	public function show(int $id): DataResponse {
 		return $this->handleNotFound(function () use ($id) {
-			return $this->itemService->find($id, $this->userId);
+			return $this->service->find($id, $this->userId);
 		});
 	}
 
@@ -64,21 +73,9 @@ class ItemApiController extends ApiController {
 	 * @NoAdminRequired
 	 */
 	public function create(string $title, int $itemTypeId): DataResponse {
-		$currentTime = new \DateTime;
-		return new DataResponse($this->itemService->create($title, $itemTypeId,
+						   $currentTime = new \DateTime;
+		return new DataResponse($this->service->create($title, $itemTypeId,
 								$currentTime, $currentTime, $this->userId));
-	}
-
-	/**
-	 * @CORS
-	 * @NoCSRFRequired
-	 * @NoAdminRequired
-	 */
-	public function createWithUrl(string $title, int $itemTypeId, string $url): DataResponse {
-		$currentTime = new \DateTime;
-		$decodedURL = urldecode(urldecode($url));
-		return new DataResponse($this->itemService->createWithUrl($title, $itemTypeId,
-								$currentTime, $currentTime, $decodedURL, $this->userId));
 	}
 
 	/**
@@ -90,7 +87,7 @@ class ItemApiController extends ApiController {
 						   \DateTime $dateModified): DataResponse {
 		return $this->handleNotFound(function () use ($id, $title, $itemTypeId, $dateAdded,
 									$dateModified) {
-			return $this->itemService->update($id, $title, $itemTypeId, $dateAdded,
+			return $this->service->update($id, $title, $itemTypeId, $dateAdded,
 							$dateModified, $this->userId);
 		});
 	}
@@ -100,10 +97,10 @@ class ItemApiController extends ApiController {
 	 * @NoCSRFRequired
 	 * @NoAdminRequired
 	 */
-	public function setItemFieldValue(int $itemId, string $fieldName,
+	public function setItemFieldValueFieldValue(int $itemId, string $fieldName,
 									  string $fieldValue): DataResponse {
 		return $this->handleNotFound(function () use ($itemId, $fieldName, $fieldValue) {
-			return $this->itemService->setItemFieldValue($itemId, $fieldName,
+			return $this->service->setItemFieldValueFieldValue($itemId, $fieldName,
 														 $fieldValue, $this->userId);
 		});
 	}
@@ -115,7 +112,7 @@ class ItemApiController extends ApiController {
 	 */
 	public function destroy(int $id): DataResponse {
 		return $this->handleNotFound(function () use ($id) {
-			return $this->itemService->delete($id, $this->userId);
+			return $this->service->delete($id, $this->userId);
 		});
 	}
 }

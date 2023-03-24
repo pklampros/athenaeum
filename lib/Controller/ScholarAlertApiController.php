@@ -9,6 +9,7 @@ use OCA\Athenaeum\AppInfo\Application;
 use OCA\Athenaeum\Service\ScholarAlertService;
 use OCP\AppFramework\ApiController;
 use OCP\AppFramework\Http\DataResponse;
+use OCP\AppFramework\Http;
 use OCP\IRequest;
 
 class ScholarAlertApiController extends ApiController {
@@ -32,6 +33,18 @@ class ScholarAlertApiController extends ApiController {
 	 */
 	public function index(): DataResponse {
 		return new DataResponse($this->service->findAll());
+	}
+
+	/**
+	 * @CORS
+	 * @NoCSRFRequired
+	 * @NoAdminRequired
+	 */
+	public function findByScholarId(string $scholarId): DataResponse {
+        // GET /scholarId/<id>
+		return $this->handleNotFound(function () use ($scholarId) {
+            return new DataResponse($this->service->findByScholarId($scholarId));
+		});
 	}
 
 	/**

@@ -28,7 +28,27 @@ class ScholarEmailItemMapper extends QBMapper {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
 			->from('athm_schlr_email_items')
-			->where($qb->expr()->eq('id', $qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
+			->where($qb->expr()
+					   ->eq('id', $qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
+		return $this->findEntity($qb);
+	}
+
+	/**
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws DoesNotExistException
+	 */
+	public function findByEmailItem(int $scholarEmailId, int $scholarItemId): ScholarEmailItem {
+		$qb = $this->db->getQueryBuilder();
+		$qb->select('*')
+			->from('athm_schlr_email_items')
+			->where($qb->expr()
+					   ->eq('scholar_email_id',
+							$qb->createNamedParameter($scholarEmailId,
+													  IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()
+						  ->eq('scholar_item_id',
+							   $qb->createNamedParameter($scholarItemId,
+														 IQueryBuilder::PARAM_INT)));
 		return $this->findEntity($qb);
 	}
 

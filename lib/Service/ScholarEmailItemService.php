@@ -52,14 +52,22 @@ class ScholarEmailItemService {
 		}
 	}
 
+	public function findByEmailItem(int $scholarEmailId, int $scholarItemId): ScholarEmailItem {
+		try {
+			return $this->mapper->findByEmailItem($scholarEmailId, $scholarItemId);
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
+	}
+
 	public function create(int $scholarEmailId, int $scholarItemId,
 						   string $excerpt): ScholarEmailItem {
 		try {
-			$item = new ScholarEmailItem();
-			$item->setScholarEmailId($scholarEmailId);
-			$item->setScholarItemId($scholarItemId);
-			$item->setExcerpt($excerpt);
-			return $this->mapper->insert($item);
+			$entity = new ScholarEmailItem();
+			$entity->setScholarEmailId($scholarEmailId);
+			$entity->setScholarItemId($scholarItemId);
+			$entity->setExcerpt($excerpt);
+			return $this->mapper->insert($entity);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}
@@ -68,11 +76,11 @@ class ScholarEmailItemService {
 	public function update(int $id, int $scholarEmailId, int $scholarItemId,
 						   string $excerpt): ScholarEmailItem {
 		try {
-			$item = $this->mapper->find($id);
-			$item->setScholarEmailId($scholarEmailId);
-			$item->setScholarItemId($scholarItemId);
-			$item->setExcerpt($excerpt);
-			return $this->mapper->update($item);
+			$entity = $this->mapper->find($id);
+			$entity->setScholarEmailId($scholarEmailId);
+			$entity->setScholarItemId($scholarItemId);
+			$entity->setExcerpt($excerpt);
+			return $this->mapper->update($entity);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}
@@ -80,9 +88,9 @@ class ScholarEmailItemService {
 
 	public function delete(int $id): ScholarEmailItem {
 		try {
-			$item = $this->mapper->find($id);
-			$this->mapper->delete($item);
-			return $item;
+			$entity = $this->mapper->find($id);
+			$this->mapper->delete($entity);
+			return $entity;
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}
