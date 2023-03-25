@@ -30,7 +30,7 @@ return [
 			'verb' => 'GET'],
 		['name' => 'item_api#createWithUrl',
 			'url' => '/api/0.1/items/createWithUrl',
-			'verb' => 'POST', 'escape' => false],
+			'verb' => 'POST'],
 		['name' => 'item_api#setItemFieldValue',
 			'url' => '/api/0.1/items/{itemId}/setField/{fieldName}/{fieldValue}',
 			'verb' => 'GET', 'escape' => false],
