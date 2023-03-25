@@ -298,7 +298,6 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			]);
 			$table->addColumn('url', 'string', [
 				'notnull' => true,
-				'length' => 200,
 			]);
 			$table->addColumn('title', 'string', [
 				'notnull' => true,
