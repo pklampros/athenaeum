@@ -78,14 +78,10 @@ class ItemMapper extends QBMapper {
 			  ->where($qb->expr()->eq('name', $qb->createNamedParameter('url')));
 			$fieldID = $this->findEntity($qb)->id;
 			$qb->insert('athm_item_field_values')
-			   ->setValue('item_id', '?')
-			   ->setValue('field_id', '?')
-			   ->setValue('order', '?')
-			   ->setValue('value', '?')
-			   ->setParameter(0, $newItem->id)
-			   ->setParameter(1, $fieldID)
-			   ->setParameter(2, 0)
-			   ->setParameter(3, $url);
+			   ->setValue('item_id', $qb->createNamedParameter($newItem->id, IQueryBuilder::PARAM_INT))
+			   ->setValue('field_id', $qb->createNamedParameter($fieldID, IQueryBuilder::PARAM_INT))
+			   ->setValue('order', 0)
+			   ->setValue('value', $qb->createNamedParameter($url));
 			$qb->executeStatement();
 			return $newItem;
         }, $this->db);
