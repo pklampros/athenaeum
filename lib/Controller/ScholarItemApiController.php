@@ -44,7 +44,7 @@ class ScholarItemApiController extends ApiController {
         // GET /scholarId/<id>
 		$decodedURL = urldecode(urldecode($url));
 		return $this->handleNotFound(function () use ($decodedURL) {
-            return new DataResponse($this->service->findByUrl($decodedURL));
+            return $this->service->findByUrl($decodedURL);
 		});
 	}
 

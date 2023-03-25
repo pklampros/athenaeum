@@ -43,7 +43,7 @@ class ScholarAlertApiController extends ApiController {
 	public function findByScholarId(string $scholarId): DataResponse {
         // GET /scholarId/<id>
 		return $this->handleNotFound(function () use ($scholarId) {
-            return new DataResponse($this->service->findByScholarId($scholarId));
+            return $this->service->findByScholarId($scholarId);
 		});
 	}
 

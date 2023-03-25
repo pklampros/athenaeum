@@ -43,7 +43,7 @@ class ScholarEmailItemApiController extends ApiController {
 	public function findByEmailItem(int $scholarEmailId, int $scholarItemId): DataResponse {
         // GET /emailId/<id>/itemId/<id>
 		return $this->handleNotFound(function () use ($scholarEmailId, $scholarItemId) {
-            return new DataResponse($this->service->findByEmailItem($scholarEmailId, $scholarItemId));
+            return $this->service->findByEmailItem($scholarEmailId, $scholarItemId);
         
 		});
 	}
