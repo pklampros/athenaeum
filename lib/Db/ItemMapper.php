@@ -56,12 +56,20 @@ class ItemMapper extends QBMapper {
 	 * @param string $userId
 	 * @return array
 	 */
-	public function findAll(string $userId): array {
+	public function findAll(
+		string $userId,
+		int $limit = 50,
+		int $offset = 0,
+		?bool $showAll = false,
+		string $search = ''
+	): array {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
 			->from('athm_items')
-			->where($qb->expr()->eq('user_id', $qb->createNamedParameter($userId)));
+			->where($qb->expr()->eq('user_id', $qb->createNamedParameter($userId)))
+			->setFirstResult($offset)
+			->setMaxResults($limit);
 		return $this->findEntities($qb);
 	}
 
