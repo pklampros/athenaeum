@@ -4,65 +4,65 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
 	<div id="content" class="app-athenaeum">
-		<AppNavigation>
-			<AppNavigationNew v-if="!loading"
+		<NcAppNavigation>
+			<NcAppNavigationNew v-if="!loading"
 				:text="t('athenaeum', 'New scholar item')"
 				:disabled="false"
 				button-id="new-scholar-item-button"
 				button-class="icon-add"
 				@click="newScholarItem" />
 			<ul>
-				<AppNavigationItem v-for="scholarItem in scholarItems"
+				<NcAppNavigationItem v-for="scholarItem in scholarItems"
 					:key="scholarItem.id"
 					:title="scholarItem.title ? scholarItem.title : t('athenaeum', 'New scholar item')"
 					:class="{active: currentScholarItemId === scholarItem.id}"
 					@click="openScholarItem(scholarItem)">
 					<template slot="actions">
-						<ActionButton v-if="scholarItem.id === -1"
+						<NcActionButton v-if="scholarItem.id === -1"
 							icon="icon-close"
 							@click="cancelNewScholarItem(scholarItem)">
 							{{
 							t('athenaeum', 'Cancel item creation') }}
-						</ActionButton>
-						<ActionButton v-else
+						</NcActionButton>
+						<NcActionButton v-else
 							icon="icon-delete"
 							@click="deleteScholarItem(scholarItem)">
 							{{
 							 t('athenaeum', 'Delete item') }}
-						</ActionButton>
+						</NcActionButton>
 					</template>
-				</AppNavigationItem>
+				</NcAppNavigationItem>
 			</ul>
-			<AppNavigationNew v-if="!loading"
+			<NcAppNavigationNew v-if="!loading"
 				:text="t('athenaeum', 'New item')"
 				:disabled="false"
 				button-id="new-item-button"
 				button-class="icon-add"
 				@click="newItem" />
 			<ul>
-				<AppNavigationItem v-for="item in items"
+				<NcAppNavigationItem v-for="item in items"
 					:key="item.id"
 					:title="item.title ? item.title : t('athenaeum', 'New item')"
 					:class="{active: currentItemId === item.id}"
 					@click="openItem(item)">
 					<template slot="actions">
-						<ActionButton v-if="item.id === -1"
+						<NcActionButton v-if="item.id === -1"
 							icon="icon-close"
 							@click="cancelNewItem(item)">
 							{{
 							t('athenaeum', 'Cancel item creation') }}
-						</ActionButton>
-						<ActionButton v-else
+						</NcActionButton>
+						<NcActionButton v-else
 							icon="icon-delete"
 							@click="deleteItem(item)">
 							{{
 							 t('athenaeum', 'Delete item') }}
-						</ActionButton>
+						</NcActionButton>
 					</template>
-				</AppNavigationItem>
+				</NcAppNavigationItem>
 			</ul>
-		</AppNavigation>
-		<AppContent>
+		</NcAppNavigation>
+		<NcAppContent>
 			<div v-if="currentScholarItem">
 				<input ref="url"
 					v-model="currentScholarItem.url"
@@ -106,18 +106,18 @@
 				<h2>{{
 				 t('athenaeum', 'Create an item to get started') }}</h2>
 			</div>
-		</AppContent>
+		</NcAppContent>
 	</div>
 </template>
 
 <script>
-import ActionButton from '@nextcloud/vue/dist/Components/ActionButton'
-import AppContent from '@nextcloud/vue/dist/Components/AppContent'
-import AppNavigation from '@nextcloud/vue/dist/Components/AppNavigation'
-import AppNavigationItem from '@nextcloud/vue/dist/Components/AppNavigationItem'
-import AppNavigationNew from '@nextcloud/vue/dist/Components/AppNavigationNew'
+import NcActionButton from '@nextcloud/vue/dist/Components/NcActionButton'
+import NcAppContent from '@nextcloud/vue/dist/Components/NcAppContent'
+import NcAppNavigation from '@nextcloud/vue/dist/Components/NcAppNavigation'
+import NcAppNavigationItem from '@nextcloud/vue/dist/Components/NcAppNavigationItem'
+import NcAppNavigationNew from '@nextcloud/vue/dist/Components/NcAppNavigationNew'
 
-import '@nextcloud/dialogs/styles/toast.scss'
+import '@nextcloud/dialogs/dist/index.css'
 import { generateUrl } from '@nextcloud/router'
 import { showError, showSuccess } from '@nextcloud/dialogs'
 import axios from '@nextcloud/axios'
@@ -125,11 +125,11 @@ import axios from '@nextcloud/axios'
 export default {
 	name: 'App',
 	components: {
-		ActionButton,
-		AppContent,
-		AppNavigation,
-		AppNavigationItem,
-		AppNavigationNew,
+		NcActionButton,
+		NcAppContent,
+		NcAppNavigation,
+		NcAppNavigationItem,
+		NcAppNavigationNew,
 	},
 	data() {
 		return {
