@@ -22,8 +22,8 @@
   "dependencies": {
     "@nextcloud/axios": "^2.3.0",
     "@nextcloud/dialogs": "^4.0.1",
-    "@nextcloud/router": "^2.0.0",
-    "@nextcloud/vue": "^7.8.0",
+    "@nextcloud/router": "^2.0.1",
+    "@nextcloud/vue": "^7.8.4",
     "vue": "^2.7.0"
   },
   "browserslist": [
@@ -35,9 +35,9 @@
   },
   "devDependencies": {
     "@nextcloud/babel-config": "^1.0.0",
-    "@nextcloud/browserslist-config": "^2.2.0",
-    "@nextcloud/eslint-config": "^8.0.0",
-    "@nextcloud/stylelint-config": "^2.1.2",
-    "@nextcloud/webpack-vue-config": "^5.3.0"
+    "@nextcloud/browserslist-config": "^2.3.0",
+    "@nextcloud/eslint-config": "^8.2.1",
+    "@nextcloud/stylelint-config": "^2.3.0",
+    "@nextcloud/webpack-vue-config": "^5.5.0"
   }
 }
