@@ -9,13 +9,15 @@
 		}
 	],
 	"require-dev": {
+		"php": "^8.0",
 		"phpunit/phpunit": "^9",
 		"sabre/dav": "^4.1",
 		"sabre/xml": "^2.2",
 		"symfony/event-dispatcher": "^5.3.11",
 		"nextcloud/ocp": "dev-master@dev",
 		"psalm/phar": "^4.10",
-		"nextcloud/coding-standard": "^1.0"
+		"nextcloud/coding-standard": "^1.0",
+		"php-mime-mail-parser/php-mime-mail-parser": "^8.0"
 	},
 	"scripts": {
 		"lint": "find . -name \\*.php -not -path './vendor/*' -print0 | xargs -0 -n1 php -l",
@@ -32,7 +34,10 @@
 			"composer/package-versions-deprecated": true
 		},
 		"platform": {
-			"php": "7.4"
+			"php": "8.0"
 		}
+	},
+	"require": {
+		"ext-mailparse": "*"
 	}
 }
