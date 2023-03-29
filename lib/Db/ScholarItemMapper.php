@@ -58,11 +58,18 @@ class ScholarItemMapper extends QBMapper {
 	): array {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
-		$qb->select('*')
-			->from('athm_schlr_items')
-			->where($qb->expr()->eq('user_id', $qb->createNamedParameter($userId)))
-			->setFirstResult($offset)
-			->setMaxResults($limit);
+		$qb->select('i.*')
+		   ->addSelect($qb->createFunction('SUM(a.importance) AS alert_importance'))
+		   ->from('athm_schlr_email_items', 'ei')
+		   ->innerJoin("ei", "athm_schlr_emails", "e", "e.id = ei.scholar_email_id")
+		   ->innerJoin("e", "athm_schlr_alerts", "a", "a.id = e.scholar_alert_id")
+		   ->innerJoin("ei", "athm_schlr_items", "i", "i.id = ei.scholar_item_id")
+		   ->where($qb->expr()->eq('i.user_id', $qb->createNamedParameter($userId)))
+		   ->andWhere($qb->expr()->eq('i.read', $qb->createNamedParameter(0)))
+		   ->addGroupBy('i.id', 'DESC')
+		   ->addOrderBy('alert_importance', 'DESC')
+		   ->setFirstResult($offset)
+		   ->setMaxResults($limit);
 		return $this->findEntities($qb);
 	}
 }
