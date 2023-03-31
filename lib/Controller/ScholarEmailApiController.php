@@ -66,11 +66,10 @@ class ScholarEmailApiController extends ApiController {
 	 * @NoAdminRequired
 	 */
 	public function create(string $subject, string $received,
-						   string $fromAddress, string $toAddress,
 						   int $alertId): DataResponse {
 		$receivedDT = new \DateTime($received);
 		return new DataResponse($this->service->create($subject, $receivedDT,
-				$fromAddress, $toAddress, $alertId));
+								$alertId));
 	}
 
 	/**
@@ -79,13 +78,12 @@ class ScholarEmailApiController extends ApiController {
 	 * @NoAdminRequired
 	 */
 	public function update(int $id, string $subject, string $received,
-						   string $fromAddress, string $toAddress,
 						   int $alertId): DataResponse {
 		$receivedDT = new \DateTime($received);
 		return $this->handleNotFound(function () use ($id, $subject, $receivedDT,
-									 $fromAddress, $toAddress, $alertId) {
+									 $alertId) {
 			return $this->service->update($id, $subject, $receivedDT,
-							$fromAddress, $toAddress, $alertId);
+										  $alertId);
 		});
 	}
 

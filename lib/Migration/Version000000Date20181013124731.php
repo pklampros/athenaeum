@@ -248,14 +248,6 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			$table->addColumn('received', 'datetime', [
 				'notnull' => true
 			]);
-			$table->addColumn('from_address', 'string', [
-				'notnull' => true,
-				'length' => 200,
-			]);
-			$table->addColumn('to_address', 'string', [
-				'notnull' => true,
-				'length' => 200,
-			]);
 			$table->addColumn('scholar_alert_id', 'integer', [
 				'notnull' => true
 			]);

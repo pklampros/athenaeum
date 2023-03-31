@@ -42,21 +42,21 @@ class ScholarEmailController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 */
-	public function create(string $subject, \DateTime $received, string $fromAddress,
-						   string $toAddress, int $alertId): DataResponse {
+	public function create(string $subject, \DateTime $received,
+						   int $alertId): DataResponse {
 		return new DataResponse($this->service->create($subject, $received,
-								$fromAddress, $toAddress, $alertId));
+								$alertId));
 	}
 
 	/**
 	 * @NoAdminRequired
 	 */
-	public function update(int $id, string $subject, \DateTime $received, string $fromAddress,
-						   string $toAddress, int $alertId): DataResponse {
+	public function update(int $id, string $subject, \DateTime $received,
+						   int $alertId): DataResponse {
 		return $this->handleNotFound(function () use ($id, $subject, $received,
-									 $fromAddress, $toAddress, $alertId) {
+									 $alertId) {
 			return $this->service->update($id, $subject, $received,
-										  $fromAddress, $toAddress, $alertId);
+										  $alertId);
 		});
 	}
 

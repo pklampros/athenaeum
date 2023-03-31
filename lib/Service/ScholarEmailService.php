@@ -60,14 +60,12 @@ class ScholarEmailService {
 		}
 	}
 
-	public function create(string $subject, \DateTime $received, string $fromAddress,
-						   string $toAddress, int $scholarAlertId): ScholarEmail {
+	public function create(string $subject, \DateTime $received,
+						   int $scholarAlertId): ScholarEmail {
 		try {
 			$entity = new ScholarEmail();
 			$entity->setSubject($subject);
 			$entity->setReceived($received);
-			$entity->setFromAddress($fromAddress);
-			$entity->setToAddress($toAddress);
 			$entity->setScholarAlertId($scholarAlertId);
 			return $this->mapper->insert($entity);
 		} catch (Exception $e) {
@@ -75,14 +73,12 @@ class ScholarEmailService {
 		}
 	}
 
-	public function update(int $id, string $subject, \DateTime $received, string $fromAddress,
-						   string $toAddress, int $scholarAlertId): ScholarEmail {
+	public function update(int $id, string $subject, \DateTime $received,
+						   int $scholarAlertId): ScholarEmail {
 		try {
 			$entity = $this->mapper->find($id);
 			$entity->setSubject($subject);
 			$entity->setReceived($received);
-			$entity->setFromAddress($fromAddress);
-			$entity->setToAddress($toAddress);
 			$entity->setScholarAlertId($scholarAlertId);
 			return $this->mapper->update($entity);
 		} catch (Exception $e) {
