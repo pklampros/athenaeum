@@ -37,6 +37,10 @@
 				button-id="new-item-button"
 				button-class="icon-add"
 				@click="newItem" />
+			<label>File
+				<input type="file" id="file" ref="file" v-on:change="handleFileUpload($event)"/>
+			</label>
+      		<button v-on:click="submitFile()">Submit</button>
 		</NcAppNavigation>
 		<NcAppContent>
 			<div id="toptitle">
@@ -327,6 +331,26 @@ export default {
 			} else {
 				this.updateScholarItem(this.currentScholarItem)
 			}
+		},
+		handleFileUpload( event ){
+			console.log(event);
+			this.file = event.target.files[0];
+			console.log(this.file);
+		},
+		submitFile(){
+			let formData = new FormData();
+			formData.append('file', this.file);
+			console.log(this.file);
+			console.log(formData.get('file'));
+			axios.post( generateUrl('/apps/athenaeum/scholar_items/extractFromEML'), formData, {
+				headers: {
+					'Content-Type': 'multipart/form-data'
+				}
+			}).then(function(){
+				console.log('SUCCESS!!');
+			}).catch(function(){
+				console.log('FAILURE!!');
+			});
 		},
 		/**
 		 * Create a new item and focus the item content field automatically

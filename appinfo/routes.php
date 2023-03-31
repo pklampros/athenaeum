@@ -53,6 +53,10 @@ return [
 		['name' => 'scholar_item_api#findByUrl',
 			'url' => '/api/0.1/scholar_items/url/{url}',
 			'verb' => 'GET', 'escape' => false],
+		['name' => 'scholar_item#extractFromEML',
+			'url' => '/scholar_items/extractFromEML',
+			'verb' => 'POST'],
+
 		['name' => 'scholar_email_item_api#findByEmailItem',
 			'url' => '/api/0.1/scholar_email_items/scholarEmailId/{scholarEmailId}/scholarItemId/{scholarItemId}',
 			'verb' => 'GET'],

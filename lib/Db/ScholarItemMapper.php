@@ -72,4 +72,92 @@ class ScholarItemMapper extends QBMapper {
 		   ->setMaxResults($limit);
 		return $this->findEntities($qb);
 	}
+
+	private function getOrInsertScholarAlert(string $scholarId, string $term): ScholarAlert {
+		$scholarAlertMapper = new ScholarAlertMapper($this->db);
+		try {
+			$alert = $scholarAlertMapper->findByScholarId($scholarId);
+		} catch (DoesNotExistException $e) {
+			$entity = new ScholarAlert();
+			$entity->setScholarId($scholarId);
+			$entity->setTerm($term);
+			$alert = $scholarAlertMapper->insert($entity);
+		}
+		return $alert;
+	}
+
+	private function getOrInsertScholarEmail(string $subject, \DateTime $received,
+											 int $scholarAlertId): ScholarEmail {
+		$scholarEmailMapper = new ScholarEmailMapper($this->db);
+		try {
+			$email = $scholarEmailMapper->findBySubjectReceived($subject, $received);
+		} catch (DoesNotExistException $e) {
+			$entity = new ScholarEmail();
+			$entity->setSubject($subject);
+			$entity->setReceived($received);
+			$entity->setScholarAlertId($scholarAlertId);
+			$email = $scholarEmailMapper->insert($entity);
+		}
+		return $email;
+	}
+
+	private function getOrInsertScholarItem(string $url, string $title, string $authors,
+											string $journal, string $published, bool $read,
+											int $importance, bool $needsReview,
+											string $userId): ScholarItem {
+		try {
+			$item = $this->findByUrl($url);
+		} catch (DoesNotExistException $e) {
+			$entity = new ScholarItem();
+			$entity->setUrl($url);
+			$entity->setTitle($title);
+			$entity->setAuthors($authors);
+			$entity->setJournal($journal);
+			$entity->setPublished($published);
+			$entity->setRead($read);
+			$entity->setImportance($importance);
+			$entity->setNeedsReview($needsReview);
+			$entity->setUserId($userId);
+			$item = $this->insert($entity);
+		}
+		return $item;
+	}
+
+	private function getOrInsertScholarEmailItem(int $scholarEmailId, int $scholarItemId,
+												 string $excerpt): ScholarEmailItem {
+		$scholarEmailItemMapper = new ScholarEmailItemMapper($this->db);
+		try {
+			$emailItem = $scholarEmailItemMapper->findByEmailItem($scholarEmailId, $scholarItemId);
+		} catch (DoesNotExistException $e) {
+			$entity = new ScholarEmailItem();
+			$entity->setScholarEmailId($scholarEmailId);
+			$entity->setScholarItemId($scholarItemId);
+			$entity->setExcerpt($excerpt);
+			$emailItem = $scholarEmailItemMapper->insert($entity);
+		}
+		return $emailItem;
+	}
+
+	public function createFromEML(array $emlData, string $userId): array {
+		$this->db->beginTransaction();
+		try {
+			$qb = $this->db->getQueryBuilder();
+
+			$alert = $this->getOrInsertScholarAlert($emlData["alertID"], $emlData["searchTerm"]);
+			$email = $this->getOrInsertScholarEmail($emlData["subject"], $emlData["received"], $alert->id);
+			
+			foreach ($emlData["items"] as $emlItem) {
+				$item = $this->getOrInsertScholarItem($emlItem["url"], $emlItem["title"], $emlItem["authors"],
+													  $emlItem["journal"], $emlItem["published"], false,
+													  0, false, $userId);
+				$emailItem = $this->getOrInsertScholarEmailItem($email->id, $item->id, $emlItem["excerpt"]);
+			}
+			$this->db->commit();
+			
+			return array();
+		} catch (Throwable $e) {
+			$this->db->rollBack();
+			throw $e;
+		}
+	}
 }

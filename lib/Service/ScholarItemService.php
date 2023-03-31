@@ -88,6 +88,14 @@ class ScholarItemService {
 		}
 	}
 
+	public function createFromEML(array $emlData, string $userId): array {
+		try {
+			return $this->mapper->createFromEML($emlData, $userId);
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
+	}
+
 	public function update(int $id, string $url, string $title, string $authors,
 						   string $journal, string $published, bool $read,
 						   int $importance, bool $needsReview, string $userId): ScholarItem {
