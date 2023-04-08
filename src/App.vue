@@ -61,9 +61,9 @@
 					</template>
 					<template slot="actions">
 						<NcActionButton
-							@click="fileItem(scholarItem.id)">
+							@click="$refs.itemFileModal.shelveItem(scholarItem)">
 							{{
-							t('athenaeum', 'Move to library') }}
+							t('athenaeum', 'Shelve...') }}
 							<template #icon>
 								<Bookshelf :size="20"/>
 							</template>
@@ -106,6 +106,8 @@
 					</template>
 				</NcListItem>
 			</NcAppContentList>
+
+			<ItemFileModal ref="itemFileModal"/>
 		</NcAppContent>
 
 		<NcAppSidebar
@@ -194,6 +196,8 @@ import NcRichText from '@nextcloud/vue/dist/Components/NcRichText'
 import Bookshelf from 'vue-material-design-icons/Bookshelf.vue';
 import Inbox from 'vue-material-design-icons/Inbox.vue';
 
+import ItemFileModal from './ItemFileModal.vue'
+
 import '@nextcloud/dialogs/dist/index.css'
 import { generateUrl } from '@nextcloud/router'
 import { showError, showSuccess } from '@nextcloud/dialogs'
@@ -201,6 +205,7 @@ import axios from '@nextcloud/axios'
 import {
 	ViewMode
 } from "./enums";
+import ItemFileModalVue from './ItemFileModal.vue'
 
 export default {
 	name: 'App',
@@ -222,6 +227,8 @@ export default {
 
 		Bookshelf,
 		Inbox,
+
+		ItemFileModal,
 	},
 	data() {
 		return {
@@ -229,6 +236,7 @@ export default {
 			scholarItems: [],
 			currentItemId: null,
 			currentScholarItemId: null,
+			fileItemTrigger: 0,
 			updating: false,
 			loading: true,
 			ViewMode: ViewMode,
@@ -395,21 +403,6 @@ export default {
 			return authors + journal
 		
 		},
-		fileItem(scholarItemID) {
-			// pop up dialog to decide what to do with this item
-			// it should show title, authors, excerpt(s) and only 
-			// allow filing if the author's list is complete. Perhaps
-			// do the author-splitting here?
-
-			// this dialog should also allow for marking items as "read"
-			// with importance = 0, but not in the inbox anymore. Perhaps
-			// these items should go into an "Read items" folder, sorted
-			// by date of opening/marking as read, so as to allow for
-			// keeping them in case a mistake was made. Then perhaps
-			// delete them after some time? Or compact them?
-
-			// clickin on an item (n)
-		},
 		/**
 		 * Abort creating a new item
 		 */
@@ -530,6 +523,15 @@ export default {
 		align-items: center;
 		min-height: var(--athenaeum-navigation-height);
 	    padding: 0 var(--athenaeum-navigation-height);
+	}
+
+	.modal__content {
+		margin: 20px;
+		text-align: center;
+	}
+
+	.input-field {
+		margin: 12px 0px;
 	}
 
 </style>
