@@ -5,11 +5,19 @@
         @close="cancelShelvingItem">
             <div class="modal__content">
                 <h2>Shelve item details</h2>
-                <NcTextField label="Title" :value.sync="scholarItemBeingFiled.title" />
-                <NcTextField label="URL" :value.sync="scholarItemBeingFiled.url" />
-                <NcTextField label="Journal"
-							 :value.sync="scholarItemBeingFiled.journal"
-							 v-if="scholarItemBeingFiled.journal"/>
+                <NcTextField
+				    label="Title"
+				    :label-visible="true"
+					:value.sync="scholarItemBeingFiled.title" />
+                <NcTextField
+				    label="URL"
+				    :label-visible="true"
+					:value.sync="scholarItemBeingFiled.url" />
+                <NcTextField
+				    label="Journal"
+				    :label-visible="true"
+					:value.sync="scholarItemBeingFiled.journal"
+					v-if="scholarItemBeingFiled.journal" />
                 <!-- <NcTextField label="Authors" :value.sync="scholarItemBeingFiled.authors" /> -->
 				<NcTextField v-for="author in scholarItemBeingFiled.authorList"
 					:key="author.name"

@@ -49,39 +49,11 @@
 			</div>
 			<ul v-if="viewMode === ViewMode.SCHOLAR_ITEMS"
 				class="main-items-list">
-				<NcListItem v-for="scholarItem in scholarItems"
+				<ScholarListItem v-for="scholarItem in scholarItems"
 					:key="scholarItem.id"
-					:title="scholarItem.title ? scholarItem.title : t('athenaeum', 'New scholar item')"
-					:class="{active: currentScholarItemId === scholarItem.id}"
-					:counter-number="scholarItem.alertImportance"
+					:scholarItem="scholarItem"
 					@click="openScholarItem(scholarItem)">
-					<template slot="subtitle">
-						<NcRichText
-							:text="getSubtitle(scholarItem)" />
-					</template>
-					<template slot="actions">
-						<NcActionButton
-							@click="$refs.itemFileModal.shelveItem(scholarItem)">
-							{{
-							t('athenaeum', 'Shelve...') }}
-							<template #icon>
-								<Bookshelf :size="20"/>
-							</template>
-						</NcActionButton>
-						<NcActionButton v-if="scholarItem.id === -1"
-							icon="icon-close"
-							@click="cancelNewScholarItem(scholarItem)">
-							{{
-							t('athenaeum', 'Cancel item creation') }}
-						</NcActionButton>
-						<NcActionButton v-else
-							icon="icon-delete"
-							@click="deleteScholarItem(scholarItem)">
-							{{
-							 t('athenaeum', 'Delete item') }}
-						</NcActionButton>
-					</template>
-				</NcListItem>
+				</ScholarListItem>
 			</ul>
 			<NcAppContentList v-else-if="viewMode === ViewMode.ITEMS"
 				class="main-items-list">
@@ -197,6 +169,7 @@ import Bookshelf from 'vue-material-design-icons/Bookshelf.vue';
 import Inbox from 'vue-material-design-icons/Inbox.vue';
 
 import ItemFileModal from './ItemFileModal.vue'
+import ScholarListItem from './ScholarListItem.vue'
 
 import '@nextcloud/dialogs/dist/index.css'
 import { generateUrl } from '@nextcloud/router'
@@ -205,7 +178,6 @@ import axios from '@nextcloud/axios'
 import {
 	ViewMode
 } from "./enums";
-import ItemFileModalVue from './ItemFileModal.vue'
 
 export default {
 	name: 'App',
@@ -229,6 +201,7 @@ export default {
 		Inbox,
 
 		ItemFileModal,
+		ScholarListItem,
 	},
 	data() {
 		return {
