@@ -52,6 +52,7 @@
 				<ScholarListItem v-for="scholarItem in scholarItems"
 					:key="scholarItem.id"
 					:scholarItem="scholarItem"
+					:itemFileModal="$refs.itemFileModal"
 					@click="openScholarItem(scholarItem)">
 				</ScholarListItem>
 			</ul>
@@ -180,7 +181,7 @@ import {
 } from "./enums";
 
 export default {
-	name: 'App',
+	name: 'AuthorEditList',
 	components: {
 		NcAppNavigation,
 		NcAppNavigationItem,

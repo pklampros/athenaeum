@@ -20,7 +20,7 @@
 		</template>
 		<template #actions>
 			<NcActionButton
-				@click="$refs.itemFileModal.shelveItem(scholarItem)">
+				@click="itemFileModal.shelveItem(scholarItem)">
 				{{
 				t('athenaeum', 'Shelve...') }}
 				<template #icon>
@@ -62,6 +62,10 @@ export default {
 	},
 	props: {
 		scholarItem: {
+			type: Object,
+			required: true,
+		},
+		itemFileModal: {
 			type: Object,
 			required: true,
 		},

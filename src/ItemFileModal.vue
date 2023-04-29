@@ -1,64 +1,94 @@
 <template>
 	<div>
-        <NcModal
-        v-if="scholarItemBeingFiled"
-        @close="cancelShelvingItem">
-            <div class="modal__content">
-                <h2>Shelve item details</h2>
-                <NcTextField
-				    label="Title"
-				    :label-visible="true"
+		<NcModal
+		v-if="scholarItemBeingFiled"
+		@close="cancelShelvingItem">
+			<div class="modal__content">
+				<h2>Shelve item details</h2>
+				<div class="field-label">
+					<h3>Title</h3>
+				</div>
+				<NcRichContenteditable
+					placeholder="Title"
+					:error="hasEllipsis(scholarItemBeingFiled.title)"
 					:value.sync="scholarItemBeingFiled.title" />
-                <NcTextField
-				    label="URL"
-				    :label-visible="true"
+				<div class="field-label">
+					<h3>URL</h3>
+				</div>
+				<NcRichContenteditable
+					placeholder="URL"
 					:value.sync="scholarItemBeingFiled.url" />
-                <NcTextField
-				    label="Journal"
-				    :label-visible="true"
+				<div class="field-label">
+					<h3>Journal</h3>
+				</div>
+				<NcRichContenteditable
+					placeholder="Journal"
+					:error="hasEllipsis(scholarItemBeingFiled.journal)"
 					:value.sync="scholarItemBeingFiled.journal"
 					v-if="scholarItemBeingFiled.journal" />
-                <!-- <NcTextField label="Authors" :value.sync="scholarItemBeingFiled.authors" /> -->
-				<NcTextField v-for="author in scholarItemBeingFiled.authorList"
-					:key="author.name"
-					:label="author.displayName"
-					:value.sync="author.name">
-				</NcTextField>
-                <NcButton
-                    :disabled="!this.scholarItemBeingFiled.title || !this.scholarItemBeingFiled.url"
-                    @click="cancelShelvingItem"
-                    type="primary">
-                    Submit
-                </NcButton>
-                <NcButton
-                    :disabled="!this.scholarItemBeingFiled.title || !this.scholarItemBeingFiled.url"
-                    @click="markScholarItemDeleted"
-                    type="primary">
-                    Move to trash
-                </NcButton>
-            </div>
-        </NcModal>
+				<AuthorEditList
+					@interface="setAuthorListInterface"/>
+				<div style="display: flex; justify-content: right; align-items: center; ">
+					<NcButton
+						ariaLabel="Remove scholar item"
+						:disabled="!this.scholarItemBeingFiled.title || !this.scholarItemBeingFiled.url"
+						@click="markScholarItemDeleted"
+						type="primary">
+						<template #icon>
+							<Delete :size="20" />
+						</template>
+					</NcButton>
+					&nbsp;
+					<NcButton
+						:disabled="!this.scholarItemBeingFiled.title || !this.scholarItemBeingFiled.url"
+						@click="cancelShelvingItem"
+						type="primary">
+						Submit
+					</NcButton>
+				</div>
+			</div>
+		</NcModal>
 	</div>
 </template>
 <script>
 
-import NcTextField from '@nextcloud/vue/dist/Components/NcTextField'
-import NcButton from '@nextcloud/vue/dist/Components/NcButton'
 import NcModal from '@nextcloud/vue/dist/Components/NcModal'
+import NcRichContenteditable from '@nextcloud/vue/dist/Components/NcRichContenteditable'
+import NcButton from '@nextcloud/vue/dist/Components/NcButton'
+
+import Delete from 'vue-material-design-icons/Delete.vue';
+
+import AuthorEditList from './AuthorEditList.vue'
 
 export default {
 	name: 'ItemFileModal',
 	components: {
-		NcTextField,
-		NcButton,
+		// components
 		NcModal,
-    },
+		NcRichContenteditable,
+		NcButton,
+
+		// icons
+		Delete,
+
+		// project components
+		AuthorEditList
+	},
 	data() {
 		return {
-			scholarItemBeingFiled: null,
+			scholarItemBeingFiled: null
 		}
 	},
+	authorListInterface: {
+      setAuthorListFromText: () => {}
+    },
 	methods: {
+		// Setting the interface when emitted from child
+		setAuthorListInterface(authorListInterface) {
+        console.log("setAuthorListInterface!!!")
+			this.$options.authorListInterface = authorListInterface;
+			this.$options.authorListInterface.setAuthorListFromText(this.scholarItemBeingFiled.authors)
+		},
 		shelveItem(scholarItem) {
 			// pop up dialog to decide what to do with this item
 			// it should show title, authors, excerpt(s) and only 
@@ -74,20 +104,7 @@ export default {
 
 			// clickin on an item (n)
 			this.scholarItemBeingFiled = scholarItem
-			let authorList = this.scholarItemBeingFiled.authors.split(",");
-			let hasMoreAuthors = false;
-			authorList = authorList.map((author) => {
-				if (author.endsWith("…")) {
-					author = author.slice(0, -1);
-					hasMoreAuthors = true;
-				}
-				author = author.trim()
-				return {"name": author, "displayName": author}
-			});
-			if (hasMoreAuthors) {
-				authorList.push({"name": "…", "displayName": "…"})
-			}
-			this.scholarItemBeingFiled.authorList = authorList;
+			// this.$options.authorListInterface.setAuthorListFromText(this.scholarItemBeingFiled.authors)
 		},
 		cancelShelvingItem() {
 			this.scholarItemBeingFiled = null
@@ -95,17 +112,40 @@ export default {
 		markScholarItemDeleted() {
 			this.scholarItemBeingFiled = null
 		},
+		hasEllipsis(text) {
+			return text.includes('…') || text.includes("...")
+		},
 	},
 }
 </script>
 
-<style scoped>
-    .modal__content {
-        margin: 50px;
-        text-align: center;
-    }
+<style lang="scss" scoped>
+	.modal__content {
+		margin: 50px;
+		text-align: center;
+	}
 
-    .input-field {
-        margin: 12px 0px;
-    }
+	.input-field {
+		margin: 8px 0px;
+	}
+
+	.rich-contenteditable__input {
+		text-align: initial;
+		&[error="true"] {
+			border-color: var(--color-error) !important;
+		}
+	}
+
+	:deep(.field-label) {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 10px 1px 0px 0px;
+	}
+
+	:deep(.field-label h3) {
+		font-weight: bold;
+		margin: 8px 0px 8px 12px;
+		text-align: start;
+	}
 </style>
