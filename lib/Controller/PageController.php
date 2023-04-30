@@ -26,6 +26,13 @@ class PageController extends Controller {
 		return new TemplateResponse(Application::APP_ID, 'main');
 	}
 
+	// The rest of the functions here do not really do anything, they just
+	// call upon the index() function to render the page. The data
+	// transmitted back to the client is exactly the same for all, and it
+	// is the client's responsibility to render the page based on what it
+	// already has, and the url. The functions are only placed here to
+	// allow the routers to point to valid urls, and not throw server errors.
+
 	/**
 	 * @NoAdminRequired
 	 * @NoCSRFRequired
