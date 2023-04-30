@@ -42,7 +42,7 @@ return [
 		// 	'url' => '/api/0.1/item_field_values/itemId/{itemId}/fieldName/{fieldName}/order/{order}',
 		// 	'verb' => 'GET'],
 
-		['name' => 'scholar_item#getById',
+		['name' => 'page#showScholarItem',
 			'url' => '/inbox/{scholarItemId}',
 			'verb' => 'GET'],
 

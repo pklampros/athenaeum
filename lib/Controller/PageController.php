@@ -25,4 +25,14 @@ class PageController extends Controller {
 
 		return new TemplateResponse(Application::APP_ID, 'main');
 	}
+
+	/**
+	 * @NoAdminRequired
+	 * @NoCSRFRequired
+	 * 
+	 * @return TemplateResponse
+	 */
+	public function showScholarItem(int $scholarItemId): TemplateResponse {
+		return $this->index();
+	}
 }
