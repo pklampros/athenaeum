@@ -179,6 +179,7 @@ import '@nextcloud/dialogs/dist/index.css'
 import { generateUrl } from '@nextcloud/router'
 import { showError, showSuccess } from '@nextcloud/dialogs'
 import axios from '@nextcloud/axios'
+import { fetchScholarItems } from './service/ScholarItemService'
 import {
 	ViewMode
 } from "./enums";
@@ -263,8 +264,7 @@ export default {
 			showError(t('athenaeum', 'Could not fetch items (route mounting failed)'))
 		}
 		try {
-			const response = await axios.get(generateUrl('/apps/athenaeum/scholar_items'))
-			this.scholarItems = response.data
+			this.scholarItems = await fetchScholarItems()
 		} catch (e) {
 			console.error(e)
 			showError(t('athenaeum', 'Could not fetch items (route mounting failed)'))

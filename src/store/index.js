@@ -16,6 +16,7 @@ export default new Vuex.Store({
 			namespaced: false,
 			state: {
 				preferences: {},
+				inboxItems: {},
 			}
 		}
 	}
