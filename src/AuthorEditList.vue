@@ -1,4 +1,8 @@
 <template>
+	<!--
+	SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
+	SPDX-License-Identifier: AGPL-3.0-or-later
+	-->
 	<div>
 		<div class="field-label">
 			<h3>Authors</h3>

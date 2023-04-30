@@ -1,4 +1,8 @@
 <template>
+	<!--
+	SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
+	SPDX-License-Identifier: AGPL-3.0-or-later
+	-->
 	<NcListItem
 		:title="scholarItem.title ? scholarItem.title : t('athenaeum', 'New scholar item')"
 		:class="{active: currentScholarItemId === scholarItem.id}"
