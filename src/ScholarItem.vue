@@ -4,6 +4,9 @@
 		:class="{active: currentScholarItemId === scholarItem.id}"
 		:counter-number="scholarItem.alertImportance"
 		:to="link">
+		<template #icon>
+			<google-scholar-icon size="20"/>
+		</template>
 		<template #subtitle>
 			<div
 				v-if="scholarItem.journal">
@@ -49,13 +52,18 @@ import NcListItem from '@nextcloud/vue/dist/Components/NcListItem'
 import NcActionButton from '@nextcloud/vue/dist/Components/NcActionButton'
 
 import Bookshelf from 'vue-material-design-icons/Bookshelf.vue';
+import { GoogleScholarIcon } from 'vue-simple-icons'
 
 export default {
 	name: 'ScholarItem',
 	components: {
+		// components
 		NcListItem,
 		NcActionButton,
+
+		// icons
 		Bookshelf,
+		GoogleScholarIcon,
 	},
 	props: {
 		scholarItem: {
