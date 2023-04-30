@@ -3,7 +3,7 @@
 		:title="scholarItem.title ? scholarItem.title : t('athenaeum', 'New scholar item')"
 		:class="{active: currentScholarItemId === scholarItem.id}"
 		:counter-number="scholarItem.alertImportance"
-		@click="openScholarItem(scholarItem)">
+		:to="link">
 		<template #subtitle>
 			<div
 				v-if="scholarItem.journal">
@@ -21,8 +21,7 @@
 		<template #actions>
 			<NcActionButton
 				@click="itemFileModal.shelveItem(scholarItem)">
-				{{
-				t('athenaeum', 'Shelve...') }}
+				{{ t('athenaeum', 'Shelve...') }}
 				<template #icon>
 					<Bookshelf :size="20"/>
 				</template>
@@ -30,14 +29,12 @@
 			<NcActionButton v-if="scholarItem.id === -1"
 				icon="icon-close"
 				@click="cancelNewScholarItem(scholarItem)">
-				{{
-				t('athenaeum', 'Cancel item creation') }}
+				{{ t('athenaeum', 'Cancel item creation') }}
 			</NcActionButton>
 			<NcActionButton v-else
 				icon="icon-delete"
 				@click="deleteScholarItem(scholarItem)">
-				{{
-					t('athenaeum', 'Delete item') }}
+				{{ t('athenaeum', 'Delete item') }}
 			</NcActionButton>
 		</template>
 		<template #extra>
@@ -54,7 +51,7 @@ import NcActionButton from '@nextcloud/vue/dist/Components/NcActionButton'
 import Bookshelf from 'vue-material-design-icons/Bookshelf.vue';
 
 export default {
-	name: 'ScholarListItem',
+	name: 'ScholarItem',
 	components: {
 		NcListItem,
 		NcActionButton,
@@ -69,15 +66,30 @@ export default {
 			type: Object,
 			required: true,
 		},
-	}
+	},
+	computed: {
+		link() {
+			return {
+				name: 'inbox_item',
+				params: {
+					//filter: this.$route.params.filter ? this.$route.params.filter : undefined,
+					scholarItemId: this.scholarItem.id,
+				},
+				exact: true,
+			}
+		},
+	},
 }
 </script>
 
 <style lang="scss" scoped>
-:deep(.list-item-content__wrapper) {
-	margin-top: 9px;
-}
-:deep(.list-item__extra) {
-	margin-top: 11px;
-}
+	:deep(.list-item-content__wrapper) {
+		margin-top: 9px;
+	}
+	:deep(.list-item__extra) {
+		margin-top: 11px;
+	}
+	.list-item__wrapper {
+		list-style: none;
+	}
 </style>

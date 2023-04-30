@@ -9,7 +9,9 @@ use PhpMimeMailParser\Parser;
 use OCA\Athenaeum\AppInfo\Application;
 use OCA\Athenaeum\Service\ScholarItemService;
 use OCP\AppFramework\Controller;
+use OCP\AppFramework\Http\ContentSecurityPolicy;
 use OCP\AppFramework\Http\DataResponse;
+use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Http;
 use OCP\IRequest;
 
@@ -32,6 +34,24 @@ class ScholarItemController extends Controller {
 	 */
 	public function index(): DataResponse {
 		return new DataResponse($this->service->findAll($this->userId));
+	}
+
+	/**
+	 * @NoAdminRequired
+	 * @NoCSRFRequired
+	 * 
+	 * @return TemplateResponse
+	 */
+	public function getById(int $scholarItemId): TemplateResponse {
+		$response = new TemplateResponse($this->appName, 'main', []);
+
+		$csp = new ContentSecurityPolicy();
+		$csp->addAllowedFrameDomain('\'self\'');
+		$response->setContentSecurityPolicy($csp);
+		// return $this->handleNotFound(function () use ($id) {
+		// 	return $this->service->find($id, $this->userId);
+		// });
+		return $response;
 	}
 
 	/**

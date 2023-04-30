@@ -43,42 +43,45 @@
       		<button v-on:click="submitFile()">Submit</button>
 		</NcAppNavigation>
 		<NcAppContent>
-			<div id="toptitle">
-				<h2 v-if="viewMode === ViewMode.SCHOLAR_ITEMS">Inbox</h2>
-				<h2 v-else-if="viewMode === ViewMode.ITEMS">Library</h2>
+			<div slot="list" class='header__button'>
+				<div id="toptitle">
+					<h2 v-if="viewMode === ViewMode.SCHOLAR_ITEMS">Inbox</h2>
+					<h2 v-else-if="viewMode === ViewMode.ITEMS">Library</h2>
+				</div>
+				<NcAppContentList
+					v-if="viewMode === ViewMode.SCHOLAR_ITEMS"
+					class="main-items-list"
+					:show-details="true">
+					<ScholarItem v-for="scholarItem in scholarItems"
+						:key="scholarItem.id"
+						:scholarItem="scholarItem"
+						:itemFileModal="$refs.itemFileModal">
+					</ScholarItem>
+				</NcAppContentList>
+				<NcAppContentList
+					v-else-if="viewMode === ViewMode.ITEMS"
+					class="main-items-list" >
+					<NcListItem v-for="item in items"
+						:key="item.id"
+						:title="item.title ? item.title : t('athenaeum', 'New item')"
+						:class="{active: currentItemId === item.id}"
+						@click="openItem(item)">
+						<template slot="actions">
+							<NcActionButton v-if="item.id === -1"
+								icon="icon-close"
+								@click="cancelNewItem(item)">
+								{{ t('athenaeum', 'Cancel item creation') }}
+							</NcActionButton>
+							<NcActionButton v-else
+								icon="icon-delete"
+								@click="deleteItem(item)">
+								{{ t('athenaeum', 'Delete item') }}
+							</NcActionButton>
+						</template>
+					</NcListItem>
+				</NcAppContentList>
 			</div>
-			<ul v-if="viewMode === ViewMode.SCHOLAR_ITEMS"
-				class="main-items-list">
-				<ScholarListItem v-for="scholarItem in scholarItems"
-					:key="scholarItem.id"
-					:scholarItem="scholarItem"
-					:itemFileModal="$refs.itemFileModal"
-					@click="openScholarItem(scholarItem)">
-				</ScholarListItem>
-			</ul>
-			<NcAppContentList v-else-if="viewMode === ViewMode.ITEMS"
-				class="main-items-list">
-				<NcListItem v-for="item in items"
-					:key="item.id"
-					:title="item.title ? item.title : t('athenaeum', 'New item')"
-					:class="{active: currentItemId === item.id}"
-					@click="openItem(item)">
-					<template slot="actions">
-						<NcActionButton v-if="item.id === -1"
-							icon="icon-close"
-							@click="cancelNewItem(item)">
-							{{
-							t('athenaeum', 'Cancel item creation') }}
-						</NcActionButton>
-						<NcActionButton v-else
-							icon="icon-delete"
-							@click="deleteItem(item)">
-							{{
-							 t('athenaeum', 'Delete item') }}
-						</NcActionButton>
-					</template>
-				</NcListItem>
-			</NcAppContentList>
+			<ScholarItemDetails />
 
 			<ItemFileModal ref="itemFileModal"/>
 		</NcAppContent>
@@ -155,7 +158,6 @@ import NcAppNavigationItem from '@nextcloud/vue/dist/Components/NcAppNavigationI
 import NcAppNavigationNew from '@nextcloud/vue/dist/Components/NcAppNavigationNew'
 import NcAppNavigationToggle from '@nextcloud/vue/dist/Components/NcAppNavigationToggle'
 
-
 import NcAppContent from '@nextcloud/vue/dist/Components/NcAppContent'
 import NcAppContentList from '@nextcloud/vue/dist/Components/NcAppContentList'
 
@@ -170,7 +172,8 @@ import Bookshelf from 'vue-material-design-icons/Bookshelf.vue';
 import Inbox from 'vue-material-design-icons/Inbox.vue';
 
 import ItemFileModal from './ItemFileModal.vue'
-import ScholarListItem from './ScholarListItem.vue'
+import ScholarItem from './ScholarItem.vue'
+import ScholarItemDetails from './ScholarItemDetails.vue'
 
 import '@nextcloud/dialogs/dist/index.css'
 import { generateUrl } from '@nextcloud/router'
@@ -181,7 +184,7 @@ import {
 } from "./enums";
 
 export default {
-	name: 'AuthorEditList',
+	name: 'App',
 	components: {
 		NcAppNavigation,
 		NcAppNavigationItem,
@@ -202,7 +205,8 @@ export default {
 		Inbox,
 
 		ItemFileModal,
-		ScholarListItem,
+		ScholarItem,
+		ScholarItemDetails,
 	},
 	data() {
 		return {
@@ -477,16 +481,6 @@ export default {
 </script>
 <style scoped>
 
-	#app-content-vue > div.main-items-list {
-		max-width: 100%;
-		width: 100%;
-		height: 100%;
-		padding: 20px;
-		display: flex;
-		flex-direction: column;
-		flex-grow: 1;
-	}
-
 	input[type='text'] {
 		width: 100%;
 	}
@@ -506,6 +500,17 @@ export default {
 
 	.input-field {
 		margin: 12px 0px;
+	}
+	
+	:deep(.app-content-wrapper) {
+		overflow: auto;
+	}
+
+	.header__button {
+		display: flex;
+		flex: 1 0 0;
+		flex-direction: column;
+		height: calc(100vh - var(--header-height));
 	}
 
 </style>

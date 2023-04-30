@@ -42,6 +42,10 @@ return [
 		// 	'url' => '/api/0.1/item_field_values/itemId/{itemId}/fieldName/{fieldName}/order/{order}',
 		// 	'verb' => 'GET'],
 
+		['name' => 'scholar_item#getById',
+			'url' => '/inbox/{scholarItemId}',
+			'verb' => 'GET'],
+
 		['name' => 'scholar_alert_api#findByScholarId',
 			'url' => '/api/0.1/scholar_alerts/scholarId/{scholarId}',
 			'verb' => 'GET'],

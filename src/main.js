@@ -3,17 +3,24 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
+import { sync } from 'vuex-router-sync'
 import { generateFilePath } from '@nextcloud/router'
 
 import Vue from 'vue'
 import App from './App'
+import router from './router'
+import store from './store'	
 
 // eslint-disable-next-line
 __webpack_public_path__ = generateFilePath(appName, '', 'js/')
+
+sync(store, router)
 
 Vue.mixin({ methods: { t, n } })
 
 export default new Vue({
 	el: '#content',
+	router,
+	store,
 	render: h => h(App),
 })

@@ -55,6 +55,15 @@
 				@click="toggleOnlyLastName(index)">
 				<template #icon>
 					<TextBox :size="20" />
+					<!--
+						Other potential pairs:
+						- CommentOutline / CommentMultipleOutline
+						- LayersOutline / LayersTripleOutline
+						- Locker / LockerMultiple
+						- PencilBox / PencilBoxMultiple
+						- TextBoxOutline / SelectCompare
+						- TextBoxOutline / TextBoxMultipleOutline
+					-->
 				</template>
 			</NcButton>
 			<NcButton
