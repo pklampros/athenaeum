@@ -166,7 +166,6 @@ import NcAppSidebarTab from '@nextcloud/vue/dist/Components/NcAppSidebarTab'
 
 import NcActionButton from '@nextcloud/vue/dist/Components/NcActionButton'
 import NcListItem from '@nextcloud/vue/dist/Components/NcListItem'
-import NcRichText from '@nextcloud/vue/dist/Components/NcRichText'
 
 import Bookshelf from 'vue-material-design-icons/Bookshelf.vue';
 import Inbox from 'vue-material-design-icons/Inbox.vue';
@@ -200,7 +199,6 @@ export default {
 
 		NcActionButton,
 		NcListItem,
-		NcRichText,
 
 		Bookshelf,
 		Inbox,

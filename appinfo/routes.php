@@ -54,6 +54,10 @@ return [
 			'url' => '/api/0.1/scholar_emails/subject/{subject}/received/{received}',
 			'verb' => 'GET'],
 
+		['name' => 'scholar_item#getForShelving',
+			'url' => '/scholar_items/details/{id}',
+			'verb' => 'GET'],
+
 		['name' => 'scholar_item_api#findByUrl',
 			'url' => '/api/0.1/scholar_items/url/{url}',
 			'verb' => 'GET', 'escape' => false],

@@ -32,3 +32,18 @@ export function fetchScholarItems(query, cursor, limit) {
 			throw convertAxiosError(error)
 		})
 }
+
+export function fetchScholarItemDetails(id) {
+	const url = generateUrl('/apps/athenaeum/scholar_items/details/' + id)
+	const params = {
+	}
+
+	return axios
+		.get(url, {
+			params,
+		})
+		.then((resp) => resp.data)
+		.catch((error) => {
+			throw convertAxiosError(error)
+		})
+}

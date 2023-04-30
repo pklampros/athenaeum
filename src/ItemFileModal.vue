@@ -89,7 +89,6 @@ export default {
 	methods: {
 		// Setting the interface when emitted from child
 		setAuthorListInterface(authorListInterface) {
-        console.log("setAuthorListInterface!!!")
 			this.$options.authorListInterface = authorListInterface;
 			this.$options.authorListInterface.setAuthorListFromText(this.scholarItemBeingFiled.authors)
 		},

@@ -37,6 +37,37 @@ class ScholarItemMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
+	public function getForShelving(int $id, string $userId): ScholarItemDetails {
+		$scholarEmailItemMapper = new ScholarEmailItemMapper($this->db);
+		$sifs = new ScholarItemDetails();
+		$sifs->setScholarItem($this->find($id, $userId));
+		$qb = $this->db->getQueryBuilder();
+		$qb->select('ei.excerpt')
+			->addSelect('a.term')
+			->addSelect('a.importance')
+		   ->from('athm_schlr_email_items', 'ei')
+		   ->innerJoin("ei", "athm_schlr_emails", "e", "e.id = ei.scholar_email_id")
+		   ->innerJoin("e", "athm_schlr_alerts", "a", "a.id = e.scholar_alert_id")
+			->where($qb->expr()->eq('ei.scholar_item_id',
+									$qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
+		
+		$excerpts = [];
+		$result = $qb->executeQuery();
+		try {
+			while ($row = $result->fetch()) {
+				array_push($excerpts, $row);
+			}
+		} finally {
+			$result->closeCursor();
+		}
+		$sifs->setAlertExcerpts($excerpts);
+		return $sifs;
+	}
+
+	/**
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws DoesNotExistException
+	 */
 	public function findByUrl(string $url): ScholarItem {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')

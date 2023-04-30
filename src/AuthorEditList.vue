@@ -15,117 +15,120 @@
 				</template>
 			</NcButton>
 		</div>
-		<div
-			v-for="(author, index) in authorList"
-			:key="author"
-			class="flex-row">
-			<div>
-				<div class="first-row">
-					<div v-if="!author.onlyLastName" class="flex-row">
-						<NcTextField
-							label="First"
-							:error="emptyOrHasEllipsis(author.firstNames)"
-							:value.sync="author.firstNames"
-							@update:value="updateDisplayName(index)" />
-						&nbsp;
-						<NcTextField
-							:label="'Last'"
-							:error="emptyOrHasEllipsis(author.name)"
-							:value.sync="author.name"
-							@update:value="updateDisplayName(index)" />
+		<ul style="list-style: inherit; padding: 4px 0 4px 44px;">
+			<li
+				v-for="(author, index) in authorList"
+				:key="author">
+				<div class="flex-row">
+					<div>
+						<div class="first-row">
+							<div v-if="!author.onlyLastName" class="flex-row">
+								<NcTextField
+									label="First"
+									:error="emptyOrHasEllipsis(author.firstNames)"
+									:value.sync="author.firstNames"
+									@update:value="updateDisplayName(index)" />
+								&nbsp;
+								<NcTextField
+									:label="'Last'"
+									:error="emptyOrHasEllipsis(author.name)"
+									:value.sync="author.name"
+									@update:value="updateDisplayName(index)" />
+							</div>
+							<NcTextField
+								v-else
+								:label="'Name'"
+									:error="emptyOrHasEllipsis(author.name)"
+								:value.sync="author.name"
+								@update:value="updateDisplayName(index)" />
+						</div>
+						<div class="flex-row last-row">
+							<label for="displayNameField">Displayed&nbsp;as&nbsp;&nbsp;</label>
+							<NcTextField
+								id="displayNameField"
+									:error="emptyOrHasEllipsis(author.displayName)"
+								:label-outside="true"
+								:value.sync="author.displayName"
+								@update:value="author.displayNameModified = (author.displayName != '')">
+							</NcTextField>
+						</div>
 					</div>
-					<NcTextField
+					<NcButton
+						v-if="author.onlyLastName"
+						ariaLabel="Single-field name?"
+						type="tertiary"
+						@click="toggleOnlyLastName(index)">
+						<template #icon>
+							<TextBox :size="20" />
+							<!--
+								Other potential pairs:
+								- CommentOutline / CommentMultipleOutline
+								- LayersOutline / LayersTripleOutline
+								- Locker / LockerMultiple
+								- PencilBox / PencilBoxMultiple
+								- TextBoxOutline / SelectCompare
+								- TextBoxOutline / TextBoxMultipleOutline
+							-->
+						</template>
+					</NcButton>
+					<NcButton
 						v-else
-						:label="'Name'"
-							:error="emptyOrHasEllipsis(author.name)"
-						:value.sync="author.name"
-						@update:value="updateDisplayName(index)" />
+						ariaLabel="Single-field name?"
+						type="tertiary"
+						@click="toggleOnlyLastName(index)">
+						<template #icon>
+							<TextBoxMultiple :size="20" />
+						</template>
+					</NcButton>
+					<NcButton
+						v-if="index == 0"
+						ariaLabel="Move down"
+						type="tertiary"
+						@click="moveDown(index)">
+						<template #icon>
+							<ChevronDown :size="20" />
+						</template>
+					</NcButton>
+					<NcButton
+						v-else
+						ariaLabel="Move up"
+						type="tertiary"
+						@click="moveUp(index)">
+						<template #icon>
+							<ChevronUp :size="20" />
+						</template>
+					</NcButton>
+					<div style="flex: 1; display:flex">
+						<NcCheckboxRadioSwitch
+							:button-variant="true"
+							:checked.sync="author.isNew"
+							value="false"
+							name="existing_new_radio"
+							type="radio"
+							button-variant-grouped="horizontal">
+							<Magnify :size="20" />
+						</NcCheckboxRadioSwitch>
+						<NcCheckboxRadioSwitch
+							:button-variant="true"
+							:checked.sync="author.isNew"
+							value="true"
+							name="existing_new_radio"
+							type="radio"
+							button-variant-grouped="horizontal">
+							New
+						</NcCheckboxRadioSwitch>
+					</div>
+					<NcButton
+						ariaLabel="Remove"
+						type="tertiary"
+						@click="removeAuthor(index)">
+						<template #icon>
+							<MinusCircle :size="20" />
+						</template>
+					</NcButton>
 				</div>
-				<div class="flex-row last-row">
-					<label for="displayNameField">Displayed&nbsp;as&nbsp;&nbsp;</label>
-					<NcTextField
-						id="displayNameField"
-							:error="emptyOrHasEllipsis(author.displayName)"
-						:label-outside="true"
-						:value.sync="author.displayName"
-						@update:value="author.displayNameModified = (author.displayName != '')">
-					</NcTextField>
-				</div>
-			</div>
-			<NcButton
-				v-if="author.onlyLastName"
-				ariaLabel="Single-field name?"
-				type="tertiary"
-				@click="toggleOnlyLastName(index)">
-				<template #icon>
-					<TextBox :size="20" />
-					<!--
-						Other potential pairs:
-						- CommentOutline / CommentMultipleOutline
-						- LayersOutline / LayersTripleOutline
-						- Locker / LockerMultiple
-						- PencilBox / PencilBoxMultiple
-						- TextBoxOutline / SelectCompare
-						- TextBoxOutline / TextBoxMultipleOutline
-					-->
-				</template>
-			</NcButton>
-			<NcButton
-				v-else
-				ariaLabel="Single-field name?"
-				type="tertiary"
-				@click="toggleOnlyLastName(index)">
-				<template #icon>
-					<TextBoxMultiple :size="20" />
-				</template>
-			</NcButton>
-			<NcButton
-				v-if="index == 0"
-				ariaLabel="Move down"
-				type="tertiary"
-				@click="moveDown(index)">
-				<template #icon>
-					<ChevronDown :size="20" />
-				</template>
-			</NcButton>
-			<NcButton
-				v-else
-				ariaLabel="Move up"
-				type="tertiary"
-				@click="moveUp(index)">
-				<template #icon>
-					<ChevronUp :size="20" />
-				</template>
-			</NcButton>
-			<div style="flex: 1; display:flex">
-				<NcCheckboxRadioSwitch
-					:button-variant="true"
-					:checked.sync="author.isNew"
-					value="false"
-					name="existing_new_radio"
-					type="radio"
-					button-variant-grouped="horizontal">
-					<Magnify :size="20" />
-				</NcCheckboxRadioSwitch>
-				<NcCheckboxRadioSwitch
-					:button-variant="true"
-					:checked.sync="author.isNew"
-					value="true"
-					name="existing_new_radio"
-					type="radio"
-					button-variant-grouped="horizontal">
-					New
-				</NcCheckboxRadioSwitch>
-			</div>
-			<NcButton
-				ariaLabel="Remove"
-				type="tertiary"
-				@click="removeAuthor(index)">
-				<template #icon>
-					<MinusCircle :size="20" />
-				</template>
-			</NcButton>
-		</div>
+			</li>
+		</ul>
 	</div>
 </template>
 <script>
@@ -159,11 +162,9 @@ export default {
 		PlusCircle,
 	},
     mounted() {
-		console.log("mounttt!!!")
 		this.emitInterface();
     },
 	data() {
-        console.log("data!!!")
 		return {
 			authorList: null
 		}

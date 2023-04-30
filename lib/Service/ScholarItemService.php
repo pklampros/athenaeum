@@ -12,6 +12,7 @@ use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 
 use OCA\Athenaeum\Db\ScholarItem;
 use OCA\Athenaeum\Db\ScholarItemMapper;
+use OCA\Athenaeum\Db\ScholarItemDetails;
 
 class ScholarItemService {
 	private ScholarItemMapper $mapper;
@@ -55,6 +56,14 @@ class ScholarItemService {
 		// for instance it is a good idea to turn storage related exceptions
 		// into service related exceptions so controllers and service users
 		// have to deal with only one type of exception
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
+	}
+
+	public function getForShelving(int $id, string $userId): ScholarItemDetails {
+		try {
+			return $this->mapper->getForShelving($id, $userId);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}

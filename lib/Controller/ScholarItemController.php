@@ -14,16 +14,16 @@ use OCP\AppFramework\Http;
 use OCP\IRequest;
 
 class ScholarItemController extends Controller {
-	private ScholarItemService $service;
+	private ScholarItemService $scholarItemService;
 	private ?string $userId;
 
 	use Errors;
 
 	public function __construct(IRequest $request,
-								ScholarItemService $service,
+								ScholarItemService $scholarItemService,
 								?string $userId) {
 		parent::__construct(Application::APP_ID, $request);
-		$this->service = $service;
+		$this->scholarItemService = $scholarItemService;
 		$this->userId = $userId;
 	}
 
@@ -31,7 +31,7 @@ class ScholarItemController extends Controller {
 	 * @NoAdminRequired
 	 */
 	public function index(): DataResponse {
-		return new DataResponse($this->service->findAll($this->userId));
+		return new DataResponse($this->scholarItemService->findAll($this->userId));
 	}
 
 	/**
@@ -39,7 +39,16 @@ class ScholarItemController extends Controller {
 	 */
 	public function show(int $id): DataResponse {
 		return $this->handleNotFound(function () use ($id) {
-			return $this->service->find($id, $this->userId);
+			return $this->scholarItemService->find($id, $this->userId);
+		});
+	}
+
+	/**
+	 * @NoAdminRequired
+	 */
+	public function getForShelving(int $id): DataResponse {
+		return $this->handleNotFound(function () use ($id) {
+			return $this->scholarItemService->getForShelving($id, $this->userId);
 		});
 	}
 
@@ -253,7 +262,7 @@ class ScholarItemController extends Controller {
 				$result["termIncomplete"] = $alertData["termIncomplete"];
 				$result["items"] = $this->getItems($doc);
 				
-				return new DataResponse($this->service->createFromEML($result, $this->userId));
+				return new DataResponse($this->scholarItemService->createFromEML($result, $this->userId));
 			}
 		} else {
 			return new DataResponse("No file sent", Http::STATUS_NOT_FOUND);
@@ -269,7 +278,7 @@ class ScholarItemController extends Controller {
 		$importance = 0;
 		$needsReview = false;
 		
-		return new DataResponse($this->service->create($url, $title, $authors,
+		return new DataResponse($this->scholarItemService->create($url, $title, $authors,
 								$journal, $published, $read, $importance,
 								$needsReview, $this->userId));
 	}
@@ -283,7 +292,7 @@ class ScholarItemController extends Controller {
 		return $this->handleNotFound(function () use ($id, $url, $title, $authors, $journal,
 													  $published, $read, $importance,
 													  $needsReview) {
-			return $this->service->update($id, $url, $title, $authors,
+			return $this->scholarItemService->update($id, $url, $title, $authors,
 										  $journal, $published, $read,
 										  $importance, $needsReview, $this->userId);
 		});
@@ -294,7 +303,7 @@ class ScholarItemController extends Controller {
 	 */
 	public function destroy(int $id): DataResponse {
 		return $this->handleNotFound(function () use ($id) {
-			return $this->service->delete($id, $this->userId);
+			return $this->scholarItemService->delete($id, $this->userId);
 		});
 	}
 }
