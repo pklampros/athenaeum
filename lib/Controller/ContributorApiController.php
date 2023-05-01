@@ -75,14 +75,14 @@ class ContributorApiController extends ApiController {
 	 * @NoCSRFRequired
 	 * @NoAdminRequired
 	 */
-	public function create(string $firstName, bool $firstNameIsFullName,
+	public function create(string $firstName, bool $lastNameIsFullName,
 						   ?string $lastName): DataResponse {
 		if ($lastName == null) {
 			$lastName = '';
-			$firstNameIsFullName = true;
+			$lastNameIsFullName = true;
 		}
 		return new DataResponse($this->service->create($firstName, $lastName,
-								$firstNameIsFullName));
+								$lastNameIsFullName));
 	}
 
 	/**
@@ -90,16 +90,16 @@ class ContributorApiController extends ApiController {
 	 * @NoCSRFRequired
 	 * @NoAdminRequired
 	 */
-	public function update(int $id, string $firstName, bool $firstNameIsFullName,
+	public function update(int $id, string $firstName, bool $lastNameIsFullName,
 	    				   ?string $lastName): DataResponse {
 		if ($lastName == null) {
 			$lastName = '';
-			$firstNameIsFullName = true;
+			$lastNameIsFullName = true;
 		}
 		return $this->handleNotFound(function () use ($id, $firstName, $lastName,
-									 $firstNameIsFullName) {
+									 $lastNameIsFullName) {
 			return $this->service->update($id, $firstName, $lastName,
-										  $firstNameIsFullName);
+										  $lastNameIsFullName);
 		});
 	}
 

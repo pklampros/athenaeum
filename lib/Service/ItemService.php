@@ -79,6 +79,18 @@ class ItemService {
 		}
 	}
 
+	public function createDetailed(array $itemData, \DateTime $dateAdded,
+	                       \DateTime $dateModified, string $userId): Item {
+		try {
+			return $this->mapper->insertDetailed(
+				$itemData, $dateAdded,
+				$dateModified, $userId
+			);
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
+	}
+
 	public function createWithUrl(string $title, int $itemTypeId, \DateTime $dateAdded,
 	                       \DateTime $dateModified, string $url, string $userId): Item {
 		try {

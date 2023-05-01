@@ -35,6 +35,10 @@ return [
 			'url' => '/api/0.1/items/{itemId}/setField/{fieldName}/{fieldValue}',
 			'verb' => 'GET', 'escape' => false],
 
+		['name' => 'item#createDetailed',
+			'url' => '/items/new/detailed',
+			'verb' => 'POST'],
+
 		// ['name' => 'item_field_value_api#findByFieldId',
 		// 	'url' => '/api/0.1/item_field_values/itemId/{itemId}/fieldId/{fieldId}/order/{order}',
 		// 	'verb' => 'GET'],

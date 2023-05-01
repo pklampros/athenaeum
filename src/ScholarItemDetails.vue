@@ -71,7 +71,7 @@
 				&nbsp;
 				<NcButton
 					:disabled="!this.scholarItem.title || !this.scholarItem.url"
-					@click="cancelShelvingItem"
+					@click="shelveItem"
 					type="primary">
 					Shelve
 				</NcButton>
@@ -103,6 +103,7 @@ import AuthorEditList from './AuthorEditList.vue'
 
 import { showError } from '@nextcloud/dialogs'
 import { fetchScholarItemDetails } from './service/ScholarItemService'
+import { createItemDetailed } from './service/ItemService'
 
 export default {
 	name: 'ScholarItemDetails',
@@ -127,6 +128,7 @@ export default {
 			scholarItem: null,
 			alertExcerpts: [],
 			authorListDisplay: null,
+			authorList: [],
 		}
 	},
 	computed: {
@@ -164,23 +166,13 @@ export default {
 			this.$options.authorListInterface.setAuthorListFromText(this.scholarItem.authors)
 		},
 		authorListUpdated(newAuthorList) {
+			this.authorList = newAuthorList;
 			this.authorListDisplay = newAuthorList.map(author => author.displayName).join(', ');
 		},
-		shelveItem(scholarItem) {
-			// pop up dialog to decide what to do with this item
-			// it should show title, authors, excerpt(s) and only 
-			// allow filing if the author's list is complete. Perhaps
-			// do the author-splitting here?
-
-			// this dialog should also allow for marking items as "read"
-			// with importance = 0, but not in the inbox anymore. Perhaps
-			// these items should go into an "Read items" folder, sorted
-			// by date of opening/marking as read, so as to allow for
-			// keeping them in case a mistake was made. Then perhaps
-			// delete them after some time? Or compact them?
-
-			// clickin on an item (n)
-			this.scholarItem = scholarItem
+		shelveItem() {
+			let detailedItem = this.scholarItem;
+			detailedItem.authorList = this.authorList;
+			createItemDetailed(detailedItem);
 		},
 		cancelShelvingItem() {
 			this.scholarItem = null

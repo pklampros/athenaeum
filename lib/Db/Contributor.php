@@ -15,20 +15,20 @@ use OCP\AppFramework\Db\Entity;
  * @method getFirstName(): string
  * @method setFirstName(string $firstName): void
  * @method getFirstNameIsFullName(): bool
- * @method setFirstNameIsFullName(bool $firstNameIsFullName): void
+ * @method setFirstNameIsFullName(bool $lastNameIsFullName): void
  * @method getLastName(): string
  * @method setLastName(string $lastName): void
  */
 class Contributor extends Entity implements JsonSerializable {
 	protected string $firstName = '';
-	protected bool $firstNameIsFullName = false;
+	protected bool $lastNameIsFullName = false;
 	protected ?string $lastName = '';
 
 	public function jsonSerialize(): array {
 		return [
 			'id' => $this->id,
 			'firstName' => $this->firstName,
-			'firstNameIsFullName' => $this->firstNameIsFullName,
+			'lastNameIsFullName' => $this->lastNameIsFullName,
 			'lastName' => $this->lastName
 		];
 	}

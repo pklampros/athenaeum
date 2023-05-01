@@ -60,6 +60,16 @@ class ItemController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 */
+	public function createDetailed(): DataResponse {
+		$currentTime = new \DateTime;
+		return new DataResponse($this->service->createDetailed(
+									$this->request->post['itemData'],
+									$currentTime, $currentTime, $this->userId));
+	}
+
+	/**
+	 * @NoAdminRequired
+	 */
 	public function update(int $id, string $title, int $itemTypeId, \DateTime $dateAdded,
 						   \DateTime $dateModified): DataResponse {
 		return $this->handleNotFound(function () use ($id, $title, $itemTypeId, $dateAdded,

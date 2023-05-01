@@ -56,12 +56,12 @@ class ContributorService {
 	}
 
 	public function create(string $firstName, string $lastName,
-						   bool $firstNameIsFullName): Contributor {
+						   bool $lastNameIsFullName): Contributor {
 		try {
 			$entity = new Contributor();
 			$entity->setFirstName($firstName);
 			$entity->setLastName($lastName);
-			$entity->setFirstNameIsFullName($firstNameIsFullName);
+			$entity->setFirstNameIsFullName($lastNameIsFullName);
 			return $this->mapper->insert($entity);
 		} catch (Exception $e) {
 			$this->handleException($e);
@@ -69,12 +69,12 @@ class ContributorService {
 	}
 
 	public function update(int $id, string $firstName, string $lastName,
-	                       bool $firstNameIsFullName): Contributor {
+	                       bool $lastNameIsFullName): Contributor {
 		try {
 			$entity = $this->mapper->find($id);
 			$entity->setFirstName($firstName);
 			$entity->setLastName($lastName);
-			$entity->setFirstNameIsFullName($firstNameIsFullName);
+			$entity->setFirstNameIsFullName($lastNameIsFullName);
 			return $this->mapper->update($entity);
 		} catch (Exception $e) {
 			$this->handleException($e);

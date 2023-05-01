@@ -73,6 +73,105 @@ class ItemMapper extends QBMapper {
 		return $this->findEntities($qb);
 	}
 
+	private function findFieldId(string $fieldName): int {
+		$qb = $this->db->getQueryBuilder();
+		$qb->select('id')
+		  ->from('athm_fields')
+		  ->where($qb->expr()->eq('name', $qb->createNamedParameter($fieldName)));
+		return $this->findEntity($qb)->id;
+	}
+
+	/**
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws DoesNotExistException
+	 */
+	private function insertItemFieldValue(int $itemId, string $fieldName, $value) {
+		$fieldID = $this->findFieldId($fieldName);
+		$qb = $this->db->getQueryBuilder();
+		$qb->insert('athm_item_field_values')
+			->setValue('item_id', $qb->createNamedParameter($itemId, IQueryBuilder::PARAM_INT))
+			->setValue('field_id', $qb->createNamedParameter($fieldID, IQueryBuilder::PARAM_INT))
+			->setValue('order', 0)
+			->setValue('value', $qb->createNamedParameter($value));
+		$qb->executeStatement();
+	}
+
+	/**
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws DoesNotExistException
+	 */
+	private function insertContributor(string $firstName, string $lastName,
+			bool $lastNameIsFullName): int {
+		$qb = $this->db->getQueryBuilder();
+		$qb->insert('athm_contributors')
+			->setValue('first_name', $qb->createNamedParameter($firstName))
+			->setValue('last_name', $qb->createNamedParameter($lastName))
+			->setValue('last_name_is_full_name', $qb->createNamedParameter($lastNameIsFullName));
+		$qb->executeStatement();
+		return $qb->getLastInsertId();
+	}
+
+	/**
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws DoesNotExistException
+	 */
+	private function insertContribution(int $itemId, int $contributorId,
+			string $contributorDisplayName, int $contributionTypeId,
+			int $contributionOrder): int {
+		$qb = $this->db->getQueryBuilder();
+		$qb->insert('athm_contributions')
+			->setValue(
+				'item_id',
+				$qb->createNamedParameter($itemId, IQueryBuilder::PARAM_INT))
+			->setValue(
+				'contributor_id',
+				$qb->createNamedParameter($contributorId, IQueryBuilder::PARAM_INT))
+			->setValue(
+				'contributor_name_display',
+				$qb->createNamedParameter($contributorDisplayName))
+			->setValue(
+				'contribution_type_id',
+				$qb->createNamedParameter($contributionTypeId))
+			->setValue(
+				'contribution_order',
+				$qb->createNamedParameter($contributionOrder));
+		$qb->executeStatement();
+		return $qb->getLastInsertId();
+	}
+
+	/**
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws DoesNotExistException
+	 */
+	public function insertDetailed(array $itemData, \DateTime $dateAdded,
+	\DateTime $dateModified, string $userId): Item {
+        return $this->atomic(function () use (&$itemData, &$dateAdded, &$dateModified, &$userId) {
+			$item = new Item();
+			$item->setTitle($itemData['title']);
+			$item->setItemTypeId(1);
+			$item->setDateAdded($dateAdded);
+			$item->setDateModified($dateModified);
+			$item->setUserId($userId);
+
+			$newItem = $this->insert($item);
+			if (array_key_exists('url', $itemData)) {
+				$fieldID = $this->insertItemFieldValue($newItem->id, 'url', $itemData['url']);
+			}
+			if (array_key_exists('authorList', $itemData)) {
+				foreach ($itemData['authorList'] as $index=>$author) {
+					
+					$newContributorId = $this->insertContributor(
+						$author['firstName'], $author['name'],
+						$author['onlyLastName']);
+					
+					$this->insertContribution($newItem->id, $newContributorId,
+						$author['displayName'], 1, $index + 1);
+				}
+			}
+			return $newItem;
+        }, $this->db);
+	}
+
 	/**
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException

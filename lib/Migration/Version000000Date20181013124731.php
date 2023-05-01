@@ -102,7 +102,7 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 				'notnull' => false,
 				'length' => 200
 			]);
-			$table->addColumn('first_name_is_full_name', 'boolean', [
+			$table->addColumn('last_name_is_full_name', 'boolean', [
 				'notnull' => false, # null is used for false
 				'default' => false
 			]);
