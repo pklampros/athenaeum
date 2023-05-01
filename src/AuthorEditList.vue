@@ -25,8 +25,8 @@
 							<div v-if="!author.onlyLastName" class="flex-row">
 								<NcTextField
 									label="First"
-									:error="emptyOrHasEllipsis(author.firstNames)"
-									:value.sync="author.firstNames"
+									:error="emptyOrHasEllipsis(author.firstName)"
+									:value.sync="author.firstName"
 									@update:value="updateDisplayName(index)" />
 								&nbsp;
 								<NcTextField
@@ -191,7 +191,7 @@ export default {
 			if (hasMoreAuthors) {
 				this.authorList.push({
 					"name": "…",
-					"firstNames": "…",
+					"firstName": "…",
 					"displayName": "…",
 					"displayNameModified": false,
 					"onlyLastName": true,
@@ -204,13 +204,13 @@ export default {
 			let name = authorNameParts.at(-1).trim()
 			let nameData = {
 				"name": name,
-				"firstNames": "",
+				"firstName": "",
 				"displayName": author,
 				"displayNameModified": authorNameParts > 1 && name != "",
 				"onlyLastName": authorNameParts > 1,
 			}
 			if (authorNameParts.length > 1) {
-				nameData.firstNames = authorNameParts.slice(0, -1).join(' ').trim();
+				nameData.firstName = authorNameParts.slice(0, -1).join(' ').trim();
 				nameData.onlyLastName = false;
 			}
 			return nameData;
@@ -224,9 +224,9 @@ export default {
 			if (author.displayNameModified) return;
 			let nameComponents = 0;
 			if (author.name) nameComponents = nameComponents + 1;
-			if (author.firstNames) nameComponents = nameComponents + 1;
+			if (author.firstName) nameComponents = nameComponents + 1;
 
-			author.displayName = author.firstNames.trim() +
+			author.displayName = author.firstName.trim() +
 								 (nameComponents == 2 ? ' ' : '') +
 								 author.name.trim();
 			this.$set(this.authorList, authorIndex, author);
@@ -243,11 +243,11 @@ export default {
 			} else {
 				author.onlyLastName = !author.onlyLastName
 			}
-			if (author.onlyLastName && author.firstNames) {
-				author.name = author.firstNames.trim() + ' ' + author.name.trim();
-				author.firstNames = "";
+			if (author.onlyLastName && author.firstName) {
+				author.name = author.firstName.trim() + ' ' + author.name.trim();
+				author.firstName = "";
 			}
-			if (!author.onlyLastName && author.firstNames == "") {
+			if (!author.onlyLastName && author.firstName == "") {
 				let authorMarkedNew = author.isNew;
 				author = this.getAuthorNameData(author.name);
 				author.isNew = authorMarkedNew;
