@@ -49,7 +49,7 @@
 									:error="emptyOrHasEllipsis(author.displayName)"
 								:label-outside="true"
 								:value.sync="author.displayName"
-								@update:value="author.displayNameModified = (author.displayName != '')">
+								@update:value="displayNameSet(index)">
 							</NcTextField>
 						</div>
 					</div>
@@ -169,6 +169,11 @@ export default {
 			authorList: null
 		}
 	},
+	watch: {
+		authorList: function(newAuthorList) {
+			this.$emit("authorListUpdated", newAuthorList);
+		}
+	},
 	methods: {
 		setAuthorListFromText(authors) {
 			this.authorList = authors.split(",");
@@ -226,6 +231,11 @@ export default {
 								 author.name.trim();
 			this.$set(this.authorList, authorIndex, author);
 		},
+		displayNameSet(authorIndex) {
+			let author = this.authorList[authorIndex];
+			author.displayNameModified = (author.displayName != '')
+			this.$set(this.authorList, authorIndex, author);
+		},
 		toggleOnlyLastName(authorIndex) {
 			let author = this.authorList[authorIndex]
 			if (!author.onlyLastName) {
@@ -278,7 +288,6 @@ export default {
 		emptyOrHasEllipsis(text) {
 			return !text || text == "" || this.hasEllipsis(text);
 		},
-
 	},
 }
 </script>
