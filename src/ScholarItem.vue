@@ -85,7 +85,7 @@ export default {
 				name: 'inbox_item',
 				params: {
 					//filter: this.$route.params.filter ? this.$route.params.filter : undefined,
-					scholarItemId: this.scholarItem.id,
+					inboxItemId: this.scholarItem.id,
 				},
 				exact: true,
 			}

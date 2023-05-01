@@ -46,10 +46,6 @@ return [
 		// 	'url' => '/api/0.1/item_field_values/itemId/{itemId}/fieldName/{fieldName}/order/{order}',
 		// 	'verb' => 'GET'],
 
-		['name' => 'page#showScholarItem',
-			'url' => '/inbox/{scholarItemId}',
-			'verb' => 'GET'],
-
 		['name' => 'scholar_alert_api#findByScholarId',
 			'url' => '/api/0.1/scholar_alerts/scholarId/{scholarId}',
 			'verb' => 'GET'],
@@ -84,8 +80,20 @@ return [
 			'url' => '/api/0.1/contributions/itemId/{itemId}/contributorId/{contributorId}',
 			'verb' => 'GET'],
 
-		['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
 		['name' => 'item_api#preflighted_cors', 'url' => '/api/0.1/{path}',
-			'verb' => 'OPTIONS', 'requirements' => ['path' => '.+']]
+			'verb' => 'OPTIONS', 'requirements' => ['path' => '.+']],
+
+		
+		['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
+
+		['name' => 'page#index', 'url' => '/inbox', 'verb' => 'GET'],
+		['name' => 'page#showInboxItem',
+			'url' => '/inbox/{inboxItemId}',
+			'verb' => 'GET'],
+
+		['name' => 'page#index', 'url' => '/library', 'verb' => 'GET'],
+		['name' => 'page#showLibraryItem',
+			'url' => '/library/{libraryItemId}',
+			'verb' => 'GET'],
 	]
 ];

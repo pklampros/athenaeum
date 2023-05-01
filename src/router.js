@@ -22,8 +22,23 @@ export default new Router({
 			component: App,
 		},
 		{
-			path: '/inbox/:scholarItemId',
+			path: '/inbox/',
+			name: 'inbox',
+			component: App,
+		},
+		{
+			path: '/inbox/:inboxItemId',
 			name: 'inbox_item',
+			component: App,
+		},
+		{
+			path: '/library/',
+			name: 'library',
+			component: App,
+		},
+		{
+			path: '/library/:libraryItemId',
+			name: 'library_item',
 			component: App,
 		},
 	],

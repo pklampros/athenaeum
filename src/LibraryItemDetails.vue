@@ -106,7 +106,7 @@ import { fetchScholarItemDetails } from './service/ScholarItemService'
 import { createItemDetailed } from './service/ItemService'
 
 export default {
-	name: 'ScholarItemDetails',
+	name: 'LibraryItemDetails',
 	components: {
 		// components
 		NcAppContentDetails,
@@ -133,7 +133,7 @@ export default {
 	},
 	computed: {
 		scholarItemId() {
-			return parseInt(this.$route.params.inboxItemId, 0)
+			return parseInt(this.$route.params.scholarItemId, 0)
 		},
 	},
 	watch: {
