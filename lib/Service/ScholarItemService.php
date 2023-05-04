@@ -61,9 +61,9 @@ class ScholarItemService {
 		}
 	}
 
-	public function getForShelving(int $id, string $userId): ScholarItemDetails {
+	public function getWithDetails(int $id, string $userId): ScholarItemDetails {
 		try {
-			return $this->mapper->getForShelving($id, $userId);
+			return $this->mapper->getWithDetails($id, $userId);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}

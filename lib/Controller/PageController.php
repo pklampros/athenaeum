@@ -53,7 +53,27 @@ class PageController extends Controller {
 	 * 
 	 * @return TemplateResponse
 	 */
+	public function inbox(): TemplateResponse {
+		return $this->index();
+	}
+
+	/**
+	 * @NoAdminRequired
+	 * @NoCSRFRequired
+	 * 
+	 * @return TemplateResponse
+	 */
 	public function showInboxItem(int $inboxItemId): TemplateResponse {
+		return $this->index();
+	}
+
+	/**
+	 * @NoAdminRequired
+	 * @NoCSRFRequired
+	 * 
+	 * @return TemplateResponse
+	 */
+	public function library(): TemplateResponse {
 		return $this->index();
 	}
 

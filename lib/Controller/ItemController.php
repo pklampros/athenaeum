@@ -12,16 +12,16 @@ use OCP\AppFramework\Http\DataResponse;
 use OCP\IRequest;
 
 class ItemController extends Controller {
-	private ItemService $service;
+	private ItemService $itemService;
 	private ?string $userId;
 
 	use Errors;
 
 	public function __construct(IRequest $request,
-								ItemService $service,
+								ItemService $itemService,
 								?string $userId) {
 		parent::__construct(Application::APP_ID, $request);
-		$this->service = $service;
+		$this->itemService = $itemService;
 		$this->userId = $userId;
 	}
 
@@ -34,7 +34,7 @@ class ItemController extends Controller {
         ?bool $showAll = false,
         string $search = ''
 	): DataResponse {
-		return new DataResponse($this->service->findAll(
+		return new DataResponse($this->itemService->findAll(
 			$this->userId, $limit, $offset, $showAll, $search
 		));
 	}
@@ -44,7 +44,16 @@ class ItemController extends Controller {
 	 */
 	public function show(int $id): DataResponse {
 		return $this->handleNotFound(function () use ($id) {
-			return $this->service->find($id, $this->userId);
+			return $this->itemService->find($id, $this->userId);
+		});
+	}
+
+	/**
+	 * @NoAdminRequired
+	 */
+	public function getWithDetails(int $id): DataResponse {
+		return $this->handleNotFound(function () use ($id) {
+			return $this->itemService->getWithDetails($id, $this->userId);
 		});
 	}
 
@@ -53,7 +62,7 @@ class ItemController extends Controller {
 	 */
 	public function create(string $title, int $itemTypeId): DataResponse {
 		$currentTime = new \DateTime;
-		return new DataResponse($this->service->create($title, $itemTypeId,
+		return new DataResponse($this->itemService->create($title, $itemTypeId,
 								$currentTime, $currentTime, $this->userId));
 	}
 
@@ -62,7 +71,7 @@ class ItemController extends Controller {
 	 */
 	public function createDetailed(): DataResponse {
 		$currentTime = new \DateTime;
-		return new DataResponse($this->service->createDetailed(
+		return new DataResponse($this->itemService->createDetailed(
 									$this->request->post['itemData'],
 									$currentTime, $currentTime, $this->userId));
 	}
@@ -74,7 +83,7 @@ class ItemController extends Controller {
 						   \DateTime $dateModified): DataResponse {
 		return $this->handleNotFound(function () use ($id, $title, $itemTypeId, $dateAdded,
 													  $dateModified) {
-			return $this->service->update($id, $title, $itemTypeId, $dateAdded,
+			return $this->itemService->update($id, $title, $itemTypeId, $dateAdded,
 										  $dateModified, $this->userId);
 		});
 	}
@@ -84,7 +93,7 @@ class ItemController extends Controller {
 	 */
 	public function destroy(int $id): DataResponse {
 		return $this->handleNotFound(function () use ($id) {
-			return $this->service->delete($id, $this->userId);
+			return $this->itemService->delete($id, $this->userId);
 		});
 	}
 }

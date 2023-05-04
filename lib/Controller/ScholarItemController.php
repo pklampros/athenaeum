@@ -46,9 +46,9 @@ class ScholarItemController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 */
-	public function getForShelving(int $id): DataResponse {
+	public function getWithDetails(int $id): DataResponse {
 		return $this->handleNotFound(function () use ($id) {
-			return $this->scholarItemService->getForShelving($id, $this->userId);
+			return $this->scholarItemService->getWithDetails($id, $this->userId);
 		});
 	}
 

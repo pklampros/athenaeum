@@ -37,7 +37,7 @@ class ScholarItemMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function getForShelving(int $id, string $userId): ScholarItemDetails {
+	public function getWithDetails(int $id, string $userId): ScholarItemDetails {
 		$scholarEmailItemMapper = new ScholarEmailItemMapper($this->db);
 		$sifs = new ScholarItemDetails();
 		$sifs->setScholarItem($this->find($id, $userId));

@@ -9,25 +9,12 @@
 				<h2 >Library</h2>
 			</div>
 			<NcAppContentList
-				class="main-items-list" >
-				<NcListItem v-for="item in items"
+				class="main-items-list"
+				:show-details="true" >
+				<LibraryItem v-for="item in items"
 					:key="item.id"
-					:title="item.title ? item.title : t('athenaeum', 'New item')"
-					:class="{active: currentItemId === item.id}"
-					@click="openItem(item)">
-					<template slot="actions">
-						<NcActionButton v-if="item.id === -1"
-							icon="icon-close"
-							@click="cancelNewItem(item)">
-							{{ t('athenaeum', 'Cancel item creation') }}
-						</NcActionButton>
-						<NcActionButton v-else
-							icon="icon-delete"
-							@click="deleteItem(item)">
-							{{ t('athenaeum', 'Delete item') }}
-						</NcActionButton>
-					</template>
-				</NcListItem>
+					:item="item">
+				</LibraryItem>
 			</NcAppContentList>
 		</div>
 
@@ -42,12 +29,10 @@ import NcAppContentList from '@nextcloud/vue/dist/Components/NcAppContentList'
 import NcActionButton from '@nextcloud/vue/dist/Components/NcActionButton'
 import NcListItem from '@nextcloud/vue/dist/Components/NcListItem'
 
+import LibraryItem from './LibraryItem.vue'
 import LibraryItemDetails from './LibraryItemDetails.vue'
 
-import '@nextcloud/dialogs/dist/index.css'
-import { generateUrl } from '@nextcloud/router'
-import { showError, showSuccess } from '@nextcloud/dialogs'
-import axios from '@nextcloud/axios'
+import { fetchLibraryItems } from './service/LibraryItemService'
 
 export default {
 	name: 'LibraryItemList',
@@ -59,6 +44,7 @@ export default {
 		NcListItem,
 
 		// project components
+		LibraryItem,
 		LibraryItemDetails,
 	},
 	data() {
@@ -82,8 +68,7 @@ export default {
 	},
 	async mounted() {
 		try {
-			const response = await axios.get(generateUrl('/apps/athenaeum/items'))
-			this.items = response.data
+			this.items = await fetchLibraryItems();
 		} catch (e) {
 			console.error(e)
 			showError(t('athenaeum', 'Could not fetch items (route mounting failed)'))

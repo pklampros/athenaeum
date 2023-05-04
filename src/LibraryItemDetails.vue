@@ -3,19 +3,21 @@
 	SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
-	<NcAppContentDetails v-if="scholarItem">
+	<NcAppContentDetails v-if="item">
 		<div style="max-width: 900px; margin: 0 auto;">
 			<div style="position: sticky; padding: 30px 18px;">
 				<h2
-					:title="scholarItem.title"
+					:title="item.title"
 					style="display: flex; align-items: center; justify-content: space-between;">
-					{{ scholarItem.title }}
-					<a :href="scholarItem.url" target="_blank"><OpenInNew></a>
+					{{ item.title }}
+					<a :href="item.url" target="_blank"><OpenInNew></a>
 				</h2>
-				<h3> {{ scholarItem.journal }} </h3>
-				<h3> {{ authorListDisplay }} </h3>
+				<h3> {{ item.journal }} </h3>
+				<h3> Authors: {{ authorListDisplay }} </h3>
+				<h3> Editors: {{ editorListDisplay }} </h3>
+				<h3> Other contributions: {{ otherContributionsDisplay }} </h3>
 				&nbsp;
-				<h3 style="font-weight: bold;">Excerpts:</h3>
+				<!-- <h3 style="font-weight: bold;">Excerpts:</h3>
 				<ul style="list-style: inherit; padding: 4px 0 4px 44px;">
 					<li v-for="alertExcerpt in alertExcerpts"
 								:key="alertExcerpt">
@@ -30,38 +32,42 @@
 							</div>
 						</div>
 					</li>
-				</ul>
+				</ul> -->
 			</div>
+
+			Raw:<br /><br />
+			Item: <pre>{{ JSON.stringify(this.item, null, 2) }}</pre><br /><br />
+			FieldData: <pre>{{ JSON.stringify(this.itemFieldData, null, 2) }}</pre><br /><br />
+			Contributions: <pre>{{ JSON.stringify(this.contributions, null, 2) }}</pre><br /><br />
+
 			<div style="padding:0px 10px; border-radius: 16px; border: 2px solid var(--color-border);">
 				<div class="field-label">
 					<h3>Title</h3>
 				</div>
 				<NcRichContenteditable
 					placeholder="Title"
-					:error="hasEllipsis(scholarItem.title)"
-					:value.sync="scholarItem.title" />
-				<div class="field-label">
-					<h3>URL</h3>
-				</div>
-				<NcRichContenteditable
-					placeholder="URL"
-					:value.sync="scholarItem.url" />
-				<div class="field-label">
-					<h3>Journal</h3>
-				</div>
-				<NcRichContenteditable
-					placeholder="Journal"
-					:error="hasEllipsis(scholarItem.journal)"
-					:value.sync="scholarItem.journal"/>
-				<AuthorEditList
+					:error="hasEllipsis(item.title)"
+					:value.sync="item.title" />
+					<div v-for="fieldData in itemFieldData"
+							:key="fieldData.name">
+						
+						<div class="field-label">
+							<h3>fieldData.name</h3>
+						</div>
+						<NcRichContenteditable
+							placeholder="fieldData.name"
+							:error="hasEllipsis(fieldData.value)"
+							:value.sync="fieldData.value" />
+					</div>
+				<!-- <AuthorEditList
 					@interface="setAuthorListInterface"
-					@authorListUpdated="authorListUpdated"/>
+					@authorListUpdated="authorListUpdated"/> -->
 				&nbsp;
 			</div>
 			<div style="display: flex; justify-content: right; align-items: center; padding: 16px;">
 				<NcButton
-					ariaLabel="Remove scholar item"
-					:disabled="!this.scholarItem.title || !this.scholarItem.url"
+					ariaLabel="Remove item"
+					:disabled="!this.item.title || !this.item.url"
 					@click="markScholarItemDeleted"
 					type="primary">
 					<template #icon>
@@ -70,10 +76,10 @@
 				</NcButton>
 				&nbsp;
 				<NcButton
-					:disabled="!this.scholarItem.title || !this.scholarItem.url"
-					@click="shelveItem"
+					:disabled="!this.item.title || !this.item.url"
+					@click="saveItem"
 					type="primary">
-					Shelve
+					Save
 				</NcButton>
 			</div>
 		</div>
@@ -102,8 +108,7 @@ import OpenInNew from 'vue-material-design-icons/OpenInNew.vue';
 import AuthorEditList from './AuthorEditList.vue'
 
 import { showError } from '@nextcloud/dialogs'
-import { fetchScholarItemDetails } from './service/ScholarItemService'
-import { createItemDetailed } from './service/ItemService'
+import { fetchLibraryItemDetails } from './service/LibraryItemService'
 
 export default {
 	name: 'LibraryItemDetails',
@@ -125,60 +130,56 @@ export default {
 	},
 	data() {
 		return {
-			scholarItem: null,
+			item: null,
+			itemFieldData: {},
 			alertExcerpts: [],
-			authorListDisplay: null,
-			authorList: [],
+			authorDisplay: null,
+			editorDisplay: null,
+			otherContributionsDisplay: null,
+			contributions: [],
 		}
 	},
 	computed: {
-		scholarItemId() {
-			return parseInt(this.$route.params.scholarItemId, 0)
+		itemId() {
+			return parseInt(this.$route.params.libraryItemId, 0)
 		},
 	},
 	watch: {
-		scholarItemId: async function (scholarItemId) {
-			if (!scholarItemId) return;
+		itemId: async function (itemId) {
+			if (!itemId) return;
 			try {
-				let scholarItemDetails = await fetchScholarItemDetails(scholarItemId);
-				this.scholarItem = scholarItemDetails.scholarItem;
-				if (!this.scholarItem.journal) this.scholarItem.journal = "";
-				if (!this.scholarItem.authors) this.scholarItem.authors = "";
-				this.authorListDisplay = this.scholarItem.authors;
-				this.alertExcerpts = scholarItemDetails.alertExcerpts;
-				this.alertExcerpts.sort(function(a, b) {
-					return parseFloat(a.importance) - parseFloat(b.importance);
+				let itemDetails = await fetchLibraryItemDetails(itemId);
+				console.log(itemDetails);
+				this.item = itemDetails.item;
+				this.itemFieldData = itemDetails.fieldData;
+				if (!this.item.authors) this.item.authors = "";
+				this.authorListDisplay = this.item.authors;
+				this.contributions = itemDetails.contributions;
+				this.contributions.sort(function(a, b) {
+					return parseFloat(a.orde) - parseFloat(b.order);
 				});
 			} catch (e) {
 				console.error(e)
-				showError(t('athenaeum', 'Could not fetch scholar item details (route mounting failed)'))
+				showError(t('athenaeum', 'Could not fetch item details (route mounting failed)'))
 			}
 		},
-		scholarItem: async function (scholarItem) {
-			if (!scholarItem || !this.$options || !this.$options.authorListInterface) return;
-			this.$options.authorListInterface.setAuthorListFromText(this.scholarItem.authors);
+		item: async function (item) {
+			if (!item || !this.$options || !this.$options.authorListInterface) return;
+			this.$options.authorListInterface.setAuthorListFromText(this.item.authors);
 		},
 	},
 	methods: {
 		// Setting the interface when emitted from child
 		setAuthorListInterface(authorListInterface) {
 			this.$options.authorListInterface = authorListInterface;
-			this.$options.authorListInterface.setAuthorListFromText(this.scholarItem.authors)
+			this.$options.authorListInterface.setAuthorListFromText(this.item.authors)
 		},
 		authorListUpdated(newAuthorList) {
 			this.authorList = newAuthorList;
 			this.authorListDisplay = newAuthorList.map(author => author.displayName).join(', ');
 		},
-		shelveItem() {
-			let detailedItem = this.scholarItem;
-			detailedItem.authorList = this.authorList;
-			createItemDetailed(detailedItem);
-		},
-		cancelShelvingItem() {
-			this.scholarItem = null
-		},
-		markScholarItemDeleted() {
-			this.scholarItem = null
+		saveItem() {
+			// unimplemented yet
 		},
 		hasEllipsis(text) {
 			return text.includes('…') || text.includes("...")

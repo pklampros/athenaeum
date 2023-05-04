@@ -71,9 +71,9 @@
 				&nbsp;
 				<NcButton
 					:disabled="!this.scholarItem.title || !this.scholarItem.url"
-					@click="shelveItem"
+					@click="addToLibrary"
 					type="primary">
-					Shelve
+					Add to Library
 				</NcButton>
 			</div>
 		</div>
@@ -103,7 +103,7 @@ import AuthorEditList from './AuthorEditList.vue'
 
 import { showError } from '@nextcloud/dialogs'
 import { fetchScholarItemDetails } from './service/ScholarItemService'
-import { createItemDetailed } from './service/ItemService'
+import { createLibraryItemDetailed } from './service/LibraryItemService'
 
 export default {
 	name: 'ScholarItemDetails',
@@ -169,10 +169,10 @@ export default {
 			this.authorList = newAuthorList;
 			this.authorListDisplay = newAuthorList.map(author => author.displayName).join(', ');
 		},
-		shelveItem() {
+		addToLibrary() {
 			let detailedItem = this.scholarItem;
 			detailedItem.authorList = this.authorList;
-			createItemDetailed(detailedItem);
+			createLibraryItemDetailed(detailedItem);
 		},
 		cancelShelvingItem() {
 			this.scholarItem = null

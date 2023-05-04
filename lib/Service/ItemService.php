@@ -12,6 +12,7 @@ use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 
 use OCA\Athenaeum\Db\Item;
 use OCA\Athenaeum\Db\ItemMapper;
+use OCA\Athenaeum\Db\ItemDetails;
 
 class ItemService {
 	private ItemMapper $mapper;
@@ -50,6 +51,14 @@ class ItemService {
 	public function find(int $id, string $userId): Item {
 		try {
 			return $this->mapper->find($id, $userId);
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
+	}
+
+	public function getWithDetails(int $id, string $userId): ItemDetails {
+		try {
+			return $this->mapper->getWithDetails($id, $userId);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}

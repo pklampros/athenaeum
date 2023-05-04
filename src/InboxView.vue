@@ -32,7 +32,6 @@ import ScholarItemDetails from './ScholarItemDetails.vue'
 
 import { fetchScholarItems } from './service/ScholarItemService'
 
-
 export default {
 	name: 'InboxView',
 	components: {

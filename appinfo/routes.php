@@ -54,7 +54,7 @@ return [
 			'url' => '/api/0.1/scholar_emails/subject/{subject}/received/{received}',
 			'verb' => 'GET'],
 
-		['name' => 'scholar_item#getForShelving',
+		['name' => 'scholar_item#getWithDetails',
 			'url' => '/scholar_items/details/{id}',
 			'verb' => 'GET'],
 
@@ -64,6 +64,10 @@ return [
 		['name' => 'scholar_item#extractFromEML',
 			'url' => '/scholar_items/extractFromEML',
 			'verb' => 'POST'],
+
+		['name' => 'item#getWithDetails',
+			'url' => '/items/details/{id}',
+			'verb' => 'GET'],
 
 		['name' => 'scholar_email_item_api#findByEmailItem',
 			'url' => '/api/0.1/scholar_email_items/scholarEmailId/{scholarEmailId}/scholarItemId/{scholarItemId}',
@@ -86,12 +90,12 @@ return [
 		
 		['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
 
-		['name' => 'page#index', 'url' => '/inbox', 'verb' => 'GET'],
+		['name' => 'page#inbox', 'url' => '/inbox', 'verb' => 'GET'],
 		['name' => 'page#showInboxItem',
 			'url' => '/inbox/{inboxItemId}',
 			'verb' => 'GET'],
 
-		['name' => 'page#index', 'url' => '/library', 'verb' => 'GET'],
+		['name' => 'page#library', 'url' => '/library', 'verb' => 'GET'],
 		['name' => 'page#showLibraryItem',
 			'url' => '/library/{libraryItemId}',
 			'verb' => 'GET'],

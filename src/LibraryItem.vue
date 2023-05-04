@@ -4,38 +4,26 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
 	<NcListItem
-		:title="scholarItem.title ? scholarItem.title : t('athenaeum', 'New scholar item')"
-		:class="{active: currentScholarItemId === scholarItem.id}"
-		:counter-number="scholarItem.alertImportance"
+		:title="item.title ? item.title : t('athenaeum', 'New item')"
+		:class="{active: currentItemId === item.id}"
+		:counter-number="item.alertImportance"
 		:to="link">
 		<template #icon>
-			<google-scholar-icon size="20"/>
+			<Bookshelf size="20"/>
 		</template>
 		<template #subtitle>
 			<div
-				v-if="scholarItem.journal">
+				v-if="item.journal">
 				<span>
-					{{ scholarItem.journal }}
+					{{ item.journal }}
 				</span>
 			</div>
 			<div
-				v-if="scholarItem.authors">
+				v-if="item.authors">
 				<span>
-					{{ scholarItem.authors }}
+					{{ item.authors }}
 				</span>
 			</div>
-		</template>
-		<template #actions>
-			<NcActionButton v-if="scholarItem.id === -1"
-				icon="icon-close"
-				@click="cancelNewScholarItem(scholarItem)">
-				{{ t('athenaeum', 'Cancel item creation') }}
-			</NcActionButton>
-			<NcActionButton v-else
-				icon="icon-delete"
-				@click="deleteScholarItem(scholarItem)">
-				{{ t('athenaeum', 'Delete item') }}
-			</NcActionButton>
 		</template>
 		<template #extra>
 			<div><!-- placeholder div to make sure the extra is always available--></div>
@@ -49,10 +37,9 @@ import NcListItem from '@nextcloud/vue/dist/Components/NcListItem'
 import NcActionButton from '@nextcloud/vue/dist/Components/NcActionButton'
 
 import Bookshelf from 'vue-material-design-icons/Bookshelf.vue';
-import { GoogleScholarIcon } from 'vue-simple-icons'
 
 export default {
-	name: 'ScholarItem',
+	name: 'LibraryItem',
 	components: {
 		// components
 		NcListItem,
@@ -60,10 +47,9 @@ export default {
 
 		// icons
 		Bookshelf,
-		GoogleScholarIcon,
 	},
 	props: {
-		scholarItem: {
+		item: {
 			type: Object,
 			required: true,
 		},
@@ -71,10 +57,10 @@ export default {
 	computed: {
 		link() {
 			return {
-				name: 'inbox_item',
+				name: 'library_item',
 				params: {
 					//filter: this.$route.params.filter ? this.$route.params.filter : undefined,
-					inboxItemId: this.scholarItem.id,
+					libraryItemId: this.item.id,
 				},
 				exact: true,
 			}

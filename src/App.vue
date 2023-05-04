@@ -10,7 +10,7 @@
 					:name="t('athenaeum', 'Inbox')"
 					:disabled="false"
 					button-id="inbox-button"
-					@click="setViewMode(ViewMode.SCHOLAR_ITEMS)">
+					to="/inbox" >
 					<template #icon>
 						<Inbox :size="20" />
 					</template>
@@ -19,7 +19,7 @@
 					:name="t('athenaeum', 'Library')"
 					:disabled="false"
 					button-id="library-button"
-					@click="setViewMode(ViewMode.ITEMS)">
+					to="/library" >
 					<template #icon>
 						<Bookshelf :size="20"/>
 					</template>
@@ -42,9 +42,9 @@
 			</label>
       		<button v-on:click="submitFile()">Submit</button>
 		</NcAppNavigation>
-		<InboxView v-if="viewMode === ViewMode.SCHOLAR_ITEMS" />
-		
-		<LibraryView v-if="viewMode === ViewMode.ITEMS" />
+
+		<InboxView v-if="currentView === ViewMode.INBOX" />
+		<LibraryView v-if="currentView === ViewMode.LIBRARY" />
 			
 	</div>
 </template>
@@ -64,6 +64,7 @@ import LibraryView from './LibraryView.vue'
 import '@nextcloud/dialogs/dist/index.css'
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
+
 import {
 	ViewMode
 } from "./enums";
@@ -88,21 +89,17 @@ export default {
 		return {
 			fileItemTrigger: 0,
 			ViewMode: ViewMode,
-			viewMode: ViewMode.SCHOLAR_ITEMS
 		}
 	},
 	computed: {
 		currentView() {
-			console.log(this.$route)
-			return this.$route
+			let pathParts = this.$route.path.split('/');
+			if (pathParts.length > 1) return pathParts[1];
+			return ViewMode.INBOX;
 		},
 	},
 
 	methods: {
-
-		setViewMode(newViewMode) {
-			this.viewMode = newViewMode;
-		},
 
 		handleFileUpload( event ){
 			console.log(event);

@@ -4,8 +4,8 @@
  */
 
 const ViewMode = Object.freeze({
-  ITEMS: "items",
-  SCHOLAR_ITEMS: "scholar_items",
+  LIBRARY: "library",
+  INBOX: "inbox",
   ALERTS: "alerts",
 });
 

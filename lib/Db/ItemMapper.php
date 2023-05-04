@@ -39,6 +39,68 @@ class ItemMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
+	public function getWithDetails(int $id, string $userId): ItemDetails {
+		$contributionMapper = new ContributionMapper($this->db);
+		$contributorMapper = new ContributorMapper($this->db);
+		$fieldMapper = new FieldMapper($this->db);
+		$itemFieldValueMapper = new ItemFieldValueMapper($this->db);
+
+		$itemDetails = new ItemDetails();
+		$itemDetails->setItem($this->find($id, $userId));
+
+		$qb = $this->db->getQueryBuilder();
+		$qb->select('co.id')
+			->addSelect('co.first_name')
+			->addSelect('co.last_name')
+			->addSelect('co.last_name_is_full_name')
+			->addSelect('ci.contribution_order')
+			->addSelect('ci.contribution_type_id')
+			->addSelect('ci.contributor_name_display')
+			->from('athm_contributions', 'ci')
+			->innerJoin("ci", "athm_contributors", "co", "co.id = ci.contributor_id")
+			->where($qb->expr()->eq('ci.item_id',
+									$qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
+		
+		$contributions = [];
+		$result = $qb->executeQuery();
+		try {
+			while ($row = $result->fetch()) {
+				array_push($contributions, $row);
+			}
+		} finally {
+			$result->closeCursor();
+		}
+		$itemDetails->setContributions($contributions);
+
+
+		$qb = $this->db->getQueryBuilder();
+		$qb->select('ifv.order')
+			->addSelect('ifv.value')
+			->addSelect('f.name')
+			->addSelect('f.type_hint')
+			->from('athm_fields', 'f')
+			->innerJoin("f", "athm_item_field_values", "ifv", "f.id = ifv.field_id")
+			->where($qb->expr()->eq('ifv.item_id',
+									$qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
+		
+		$fieldData = [];
+		$result = $qb->executeQuery();
+		try {
+			while ($row = $result->fetch()) {
+				array_push($fieldData, $row);
+			}
+		} finally {
+			$result->closeCursor();
+		}
+		$itemDetails->setFieldData($fieldData);
+
+		return $itemDetails;
+	}
+
+	/**
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws DoesNotExistException
+	 */
 	public function findByFieldValue(string $fieldName, string $fieldValue, string $userId): Item {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
