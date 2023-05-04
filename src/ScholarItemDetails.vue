@@ -174,9 +174,6 @@ export default {
 			detailedItem.authorList = this.authorList;
 			createLibraryItemDetailed(detailedItem);
 		},
-		cancelShelvingItem() {
-			this.scholarItem = null
-		},
 		markScholarItemDeleted() {
 			this.scholarItem = null
 		},
