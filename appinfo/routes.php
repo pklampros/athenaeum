@@ -21,6 +21,7 @@ return [
 		'scholar_alert_api' => ['url' => '/api/0.1/scholar_alerts'],
 		'scholar_email_api' => ['url' => '/api/0.1/scholar_emails'],
 		'scholar_email_item_api' => ['url' => '/api/0.1/scholar_email_items'],
+		// 'contributor' => ['url' => '/contributors'],
 		'contributor_api' => ['url' => '/api/0.1/contributors'],
 		'contribution_api' => ['url' => '/api/0.1/contributions'],
 	],
@@ -87,6 +88,9 @@ return [
 		['name' => 'item_api#preflighted_cors', 'url' => '/api/0.1/{path}',
 			'verb' => 'OPTIONS', 'requirements' => ['path' => '.+']],
 
+		['name' => 'contributor#findSimilar',
+			'url' => '/contributors/similar',
+			'verb' => 'POST'],
 		
 		['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
 

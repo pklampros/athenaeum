@@ -47,6 +47,15 @@ class ContributorService {
 		}
 	}
 
+	public function findSimilar(string $firstName, string $lastName,
+								string $displayName): Array {
+		try {
+			return $this->mapper->findSimilar($firstName, $lastName, $displayName);
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
+	}
+
 	public function findByFirstLastName(string $firstName, string $lastName): Contributor {
 		try {
 			return $this->mapper->findByFirstLastName($firstName, $lastName);

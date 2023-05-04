@@ -105,7 +105,8 @@
 							value="false"
 							name="existing_new_radio"
 							type="radio"
-							button-variant-grouped="horizontal">
+							button-variant-grouped="horizontal"
+							@update:checked="findSimilarContributors(index)">
 							<Magnify :size="20" />
 						</NcCheckboxRadioSwitch>
 						<NcCheckboxRadioSwitch
@@ -143,6 +144,8 @@ import ChevronUp from 'vue-material-design-icons/ChevronUp.vue';
 import ChevronDown from 'vue-material-design-icons/ChevronDown.vue';
 import MinusCircle from 'vue-material-design-icons/MinusCircle.vue';
 import PlusCircle from 'vue-material-design-icons/PlusCircle.vue';
+
+import { findSimilar } from './service/ContributorService'
 
 export default {
 	name: 'AuthorEditList',
@@ -270,6 +273,16 @@ export default {
 		removeAuthor(authorIndex) {
 			if (authorIndex < 0 || authorIndex > this.authorList.length) return;
 			this.authorList.splice(authorIndex, 1);
+		},
+		async findSimilarContributors(authorIndex) {
+			let author = this.authorList[authorIndex];
+			try {
+				let similarAuthors = await findSimilar(author.firstName, author.name, author.displayName)
+				console.log(similarAuthors);
+			} catch (e) {
+				console.error(e)
+				showError(t('athenaeum', 'Could not fetch items (route mounting failed)'))
+			}
 		},
 		addAuthor() {
 			let authorData = this.getAuthorNameData("")
