@@ -108,6 +108,24 @@
 							button-variant-grouped="horizontal"
 							@update:checked="findSimilarContributors(index)">
 							<Magnify :size="20" />
+							<NcPopover
+								:shown="author.findingContributors"
+								@apply-hide="stopFindingContributors(index)">
+								<template>
+									<h2>Similar contributors:</h2>
+									<ul>
+										<NcListItem 
+											v-for="contributor in author.potentialContributors"
+											:key="contributor.id"
+											:title="contributor.firstName + contributor.lastName">
+											<div slot="subtitle">
+												Display name: {{ contributor.displayName }}
+											</div>
+										</NcListItem>
+									</ul>
+									<NcButton aria-label="Custom search">Custom search</NcButton>
+								</template>
+							</NcPopover>
 						</NcCheckboxRadioSwitch>
 						<NcCheckboxRadioSwitch
 							:button-variant="true"
@@ -136,6 +154,8 @@
 import NcTextField from '@nextcloud/vue/dist/Components/NcTextField'
 import NcCheckboxRadioSwitch from '@nextcloud/vue/dist/Components/NcCheckboxRadioSwitch'
 import NcButton from '@nextcloud/vue/dist/Components/NcButton'
+import NcListItem from '@nextcloud/vue/dist/Components/NcListItem'
+import NcPopover from '@nextcloud/vue/dist/Components/NcPopover'
 
 import Magnify from 'vue-material-design-icons/Magnify.vue';
 import TextBox from 'vue-material-design-icons/TextBox.vue';
@@ -154,6 +174,8 @@ export default {
 		NcTextField,
 		NcCheckboxRadioSwitch,
 		NcButton,
+		NcListItem,
+		NcPopover,
 
 		// icons
 		Magnify,
@@ -169,7 +191,8 @@ export default {
     },
 	data() {
 		return {
-			authorList: null
+			authorList: null,
+			findingContributors: null,
 		}
 	},
 	watch: {
@@ -211,6 +234,8 @@ export default {
 				"displayName": author,
 				"displayNameModified": authorNameParts > 1 && name != "",
 				"onlyLastName": authorNameParts > 1,
+				"findingContributors": false,
+				"potentialContributors": [],
 			}
 			if (authorNameParts.length > 1) {
 				nameData.firstName = authorNameParts.slice(0, -1).join(' ').trim();
@@ -277,12 +302,19 @@ export default {
 		async findSimilarContributors(authorIndex) {
 			let author = this.authorList[authorIndex];
 			try {
-				let similarAuthors = await findSimilar(author.firstName, author.name, author.displayName)
-				console.log(similarAuthors);
+				author.potentialContributors = await findSimilar(author.firstName, author.name, author.displayName)
+				console.log(author.potentialContributors);
 			} catch (e) {
 				console.error(e)
 				showError(t('athenaeum', 'Could not fetch items (route mounting failed)'))
 			}
+			author.findingContributors = true;
+			this.$set(this.authorList, authorIndex, author);
+		},
+		stopFindingContributors(authorIndex) {
+			let author = this.authorList[authorIndex];
+			author.findingContributors = true;
+			this.$set(this.authorList, authorIndex, author);
 		},
 		addAuthor() {
 			let authorData = this.getAuthorNameData("")
