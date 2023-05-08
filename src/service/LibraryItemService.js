@@ -48,7 +48,7 @@ export function fetchLibraryItemDetails(id) {
 		})
 }
 
-export function createItemDetailed(itemData) {
+export function createLibraryItemDetailed(itemData) {
 	const url = generateUrl('/apps/athenaeum/items/new/detailed')
 
 	return axios
