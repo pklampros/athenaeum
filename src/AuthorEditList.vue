@@ -3,7 +3,7 @@
 	SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
-	<div>
+	<div id="author-edit-list">
 		<div class="field-label">
 			<h3>Authors</h3>
 			<NcButton
@@ -22,25 +22,28 @@
 				<div class="flex-row">
 					<div>
 						<div class="first-row">
-							<div v-if="!author.onlyLastName" class="flex-row">
+							<div v-if="!author.existingContributor">
+								<div v-if="!author.onlyLastName" class="flex-row">
+									<NcTextField
+										label="First"
+										:error="emptyOrHasEllipsis(author.firstName)"
+										:value.sync="author.firstName"
+										@update:value="updateDisplayName(index)" />
+									&nbsp;
+									<NcTextField
+										:label="'Last'"
+										:error="emptyOrHasEllipsis(author.name)"
+										:value.sync="author.name"
+										@update:value="updateDisplayName(index)" />
+								</div>
 								<NcTextField
-									label="First"
-									:error="emptyOrHasEllipsis(author.firstName)"
-									:value.sync="author.firstName"
-									@update:value="updateDisplayName(index)" />
-								&nbsp;
-								<NcTextField
-									:label="'Last'"
-									:error="emptyOrHasEllipsis(author.name)"
+									v-else
+									:label="'Name'"
+										:error="emptyOrHasEllipsis(author.name)"
 									:value.sync="author.name"
 									@update:value="updateDisplayName(index)" />
 							</div>
-							<NcTextField
-								v-else
-								:label="'Name'"
-									:error="emptyOrHasEllipsis(author.name)"
-								:value.sync="author.name"
-								@update:value="updateDisplayName(index)" />
+							<div v-else> {{ author.existingContributor.firstName + " " + author.existingContributor.lastName }}</div>
 						</div>
 						<div class="flex-row last-row">
 							<label for="displayNameField">Displayed&nbsp;as&nbsp;&nbsp;</label>
@@ -102,38 +105,46 @@
 						<NcCheckboxRadioSwitch
 							:button-variant="true"
 							:checked.sync="author.isNew"
-							value="false"
-							name="existing_new_radio"
+							:value="false"
+							:name="'existing_new_radio_' + index"
 							type="radio"
 							button-variant-grouped="horizontal"
 							@update:checked="findSimilarContributors(index)">
-							<Magnify :size="20" />
+							<Magnify :size="20" v-if="!author.existingContributor"/>
+							<DatabaseCheck :size="20" v-else />
+							<!-- when  there is a suggested already from the database: <DatabaseSearch :size="20" /> -->
 							<NcPopover
-								:shown="author.findingContributors"
-								@apply-hide="stopFindingContributors(index)">
+								:shown="author.hasPotentialContributors()"
+								container="#author-edit-list"
+								popover-base-class="similar-contributors_pop"
+								@apply-hide="dismissPotentialContributors(index)">
 								<template>
-									<h2>Similar contributors:</h2>
-									<ul>
-										<NcListItem 
-											v-for="contributor in author.potentialContributors"
-											:key="contributor.id"
-											:title="contributor.firstName + contributor.lastName">
-											<div slot="subtitle">
-												Display name: {{ contributor.displayName }}
-											</div>
-										</NcListItem>
-									</ul>
-									<NcButton aria-label="Custom search">Custom search</NcButton>
+									<div>
+										<h2>Similar contributors</h2>
+										<ul>
+											<NcListItem
+												v-for="contributor in author.potentialContributors"
+												:key="contributor.id"
+												:title="contributor.firstName + ' ' + contributor.lastName"
+												@click="selectContributor(index, contributor)">
+												<div slot="subtitle">
+													{{ contributor.displayName }}
+												</div>
+											</NcListItem>
+										</ul>
+										<NcButton style="width: 100%;" aria-label="Advanced search">Advanced search</NcButton>
+									</div>
 								</template>
 							</NcPopover>
 						</NcCheckboxRadioSwitch>
 						<NcCheckboxRadioSwitch
 							:button-variant="true"
 							:checked.sync="author.isNew"
-							value="true"
-							name="existing_new_radio"
+							:value="true"
+							:name="'existing_new_radio_' + index"
 							type="radio"
-							button-variant-grouped="horizontal">
+							button-variant-grouped="horizontal"
+							@update:checked="markAsNew(index)">
 							New
 						</NcCheckboxRadioSwitch>
 					</div>
@@ -164,6 +175,7 @@ import ChevronUp from 'vue-material-design-icons/ChevronUp.vue';
 import ChevronDown from 'vue-material-design-icons/ChevronDown.vue';
 import MinusCircle from 'vue-material-design-icons/MinusCircle.vue';
 import PlusCircle from 'vue-material-design-icons/PlusCircle.vue';
+import DatabaseCheck from 'vue-material-design-icons/DatabaseCheck.vue';
 
 import { findSimilar } from './service/ContributorService'
 
@@ -185,6 +197,7 @@ export default {
 		ChevronDown,
 		MinusCircle,
 		PlusCircle,
+		DatabaseCheck,
 	},
     mounted() {
 		this.emitInterface();
@@ -192,7 +205,6 @@ export default {
 	data() {
 		return {
 			authorList: null,
-			findingContributors: null,
 		}
 	},
 	watch: {
@@ -222,6 +234,11 @@ export default {
 					"displayNameModified": false,
 					"onlyLastName": true,
 					"isNew": true,
+					"potentialContributors": [],
+					"hasPotentialContributors": function() {
+						return this.potentialContributors.length > 0;
+					},
+					"existingContributor": null,
 				})
 			}
 		},
@@ -234,8 +251,11 @@ export default {
 				"displayName": author,
 				"displayNameModified": authorNameParts > 1 && name != "",
 				"onlyLastName": authorNameParts > 1,
-				"findingContributors": false,
 				"potentialContributors": [],
+				"hasPotentialContributors": function() {
+					return this.potentialContributors.length > 0;
+				},
+				"existingContributor": null,
 			}
 			if (authorNameParts.length > 1) {
 				nameData.firstName = authorNameParts.slice(0, -1).join(' ').trim();
@@ -303,23 +323,39 @@ export default {
 			let author = this.authorList[authorIndex];
 			try {
 				author.potentialContributors = await findSimilar(author.firstName, author.name, author.displayName)
-				console.log(author.potentialContributors);
+				this.$set(this.authorList, authorIndex, author);
 			} catch (e) {
 				console.error(e)
 				showError(t('athenaeum', 'Could not fetch items (route mounting failed)'))
 			}
-			author.findingContributors = true;
+		},
+		dismissPotentialContributors(authorIndex) {
+			let author = this.authorList[authorIndex];
+			author.potentialContributors = [];
+			author.isNew = author.existingContributor === null
 			this.$set(this.authorList, authorIndex, author);
 		},
-		stopFindingContributors(authorIndex) {
+		selectContributor(authorIndex, contributorData) {
 			let author = this.authorList[authorIndex];
-			author.findingContributors = true;
+			author.existingContributor = contributorData;
 			this.$set(this.authorList, authorIndex, author);
+			this.dismissPotentialContributors(authorIndex);
+		},
+		markAsNew(authorIndex) {
+			let author = this.authorList[authorIndex];
+			author.existingContributor = null;
+			author.isNew = true;
+			this.$set(this.authorList, authorIndex, author);
+		},
+		hasPotentialContributors() {
+			if (!this.potentialContributors) return false;
+			return this.potentialContributors.length > 0;
 		},
 		addAuthor() {
 			let authorData = this.getAuthorNameData("")
 			authorData.onlyLastName = false;
 			authorData.isNew = true;
+			authorData.existingContributor = null;
 			this.authorList.push(authorData);
 		},
 		emitInterface() {
@@ -380,5 +416,22 @@ export default {
 		font-weight: bold;
 		margin: 8px 0px 8px 12px;
 		text-align: start;
+	}
+</style>
+
+
+<style lang="scss">
+	.v-popper--theme-dropdown.v-popper__popper.similar-contributors_pop .v-popper__wrapper {
+		border-radius: var(--border-radius-large);
+		.v-popper__inner {
+			padding: 10px;
+			border-radius: var(--border-radius-large);
+
+			.flex-row {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+		}
 	}
 </style>
