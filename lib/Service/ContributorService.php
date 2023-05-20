@@ -56,6 +56,14 @@ class ContributorService {
 		}
 	}
 
+	public function freeSearch(string $term): Array {
+		try {
+			return $this->mapper->freeSearch($term);
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
+	}
+
 	public function findByFirstLastName(string $firstName, string $lastName): Contributor {
 		try {
 			return $this->mapper->findByFirstLastName($firstName, $lastName);

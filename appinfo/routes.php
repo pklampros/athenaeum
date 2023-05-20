@@ -91,6 +91,9 @@ return [
 		['name' => 'contributor#findSimilar',
 			'url' => '/contributors/similar',
 			'verb' => 'POST'],
+		['name' => 'contributor#freeSearch',
+			'url' => '/contributors/search',
+			'verb' => 'POST'],
 		
 		['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
 

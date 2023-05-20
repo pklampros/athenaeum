@@ -27,3 +27,20 @@ export function findSimilar(firstName, lastName, displayName) {
 			throw convertAxiosError(error)
 		})
 }
+
+export function freeSearch(term) {
+	const url = generateUrl('/apps/athenaeum/contributors/search');
+
+	return axios
+		.post(url, {
+			term,
+		}, {
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		})
+		.then((resp) => resp.data)
+		.catch((error) => {
+			throw convertAxiosError(error)
+		})
+}

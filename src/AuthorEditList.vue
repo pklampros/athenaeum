@@ -114,16 +114,21 @@
 							<DatabaseCheck :size="20" v-else />
 							<!-- when  there is a suggested already from the database: <DatabaseSearch :size="20" /> -->
 							<NcPopover
-								:shown="author.hasPotentialContributors()"
+								:shown="author.potentialContributors.popoverVisible"
 								container="#author-edit-list"
 								popover-base-class="similar-contributors_pop"
 								@apply-hide="dismissPotentialContributors(index)">
 								<template>
 									<div>
 										<h2>Similar contributors</h2>
-										<ul>
+										<div v-if="author.potentialContributors.error" style="padding: 1em">
+											<span>
+												{{ author.potentialContributors.error }}<br>
+											</span>
+										</div>
+										<ul v-else>
 											<NcListItem
-												v-for="contributor in author.potentialContributors"
+												v-for="contributor in author.potentialContributors.found"
 												:key="contributor.id"
 												:title="contributor.firstName + ' ' + contributor.lastName"
 												@click="selectContributor(index, contributor)">
@@ -132,7 +137,12 @@
 												</div>
 											</NcListItem>
 										</ul>
-										<NcButton style="width: 100%;" aria-label="Advanced search">Advanced search</NcButton>
+										<NcButton
+											style="width: 100%;"
+											aria-label="Advanced search"
+											@click="advancedSearch(index)">
+											Advanced search
+										</NcButton>
 									</div>
 								</template>
 							</NcPopover>
@@ -159,6 +169,11 @@
 				</div>
 			</li>
 		</ul>
+		<SimilarAuthorsModal
+			:contributorSearchTerm="contributorSearchTerm"
+			:authorIndex="modalAuthorIndex"
+			@selectContributor="selectContributor"
+		/>
 	</div>
 </template>
 <script>
@@ -176,6 +191,8 @@ import ChevronDown from 'vue-material-design-icons/ChevronDown.vue';
 import MinusCircle from 'vue-material-design-icons/MinusCircle.vue';
 import PlusCircle from 'vue-material-design-icons/PlusCircle.vue';
 import DatabaseCheck from 'vue-material-design-icons/DatabaseCheck.vue';
+
+import SimilarAuthorsModal from './SimilarAuthorsModal.vue'
 
 import { findSimilar } from './service/ContributorService'
 
@@ -198,6 +215,9 @@ export default {
 		MinusCircle,
 		PlusCircle,
 		DatabaseCheck,
+
+		// project components
+		SimilarAuthorsModal,
 	},
     mounted() {
 		this.emitInterface();
@@ -205,6 +225,8 @@ export default {
 	data() {
 		return {
 			authorList: null,
+			contributorSearchTerm: null,
+			modalAuthorIndex: null,
 		}
 	},
 	watch: {
@@ -234,9 +256,11 @@ export default {
 					"displayNameModified": false,
 					"onlyLastName": true,
 					"isNew": true,
-					"potentialContributors": [],
-					"hasPotentialContributors": function() {
-						return this.potentialContributors.length > 0;
+					"potentialContributors": {
+						"found": [],
+						"loading": false,
+						"error": "",
+						"popoverVisible": false
 					},
 					"existingContributor": null,
 				})
@@ -251,9 +275,11 @@ export default {
 				"displayName": author,
 				"displayNameModified": authorNameParts > 1 && name != "",
 				"onlyLastName": authorNameParts > 1,
-				"potentialContributors": [],
-				"hasPotentialContributors": function() {
-					return this.potentialContributors.length > 0;
+				"potentialContributors": {
+					"found": [],
+					"loading": false,
+					"error": "",
+					"popoverVisible": false
 				},
 				"existingContributor": null,
 			}
@@ -321,8 +347,14 @@ export default {
 		},
 		async findSimilarContributors(authorIndex) {
 			let author = this.authorList[authorIndex];
+			author.potentialContributors.popoverVisible = true;
+			author.potentialContributors.loading = true;
+			author.potentialContributors.error = "";
+			this.$set(this.authorList, authorIndex, author);
 			try {
-				author.potentialContributors = await findSimilar(author.firstName, author.name, author.displayName)
+				author.potentialContributors.found = await findSimilar(author.firstName, author.name, author.displayName);
+				author.potentialContributors.loading = false;
+				author.potentialContributors.error = author.potentialContributors.found.length == 0 ? "None Found..." : "";
 				this.$set(this.authorList, authorIndex, author);
 			} catch (e) {
 				console.error(e)
@@ -331,7 +363,9 @@ export default {
 		},
 		dismissPotentialContributors(authorIndex) {
 			let author = this.authorList[authorIndex];
-			author.potentialContributors = [];
+			author.potentialContributors.found = [];
+			author.potentialContributors.popoverVisible = false;
+			author.potentialContributors.error = "";
 			author.isNew = author.existingContributor === null
 			this.$set(this.authorList, authorIndex, author);
 		},
@@ -340,16 +374,13 @@ export default {
 			author.existingContributor = contributorData;
 			this.$set(this.authorList, authorIndex, author);
 			this.dismissPotentialContributors(authorIndex);
+			this.contributorSearchTerm = null;
 		},
 		markAsNew(authorIndex) {
 			let author = this.authorList[authorIndex];
 			author.existingContributor = null;
 			author.isNew = true;
 			this.$set(this.authorList, authorIndex, author);
-		},
-		hasPotentialContributors() {
-			if (!this.potentialContributors) return false;
-			return this.potentialContributors.length > 0;
 		},
 		addAuthor() {
 			let authorData = this.getAuthorNameData("")
@@ -368,6 +399,11 @@ export default {
 		},
 		emptyOrHasEllipsis(text) {
 			return !text || text == "" || this.hasEllipsis(text);
+		},
+		advancedSearch(authorIndex) {
+			let author = this.authorList[authorIndex];
+			this.contributorSearchTerm = author.name;
+			this.modalAuthorIndex = authorIndex;
 		},
 	},
 }

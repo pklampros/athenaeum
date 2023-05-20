@@ -54,6 +54,14 @@ class ContributorController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 */
+	public function freeSearch(): DataResponse {
+		return new DataResponse($this->service->freeSearch(
+									$this->request->post['term']));
+	}
+
+	/**
+	 * @NoAdminRequired
+	 */
 	public function create(string $title, string $content): DataResponse {
 		return new DataResponse($this->service->create($title, $content,
 			$this->userId));

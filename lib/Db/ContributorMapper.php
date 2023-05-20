@@ -38,6 +38,9 @@ class ContributorMapper extends QBMapper {
 	 */
 	public function findSimilar(string $firstName, string $lastName,
 								string $displayName): Array {
+		$firstName = strtolower($firstName);
+		$lastName = strtolower($lastName);
+		$displayName = strtolower($displayName);
 		$fullName = $firstName." ".$lastName;
 		$qb = $this->db->getQueryBuilder();
 		# find contributors whose last name, full name or display name is
@@ -54,11 +57,11 @@ class ContributorMapper extends QBMapper {
 			->from('athm_contributions', 'ci')
 			->innerJoin("ci", "athm_contributors", "co", "co.id = ci.contributor_id")
 			->where($qb->expr()->andx(
-				'co.last_name LIKE :ln',
+				'LOWER(co.last_name) LIKE :ln',
 				'LENGTH(co.last_name) < 3*LENGTH(:ln)'
 			))
-			->orWhere('ci.contributor_name_display LIKE :ln')
-			->orWhere('ci.contributor_name_display LIKE :fn')
+			->orWhere('LOWER(ci.contributor_name_display) LIKE :dn')
+			->orWhere('LOWER(ci.contributor_name_display) LIKE :fn')
 			->setParameter('ln', '%'.addcslashes($lastName, '%_').'%')
 			->setParameter('dn', '%'.addcslashes($displayName, '%_').'%')
 			->setParameter('fn', '%'.addcslashes($fullName, '%_').'%');
@@ -81,6 +84,20 @@ class ContributorMapper extends QBMapper {
 			$result->closeCursor();
 		}
 		return $contributionData;
+	}
+
+	/**
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws DoesNotExistException
+	 */
+	public function freeSearch(string $term): Array {
+		$nameParts = explode(' ', $term);
+		$lastName = end($nameParts);
+		$firstName = "";
+		if (sizeof($nameParts) > 1) {
+			$firstName = implode(' ', array_slice($nameParts, 0, -1));
+		}
+		return $this->findSimilar($firstName, $lastName, $term);
 	}
 
 	/**
