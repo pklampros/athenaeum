@@ -277,13 +277,13 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			$table->setPrimaryKey(['id']);
 			$table->addForeignKeyConstraint('athm_schlr_emails', ['scholar_email_id'], ['id'], [],
 											'scholar_email_id_fk');
-			$table->addForeignKeyConstraint('athm_schlr_items', ['scholar_item_id'], ['id'], [],
+			$table->addForeignKeyConstraint('athm_inbox_items', ['scholar_item_id'], ['id'], [],
 											'scholar_item_id_fk');
 			$table->addUniqueConstraint(['scholar_email_id', 'scholar_item_id']);
 		}
 
-		if (!$schema->hasTable('athm_schlr_items')) {
-			$table = $schema->createTable('athm_schlr_items');
+		if (!$schema->hasTable('athm_inbox_items')) {
+			$table = $schema->createTable('athm_inbox_items');
 			$table->addColumn('id', 'integer', [
 				'autoincrement' => true,
 				'notnull' => true,

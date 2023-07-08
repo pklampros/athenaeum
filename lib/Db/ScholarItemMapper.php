@@ -16,7 +16,7 @@ use OCP\IDBConnection;
  */
 class ScholarItemMapper extends QBMapper {
 	public function __construct(IDBConnection $db) {
-		parent::__construct($db, 'athm_schlr_items', ScholarItem::class);
+		parent::__construct($db, 'athm_inbox_items', ScholarItem::class);
 	}
 
 	/**
@@ -27,7 +27,7 @@ class ScholarItemMapper extends QBMapper {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
-			->from('athm_schlr_items')
+			->from('athm_inbox_items')
 			->where($qb->expr()->eq('id', $qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)))
 			->andWhere($qb->expr()->eq('user_id', $qb->createNamedParameter($userId)));
 		return $this->findEntity($qb);
@@ -71,7 +71,7 @@ class ScholarItemMapper extends QBMapper {
 	public function findByUrl(string $url): ScholarItem {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
-			->from('athm_schlr_items')
+			->from('athm_inbox_items')
 			->where($qb->expr()->eq('url', $qb->createNamedParameter($url)));
 		return $this->findEntity($qb);
 	}
@@ -94,7 +94,7 @@ class ScholarItemMapper extends QBMapper {
 		   ->from('athm_schlr_email_items', 'ei')
 		   ->innerJoin("ei", "athm_schlr_emails", "e", "e.id = ei.scholar_email_id")
 		   ->innerJoin("e", "athm_schlr_alerts", "a", "a.id = e.scholar_alert_id")
-		   ->innerJoin("ei", "athm_schlr_items", "i", "i.id = ei.scholar_item_id")
+		   ->innerJoin("ei", "athm_inbox_items", "i", "i.id = ei.scholar_item_id")
 		   ->where($qb->expr()->eq('i.user_id', $qb->createNamedParameter($userId)))
 		   ->andWhere($qb->expr()->eq('i.read', $qb->createNamedParameter(0)))
 		   ->addGroupBy('i.id', 'DESC')
