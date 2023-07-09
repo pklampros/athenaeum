@@ -32,7 +32,7 @@ class InboxItemService {
         string $search = ''
 	): array {
 		return $this->mapper->findAll(
-			$userId, $limit, $offset, $showAll, $search
+			$userId, $limit, $offset, $showAll, $search, 1
 		);
 	}
 

@@ -205,13 +205,15 @@ class ItemMapper extends QBMapper {
 		int $limit = 50,
 		int $offset = 0,
 		?bool $showAll = false,
-		string $search = ''
+		string $search = '',
+		int $folderId
 	): array {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
 			->from('athm_items')
 			->where($qb->expr()->eq('user_id', $qb->createNamedParameter($userId)))
+			->andWhere($qb->expr()->eq('folder_id', $qb->createNamedParameter($folderId)))
 			->setFirstResult($offset)
 			->setMaxResults($limit);
 		return $this->findEntities($qb);
