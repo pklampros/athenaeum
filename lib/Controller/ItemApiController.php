@@ -63,9 +63,9 @@ class ItemApiController extends ApiController {
 	 * @NoCSRFRequired
 	 * @NoAdminRequired
 	 */
-	public function create(string $title, int $itemTypeId): DataResponse {
+	public function create(string $title, int $itemTypeId, int $folderId): DataResponse {
 		$currentTime = new \DateTime;
-		return new DataResponse($this->itemService->create($title, $itemTypeId,
+		return new DataResponse($this->itemService->create($title, $itemTypeId, $folderId,
 								$currentTime, $currentTime, $this->userId));
 	}
 
@@ -74,10 +74,10 @@ class ItemApiController extends ApiController {
 	 * @NoCSRFRequired
 	 * @NoAdminRequired
 	 */
-	public function createWithUrl(string $title, int $itemTypeId, string $url): DataResponse {
+	public function createWithUrl(string $title, int $itemTypeId, int $folderId, string $url): DataResponse {
 		$currentTime = new \DateTime;
 		$decodedURL = urldecode(urldecode($url));
-		return new DataResponse($this->itemService->createWithUrl($title, $itemTypeId,
+		return new DataResponse($this->itemService->createWithUrl($title, $itemTypeId, $folderId,
 								$currentTime, $currentTime, $decodedURL, $this->userId));
 	}
 
@@ -86,11 +86,11 @@ class ItemApiController extends ApiController {
 	 * @NoCSRFRequired
 	 * @NoAdminRequired
 	 */
-	public function update(int $id, string $title, int $itemTypeId, \DateTime $dateAdded,
+	public function update(int $id, string $title, int $itemTypeId, int $folderId,\DateTime $dateAdded,
 						   \DateTime $dateModified): DataResponse {
-		return $this->handleNotFound(function () use ($id, $title, $itemTypeId, $dateAdded,
-									$dateModified) {
-			return $this->itemService->update($id, $title, $itemTypeId, $dateAdded,
+		return $this->handleNotFound(function () use ($id, $title, $itemTypeId, $folderId,
+									$dateAdded, $dateModified) {
+			return $this->itemService->update($id, $title, $itemTypeId, $folderId, $dateAdded,
 							$dateModified, $this->userId);
 		});
 	}

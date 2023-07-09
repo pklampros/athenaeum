@@ -60,9 +60,9 @@ class ItemController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 */
-	public function create(string $title, int $itemTypeId): DataResponse {
+	public function create(string $title, int $itemTypeId, int $folderId): DataResponse {
 		$currentTime = new \DateTime;
-		return new DataResponse($this->itemService->create($title, $itemTypeId,
+		return new DataResponse($this->itemService->create($title, $itemTypeId, $folderId,
 								$currentTime, $currentTime, $this->userId));
 	}
 
@@ -79,11 +79,11 @@ class ItemController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 */
-	public function update(int $id, string $title, int $itemTypeId, \DateTime $dateAdded,
-						   \DateTime $dateModified): DataResponse {
-		return $this->handleNotFound(function () use ($id, $title, $itemTypeId, $dateAdded,
-													  $dateModified) {
-			return $this->itemService->update($id, $title, $itemTypeId, $dateAdded,
+	public function update(int $id, string $title, int $itemTypeId, int $folderId,
+						   \DateTime $dateAdded, \DateTime $dateModified): DataResponse {
+		return $this->handleNotFound(function () use ($id, $title, $itemTypeId, $folderId,
+													  $dateAdded, $dateModified) {
+			return $this->itemService->update($id, $title, $itemTypeId, $folderId, $dateAdded,
 										  $dateModified, $this->userId);
 		});
 	}

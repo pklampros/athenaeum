@@ -112,7 +112,8 @@ export default {
 				this.items.push({
 					id: -1,
 					title: '',
-					itemTypeId: 1
+					itemTypeId: 1,
+					folderId: 1
 				})
 				this.$nextTick(() => {
 					this.$refs.title.focus()

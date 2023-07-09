@@ -72,12 +72,14 @@ class ItemService {
 		}
 	}
 
-	public function create(string $title, int $itemTypeId, \DateTime $dateAdded,
-	                       \DateTime $dateModified, string $userId): Item {
+	public function create(string $title, int $itemTypeId, int $folderId,
+						   \DateTime $dateAdded, \DateTime $dateModified,
+						   string $userId): Item {
 		try {
 			$entity = new Item();
 			$entity->setTitle($title);
 			$entity->setItemTypeId($itemTypeId);
+			$entity->setFolderId($folderId);
 			$currentDate = new \DateTime;
 			$entity->setDateAdded($currentDate);
 			$entity->setDateModified($currentDate);
@@ -100,12 +102,14 @@ class ItemService {
 		}
 	}
 
-	public function createWithUrl(string $title, int $itemTypeId, \DateTime $dateAdded,
-	                       \DateTime $dateModified, string $url, string $userId): Item {
+	public function createWithUrl(string $title, int $itemTypeId, int $folderId,
+						   \DateTime $dateAdded, \DateTime $dateModified, string $url,
+						   string $userId): Item {
 		try {
 			$entity = new Item();
 			$entity->setTitle($title);
 			$entity->setItemTypeId($itemTypeId);
+			$entity->setFolderId($folderId);
 			$currentDate = new \DateTime;
 			$entity->setDateAdded($currentDate);
 			$entity->setDateModified($currentDate);
@@ -115,14 +119,39 @@ class ItemService {
 			$this->handleException($e);
 		}
 	}
+
+	public function createInboxItem(string $url, string $title, string $authors,
+									string $journal, string $published,
+									bool $read, int $importance, bool $needsReview,
+									string $userId) : Item {
+		try {
+			$entity = new Item();
+			$entity->setTitle($title);
+			$itemTypeId = 1; # paper
+			$entity->setItemTypeId($itemTypeId);
+			$folderId = 1; # inbox
+			$entity->setFolderId($folderId);
+			$currentDate = new \DateTime;
+			$entity->setDateAdded($currentDate);
+			$entity->setDateModified($currentDate);
+			$entity->setUserId($userId);
+			return $this->mapper->insertAsInboxItem($entity, $url, $authors, $journal,
+													$published, $read, $importance,
+													$needsReview);
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
+	}
 	
 
-	public function update(int $id, string $title, int $itemTypeId, \DateTime $dateAdded,
-	                       \DateTime $dateModified, string $userId): Item {
+	public function update(int $id, string $title, int $itemTypeId, int $folderId,
+						   \DateTime $dateAdded, \DateTime $dateModified,
+						   string $userId): Item {
 		try {
 			$entity = $this->mapper->find($id, $userId);
 			$entity->setTitle($title);
 			$entity->setItemTypeId($itemTypeId);
+			$entity->setFolderId($folderId);
 			$currentDate = new \DateTime;
 			$entity->setDateModified($currentDate);
 			$entity->setUserId($userId);

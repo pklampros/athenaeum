@@ -6,18 +6,18 @@ declare(strict_types=1);
 namespace OCA\Athenaeum\Controller;
 
 use OCA\Athenaeum\AppInfo\Application;
-use OCA\Athenaeum\Service\ScholarEmailService;
+use OCA\Athenaeum\Service\SourceService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\IRequest;
 
-class ScholarEmailController extends Controller {
-	private ScholarEmailService $service;
+class SourceController extends Controller {
+	private SourceService $service;
 
 	use Errors;
 
 	public function __construct(IRequest $request,
-								ScholarEmailService $service,
+								SourceService $service,
 								?string $userId) {
 		parent::__construct(Application::APP_ID, $request);
 		$this->service = $service;
@@ -27,7 +27,7 @@ class ScholarEmailController extends Controller {
 	 * @NoAdminRequired
 	 */
 	public function index(): DataResponse {
-		return new DataResponse($this->service->findAll($this->userId));
+		return new DataResponse($this->service->findAll());
 	}
 
 	/**
@@ -35,28 +35,28 @@ class ScholarEmailController extends Controller {
 	 */
 	public function show(int $id): DataResponse {
 		return $this->handleNotFound(function () use ($id) {
-			return $this->service->find($id, $this->userId);
+			return $this->service->find($id);
 		});
 	}
 
 	/**
 	 * @NoAdminRequired
 	 */
-	public function create(string $subject, \DateTime $received,
-						   int $alertId): DataResponse {
-		return new DataResponse($this->service->create($subject, $received,
-								$alertId));
+	public function create(string $uid, string $sourceType): DataResponse {
+		$importance = 0;
+		return new DataResponse($this->service->create($uid, $sourceType,
+								$importance));
 	}
 
 	/**
 	 * @NoAdminRequired
 	 */
-	public function update(int $id, string $subject, \DateTime $received,
-						   int $alertId): DataResponse {
-		return $this->handleNotFound(function () use ($id, $subject, $received,
-									 $alertId) {
-			return $this->service->update($id, $subject, $received,
-										  $alertId);
+	public function update(int $id, string $uid, string $sourceType,
+						   int $importance): DataResponse {
+		return $this->handleNotFound(function () use ($id, $uid, $sourceType,
+									 $importance) {
+			return $this->service->update($id, $uid, $sourceType,
+										  $importance);
 		});
 	}
 
@@ -65,7 +65,7 @@ class ScholarEmailController extends Controller {
 	 */
 	public function destroy(int $id): DataResponse {
 		return $this->handleNotFound(function () use ($id) {
-			return $this->service->delete($id, $this->userId);
+			return $this->service->delete($id);
 		});
 	}
 }

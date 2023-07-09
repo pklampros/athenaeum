@@ -68,7 +68,7 @@
 				<NcButton
 					ariaLabel="Remove item"
 					:disabled="!this.item.title || !this.item.url"
-					@click="markScholarItemDeleted"
+					@click="markInboxItemDeleted"
 					type="primary">
 					<template #icon>
 						<Delete :size="20" />

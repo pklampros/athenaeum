@@ -26,11 +26,11 @@
 				</NcAppNavigationItem>
 			</ul>
 			<NcAppNavigationNew v-if="!loading"
-				:text="t('athenaeum', 'New scholar item')"
+				:text="t('athenaeum', 'New inbox item')"
 				:disabled="false"
-				button-id="new-scholar-item-button"
+				button-id="new-inbox-item-button"
 				button-class="icon-add"
-				@click="newScholarItem" />
+				@click="newInboxItem" />
 			<NcAppNavigationNew v-if="!loading"
 				:text="t('athenaeum', 'New item')"
 				:disabled="false"
@@ -111,7 +111,7 @@ export default {
 			formData.append('file', this.file);
 			console.log(this.file);
 			console.log(formData.get('file'));
-			axios.post( generateUrl('/apps/athenaeum/scholar_items/extractFromEML'), formData, {
+			axios.post( generateUrl('/apps/athenaeum/inbox_items/extractFromEML'), formData, {
 				headers: {
 					'Content-Type': 'multipart/form-data'
 				}

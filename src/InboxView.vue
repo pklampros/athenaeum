@@ -11,13 +11,13 @@
 			<NcAppContentList
 				class="main-items-list"
 				:show-details="true">
-				<ScholarItem v-for="scholarItem in scholarItems"
-					:key="scholarItem.id"
-					:scholarItem="scholarItem">
-				</ScholarItem>
+				<InboxItem v-for="inboxItem in inboxItems"
+					:key="inboxItem.id"
+					:inboxItem="inboxItem">
+				</InboxItem>
 			</NcAppContentList>
 		</div>
-		<ScholarItemDetails slot="default"/>
+		<InboxItemDetails slot="default"/>
 	</NcAppContent>
 </template>
 
@@ -27,10 +27,10 @@
 import NcAppContent from '@nextcloud/vue/dist/Components/NcAppContent'
 import NcAppContentList from '@nextcloud/vue/dist/Components/NcAppContentList'
 
-import ScholarItem from './ScholarItem.vue'
-import ScholarItemDetails from './ScholarItemDetails.vue'
+import InboxItem from './InboxItem.vue'
+import InboxItemDetails from './InboxItemDetails.vue'
 
-import { fetchScholarItems } from './service/ScholarItemService'
+import { fetchInboxItems } from './service/InboxItemService'
 
 export default {
 	name: 'InboxView',
@@ -40,32 +40,33 @@ export default {
 		NcAppContentList,
 
 		// project components
-		ScholarItem,
-		ScholarItemDetails,
+		InboxItem,
+		InboxItemDetails,
 	},
 	data() {
 		return {
-			scholarItems: [],
-			currentScholarItemId: null,
+			inboxItems: [],
+			currentInboxItemId: null,
 			updating: false,
 			loading: true,
 		}
 	},
 	computed: {
-		currentScholarItem() {
-			if (this.currentScholarItemId === null) {
+		currentInboxItem() {
+			if (this.currentInboxItemId === null) {
 				return null
 			}
-			return this.scholarItems.find((scholarItem) => scholarItem.id === this.currentScholarItemId)
+			return this.inboxItems.find((inboxItem) => inboxItem.id === this.currentInboxItemId)
 		},
 
-		saveScholarItemPossible() {
-			return this.currentScholarItem && this.currentScholarItem.title !== ''
+		saveInboxItemPossible() {
+			return this.currentInboxItem && this.currentInboxItem.title !== ''
 		},
 	},
 	async mounted() {
 		try {
-			this.scholarItems = await fetchScholarItems()
+			this.inboxItems = await fetchInboxItems()
+			console.log(this.inboxItems)
 		} catch (e) {
 			console.error(e)
 			showError(t('athenaeum', 'Could not fetch items (route mounting failed)'))
@@ -75,10 +76,10 @@ export default {
 
 	methods: {
 
-		newScholarItem() {
-			if (this.currentScholarItemId !== -1) {
-				this.currentScholarItemId = -1
-				this.scholarItems.push({
+		newInboxItem() {
+			if (this.currentInboxItemId !== -1) {
+				this.currentInboxItemId = -1
+				this.inboxItems.push({
 					id: -1,
 					url: '',
 					title: '',
@@ -91,53 +92,53 @@ export default {
 				})
 			}
 		},
-		getSubtitle(scholarItem) {
-			const authors = scholarItem.authors ? scholarItem.authors : ''
-			const journal = scholarItem.journal ? scholarItem.journal : ''
+		getSubtitle(inboxItem) {
+			const authors = inboxItem.authors ? inboxItem.authors : ''
+			const journal = inboxItem.journal ? inboxItem.journal : ''
 			if (authors && journal) {
 				return authors + ' - ' + journal
 			}
 			return authors + journal
 		
 		},
-		cancelNewScholarItem() {
-			this.scholarItems.splice(this.scholarItems.findIndex((scholarItem) => scholarItem.id === -1), 1)
-			this.currentScholarItemId = null
+		cancelNewInboxItem() {
+			this.inboxItems.splice(this.inboxItems.findIndex((inboxItem) => inboxItem.id === -1), 1)
+			this.currentInboxItemId = null
 		},
-		async createScholarItem(scholarItem) {
+		async createInboxItem(inboxItem) {
 			this.updating = true
 			try {
-				const response = await axios.post(generateUrl('/apps/athenaeum/scholar_items'), scholarItem)
-				const index = this.scholarItems.findIndex((match) => match.id === this.currentScholarItemId)
-				this.$set(this.scholarItems, index, response.data)
-				this.currentScholarItemId = response.data.id
+				const response = await axios.post(generateUrl('/apps/athenaeum/inbox_items'), inboxItem)
+				const index = this.inboxItems.findIndex((match) => match.id === this.currentInboxItemId)
+				this.$set(this.inboxItems, index, response.data)
+				this.currentInboxItemId = response.data.id
 			} catch (e) {
 				console.error(e)
-				showError(t('athenaeum', 'Could not create the scholar item'))
+				showError(t('athenaeum', 'Could not create the inbox item'))
 			}
 			this.updating = false
 		},
-		async updateScholarItem(scholarItem) {
+		async updateInboxItem(inboxItem) {
 			this.updating = true
 			try {
-				await axios.put(generateUrl(`/apps/athenaeum/scholar_items/${scholarItem.id}`), scholarItem)
+				await axios.put(generateUrl(`/apps/athenaeum/inbox_items/${inboxItem.id}`), inboxItem)
 			} catch (e) {
 				console.error(e)
-				showError(t('athenaeum', 'Could not update the scholar item'))
+				showError(t('athenaeum', 'Could not update the inbox item'))
 			}
 			this.updating = false
 		},
-		async deleteScholarItem(scholarItem) {
+		async deleteInboxItem(inboxItem) {
 			try {
-				await axios.delete(generateUrl(`/apps/athenaeum/scholar_items/${scholarItem.id}`))
-				this.scholarItems.splice(this.scholarItems.indexOf(scholarItem), 1)
-				if (this.currentScholarItemId === scholarItem.id) {
-					this.currentScholarItemId = null
+				await axios.delete(generateUrl(`/apps/athenaeum/inbox_items/${inboxItem.id}`))
+				this.inboxItems.splice(this.inboxItems.indexOf(inboxItem), 1)
+				if (this.currentInboxItemId === inboxItem.id) {
+					this.currentInboxItemId = null
 				}
 				showSuccess(t('athenaeum', 'Scholar Item deleted'))
 			} catch (e) {
 				console.error(e)
-				showError(t('athenaeum', 'Could not delete the scholar item'))
+				showError(t('athenaeum', 'Could not delete the inbox item'))
 			}
 		},
 	},

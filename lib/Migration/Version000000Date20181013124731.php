@@ -27,7 +27,7 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			$table = $schema->createTable('athm_contribn_types');
 			$table->addColumn('id', 'integer', [
 				'autoincrement' => true,
-				   'notnull' => true,
+				'notnull' => true,
 			]);
 			$table->addColumn('name', 'string', [
 				'notnull' => true,
@@ -130,6 +130,21 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			$table->addUniqueConstraint(['name']);
 		}
 
+		if (!$schema->hasTable('athm_folders')) {
+			$table = $schema->createTable('athm_folders');
+			$table->addColumn('id', 'integer', [
+				'autoincrement' => true,
+				'notnull' => true,
+			]);
+			$table->addColumn('path', 'string', [
+				'notnull' => true,
+				'length' => 200
+			]);
+
+			$table->setPrimaryKey(['id']);
+			$table->addUniqueConstraint(['path']);
+		}
+
 		if (!$schema->hasTable('athm_items')) {
 			$table = $schema->createTable('athm_items');
 			$table->addColumn('id', 'integer', [
@@ -140,6 +155,9 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 				'notnull' => true
 			]);
 			$table->addColumn('item_type_id', 'integer', [
+				'notnull' => true
+			]);
+			$table->addColumn('folder_id', 'integer', [
 				'notnull' => true
 			]);
 			$table->addColumn('date_added', 'datetime', [
@@ -155,8 +173,10 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 
 			$table->setPrimaryKey(['id']);
 			$table->addIndex(['user_id'], 'items_user_id_index');
-			//$table->addForeignKeyConstraint('athm_item_types', ['item_type_id'], ['id'], [],
-			//								'item_type_id_fk');
+			$table->addForeignKeyConstraint('athm_item_types', ['item_type_id'], ['id'], [],
+											'item_type_id_fk');
+			$table->addForeignKeyConstraint('athm_folders', ['folder_id'], ['id'], [],
+											'item_folder_id_fk');
 		}
 
 		if (!$schema->hasTable('athm_item_field_values')) {
@@ -209,17 +229,17 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			$table->addUniqueConstraint(['item_id', 'tag_id']);
 		}
 
-		if (!$schema->hasTable('athm_schlr_alerts')) {
-			$table = $schema->createTable('athm_schlr_alerts');
+		if (!$schema->hasTable('athm_sources')) {
+			$table = $schema->createTable('athm_sources');
 			$table->addColumn('id', 'integer', [
 				'autoincrement' => true,
 				'notnull' => true,
 			]);
-			$table->addColumn('scholar_id', 'string', [
+			$table->addColumn('uid', 'string', [
 				'notnull' => true,
 				'length' => 200,
 			]);
-			$table->addColumn('term', 'string', [
+			$table->addColumn('source_type', 'string', [
 				'notnull' => true,
 				'length' => 200,
 			]);
@@ -227,105 +247,32 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 				'notnull' => true,
 				'default' => 0
 			]);
-			$table->addColumn('importance_decided', 'boolean', [
-				'notnull' => false, # null is used for false
-				'default' => false
-			]);
 
 			$table->setPrimaryKey(['id']);
+			$table->addUniqueConstraint(['uid']);
 		}
 
-		if (!$schema->hasTable('athm_schlr_emails')) {
-			$table = $schema->createTable('athm_schlr_emails');
+		if (!$schema->hasTable('athm_item_sources')) {
+			$table = $schema->createTable('athm_item_sources');
 			$table->addColumn('id', 'integer', [
 				'autoincrement' => true,
 				'notnull' => true,
 			]);
-			$table->addColumn('subject', 'string', [
+			$table->addColumn('item_id', 'integer', [
 				'notnull' => true,
-				'length' => 200,
 			]);
-			$table->addColumn('received', 'datetime', [
-				'notnull' => true
+			$table->addColumn('source_id', 'integer', [
+				'notnull' => true,
 			]);
-			$table->addColumn('scholar_alert_id', 'integer', [
-				'notnull' => true
+			$table->addColumn('extra', 'string', [
+				'notnull' => true,
 			]);
 
 			$table->setPrimaryKey(['id']);
-			$table->addForeignKeyConstraint('athm_schlr_alerts', ['scholar_alert_id'], ['id'], [],
-											'scholar_alert_id_fk');
-		}
-
-		if (!$schema->hasTable('athm_schlr_email_items')) {
-			$table = $schema->createTable('athm_schlr_email_items');
-			$table->addColumn('id', 'integer', [
-				'autoincrement' => true,
-				'notnull' => true,
-			]);
-			$table->addColumn('scholar_email_id', 'integer', [
-				'notnull' => true
-			]);
-			$table->addColumn('scholar_item_id', 'integer', [
-				'notnull' => true
-			]);
-			$table->addColumn('excerpt', 'string', [
-				'notnull' => false,
-				'length' => 200,
-			]);
-
-			$table->setPrimaryKey(['id']);
-			$table->addForeignKeyConstraint('athm_schlr_emails', ['scholar_email_id'], ['id'], [],
-											'scholar_email_id_fk');
-			$table->addForeignKeyConstraint('athm_inbox_items', ['scholar_item_id'], ['id'], [],
-											'scholar_item_id_fk');
-			$table->addUniqueConstraint(['scholar_email_id', 'scholar_item_id']);
-		}
-
-		if (!$schema->hasTable('athm_inbox_items')) {
-			$table = $schema->createTable('athm_inbox_items');
-			$table->addColumn('id', 'integer', [
-				'autoincrement' => true,
-				'notnull' => true,
-			]);
-			$table->addColumn('url', 'string', [
-				'notnull' => true,
-			]);
-			$table->addColumn('title', 'string', [
-				'notnull' => true,
-				'length' => 200,
-			]);
-			$table->addColumn('authors', 'string', [
-				'notnull' => false,
-				'length' => 200,
-			]);
-			$table->addColumn('journal', 'string', [
-				'notnull' => false,
-				'length' => 200,
-			]);
-			$table->addColumn('published', 'string', [
-				'notnull' => false,
-				'length' => 200,
-			]);
-			$table->addColumn('read', 'boolean', [
-				'notnull' => false, # null is used for false
-				'default' => false
-			]);
-			$table->addColumn('importance', 'integer', [
-				'notnull' => true,
-				'default' => 0
-			]);
-			$table->addColumn('needs_review', 'boolean', [
-				'notnull' => false, # null is used for false
-				'default' => false
-			]);
-			$table->addColumn('user_id', 'string', [
-				'notnull' => true,
-				'length' => 200,
-			]);
-
-			$table->setPrimaryKey(['id']);
-			$table->addIndex(['user_id'], 'schlr_items_user_id_index');
+			$table->addForeignKeyConstraint('athm_items', ['item_id'], ['id'], [],
+											'item_id_fk');
+			$table->addForeignKeyConstraint('athm_sources', ['source_id'], ['id'], [],
+											'source_id_fk');
 		}
 
 		if (!$schema->hasTable('athm_tags')) {

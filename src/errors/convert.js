@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-import ScholarItemNotFoundError from './ScholarItemNotFoundError'
+import InboxItemNotFoundError from './InboxItemNotFoundError'
 
 const map = {
-	'Exception\\ScholarItemNotFoundError': ScholarItemNotFoundError,
+	'Exception\\InboxItemNotFoundError': InboxItemNotFoundError,
 }
 
 /**

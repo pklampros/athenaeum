@@ -16,6 +16,8 @@ use OCP\AppFramework\Db\Entity;
  * @method setTitle(string $title): void
  * @method getItemTypeId(): int
  * @method setItemTypeId(int $itemTypeId): void
+ * @method getFolderId(): int
+ * @method setFolderId(int $folderId): void
  * @method getDateAdded(): \DateTime
  * @method setDateAdded(DateTime $dateAdded): void
  * @method getDateModified(): \DateTime
@@ -25,7 +27,8 @@ use OCP\AppFramework\Db\Entity;
  */
 class Item extends Entity implements JsonSerializable {
 	public string $title = '';
-	protected int $itemTypeId = 0;
+	protected int $itemTypeId = 0; # defulat type 0 = null
+	protected int $folderId = 0; # default folder 0 = null
 	//protected ?\DateTime $dateAdded = NULL; # not possible to set a default DateTime as it's an object
 	//protected ?\DateTime $dateModified = NULL; # not possible to set a default DateTime as it's an object
 	protected $dateAdded;
@@ -42,6 +45,7 @@ class Item extends Entity implements JsonSerializable {
 			'id' => $this->id,
 			'title' => $this->title,
 			'itemTypeId' => $this->itemTypeId,
+			'folderId' => $this->folderId,
 			'dateAdded' => $this->dateAdded,
 			'dateModified' => $this->dateModified,
 			'userId' => $this->userId

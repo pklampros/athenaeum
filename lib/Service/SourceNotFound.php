@@ -5,5 +5,5 @@ declare(strict_types=1);
 
 namespace OCA\Athenaeum\Service;
 
-class ScholarEmailNotFound extends EntityNotFound {
+class SourceNotFound extends EntityNotFound {
 }

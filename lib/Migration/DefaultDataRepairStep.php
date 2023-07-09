@@ -30,6 +30,7 @@ class DefaultDataRepairStep implements IRepairStep {
 	}
 	
 	public function run(IOutput $output) {
+		// add default item types
 		$query = $this->connection->getQueryBuilder();
 		$query->insert('athm_item_types')
 			   ->setValue('name', $query->createParameter('new_item_type'));
@@ -39,6 +40,17 @@ class DefaultDataRepairStep implements IRepairStep {
 		$query->setParameter('new_item_type', 'editor');
 		$query->executeStatement();
 
+		// add default item folders
+		$query = $this->connection->getQueryBuilder();
+		$query->insert('athm_folders')
+			   ->setValue('path', $query->createParameter('new_folder'));
+
+		$query->setParameter('new_folder', 'inbox');
+		$query->executeStatement();
+		$query->setParameter('new_folder', 'library');
+		$query->executeStatement();
+
+		// add default fields
 		$query = $this->connection->getQueryBuilder();
 		$query->insert('athm_fields')
 			  ->setValue('name', $query->createParameter('new_field_name'))
@@ -47,7 +59,17 @@ class DefaultDataRepairStep implements IRepairStep {
 		$query->setParameter('new_field_name', 'url');
 		$query->setParameter('new_field_type_hint', 'string');
 		$query->executeStatement();
+		$query->setParameter('new_field_name', 'inbox_read');
+		$query->setParameter('new_field_type_hint', 'bool');
+		$query->executeStatement();
+		$query->setParameter('new_field_name', 'inbox_importance');
+		$query->setParameter('new_field_type_hint', 'int');
+		$query->executeStatement();
+		$query->setParameter('new_field_name', 'inbox_needs_review');
+		$query->setParameter('new_field_type_hint', 'bool');
+		$query->executeStatement();
 
+		// add default contributors
 		$query = $this->connection->getQueryBuilder();
 		$query->insert('athm_contribn_types')
 			  ->setValue('name', $query->createParameter('new_contribn_type'));

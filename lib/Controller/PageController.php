@@ -6,7 +6,7 @@ declare(strict_types=1);
 namespace OCA\Athenaeum\Controller;
 
 use OCA\Athenaeum\AppInfo\Application;
-use OCA\Athenaeum\Service\ScholarItemService;
+use OCA\Athenaeum\Service\InboxItemService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Services\IInitialState;
@@ -15,14 +15,14 @@ use OCP\Util;
 
 class PageController extends Controller {
 	private IInitialState $initialStateService;
-	private ScholarItemService $scholarItemService;
+	private InboxItemService $inboxItemService;
 
 	public function __construct(IRequest $request,
 								IInitialState $initialStateService,
-								ScholarItemService $scholarItemService) {
+								InboxItemService $inboxItemService) {
 		parent::__construct(Application::APP_ID, $request);
 		$this->initialStateService = $initialStateService;
-		$this->scholarItemService = $scholarItemService;
+		$this->inboxItemService = $inboxItemService;
 	}
 
 	/**
@@ -32,10 +32,10 @@ class PageController extends Controller {
 	public function index(): TemplateResponse {
 		Util::addScript(Application::APP_ID, 'athenaeum-main');
 
-		$this->initialStateService->provideInitialState(
-			'accounts',
-			$accountsJson
-		);
+		// $this->initialStateService->provideInitialState(
+			// 'accounts',
+			// $accountsJson
+		// );
 
 		return new TemplateResponse(Application::APP_ID, 'main');
 	}

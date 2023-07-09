@@ -6,20 +6,20 @@ declare(strict_types=1);
 namespace OCA\Athenaeum\Controller;
 
 use OCA\Athenaeum\AppInfo\Application;
-use OCA\Athenaeum\Service\ScholarEmailService;
+use OCA\Athenaeum\Service\SourceService;
 use OCP\AppFramework\ApiController;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Http;
 use OCP\IRequest;
 
-class ScholarEmailApiController extends ApiController {
-	private ScholarEmailService $service;
+class SourceApiController extends ApiController {
+	private SourceService $service;
 	private ?string $userId;
 
 	use Errors;
 
 	public function __construct(IRequest $request,
-								ScholarEmailService $service,
+								SourceService $service,
 								?string $userId) {
 		parent::__construct(Application::APP_ID, $request);
 		$this->service = $service;
@@ -40,12 +40,10 @@ class ScholarEmailApiController extends ApiController {
 	 * @NoCSRFRequired
 	 * @NoAdminRequired
 	 */
-	public function findBySubjectReceived(string $subject, string $received): DataResponse {
-        // GET /scholarId/<id>
-		$receivedDT = new \DateTime($received);
-		return $this->handleNotFound(function () use ($subject, $receivedDT) {
-            return $this->service->findBySubjectReceived($subject, $receivedDT);
-        
+	public function findByUid(string $uid): DataResponse {
+        // GET /uid/<id>
+		return $this->handleNotFound(function () use ($uid) {
+            return $this->service->findByUid($uid);
 		});
 	}
 
@@ -65,11 +63,10 @@ class ScholarEmailApiController extends ApiController {
 	 * @NoCSRFRequired
 	 * @NoAdminRequired
 	 */
-	public function create(string $subject, string $received,
-						   int $alertId): DataResponse {
-		$receivedDT = new \DateTime($received);
-		return new DataResponse($this->service->create($subject, $receivedDT,
-								$alertId));
+	public function create(string $scholarId, string $term, int $importance,
+						   bool $importanceDecided): DataResponse {
+		return new DataResponse($this->service->create($scholarId, $term,
+								$importance, $importanceDecided));
 	}
 
 	/**
@@ -77,13 +74,12 @@ class ScholarEmailApiController extends ApiController {
 	 * @NoCSRFRequired
 	 * @NoAdminRequired
 	 */
-	public function update(int $id, string $subject, string $received,
-						   int $alertId): DataResponse {
-		$receivedDT = new \DateTime($received);
-		return $this->handleNotFound(function () use ($id, $subject, $receivedDT,
-									 $alertId) {
-			return $this->service->update($id, $subject, $receivedDT,
-										  $alertId);
+	public function update(string $scholarId, string $term, int $importance,
+						   bool $importanceDecided): DataResponse {
+		return $this->handleNotFound(function () use ($id, $scholarId, $term,
+									 $importance, $importanceDecided) {
+			return $this->service->update($id, $scholarId, $term,
+							$importance, $importanceDecided);
 		});
 	}
 

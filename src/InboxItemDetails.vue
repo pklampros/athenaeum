@@ -3,29 +3,29 @@
 	SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
-	<NcAppContentDetails v-if="scholarItem">
+	<NcAppContentDetails v-if="inboxItem">
 		<div style="max-width: 900px; margin: 0 auto;">
 			<div style="position: sticky; padding: 30px 18px;">
 				<h2
-					:title="scholarItem.title"
+					:title="inboxItem.title"
 					style="display: flex; align-items: center; justify-content: space-between;">
-					{{ scholarItem.title }}
-					<a :href="scholarItem.url" target="_blank"><OpenInNew></a>
+					{{ inboxItem.title }}
+					<a :href="inboxItem.url" target="_blank"><OpenInNew></a>
 				</h2>
-				<h3> {{ scholarItem.journal }} </h3>
+				<h3> {{ inboxItem.journal }} </h3>
 				<h3> {{ authorListDisplay }} </h3>
 				&nbsp;
 				<h3 style="font-weight: bold;">Excerpts:</h3>
 				<ul style="list-style: inherit; padding: 4px 0 4px 44px;">
-					<li v-for="alertExcerpt in alertExcerpts"
-								:key="alertExcerpt">
+					<li v-for="sourceInfoPoint in sourceInfo"
+								:key="sourceInfoPoint">
 						<div>
 							<span style="color: var(--color-main-text);font-weight: bold;">
-								{{ alertExcerpt.excerpt }}
+								{{ sourceInfoPoint.extra.excerpt }}
 							</span>
 							<div style="padding: 5px 0px;">
 								<span style="color: var(--color-text-maxcontrast);">
-									Search term: {{ alertExcerpt.term }}
+									Search term: {{ sourceInfoPoint.extra.searchTerm }}
 								</span>
 							</div>
 						</div>
@@ -38,21 +38,21 @@
 				</div>
 				<NcRichContenteditable
 					placeholder="Title"
-					:error="hasEllipsis(scholarItem.title)"
-					:value.sync="scholarItem.title" />
+					:error="hasEllipsis(inboxItem.title)"
+					:value.sync="inboxItem.title" />
 				<div class="field-label">
 					<h3>URL</h3>
 				</div>
 				<NcRichContenteditable
 					placeholder="URL"
-					:value.sync="scholarItem.url" />
+					:value.sync="inboxItem.url" />
 				<div class="field-label">
 					<h3>Journal</h3>
 				</div>
 				<NcRichContenteditable
 					placeholder="Journal"
-					:error="hasEllipsis(scholarItem.journal)"
-					:value.sync="scholarItem.journal"/>
+					:error="hasEllipsis(inboxItem.journal)"
+					:value.sync="inboxItem.journal"/>
 				<AuthorEditList
 					@interface="setAuthorListInterface"
 					@authorListUpdated="authorListUpdated"/>
@@ -60,9 +60,9 @@
 			</div>
 			<div style="display: flex; justify-content: right; align-items: center; padding: 16px;">
 				<NcButton
-					ariaLabel="Remove scholar item"
-					:disabled="!this.scholarItem.title || !this.scholarItem.url"
-					@click="markScholarItemDeleted"
+					ariaLabel="Remove inbox item"
+					:disabled="!this.inboxItem.title || !this.inboxItem.url"
+					@click="markInboxItemDeleted"
 					type="primary">
 					<template #icon>
 						<Delete :size="20" />
@@ -70,7 +70,7 @@
 				</NcButton>
 				&nbsp;
 				<NcButton
-					:disabled="!this.scholarItem.title || !this.scholarItem.url"
+					:disabled="!this.inboxItem.title || !this.inboxItem.url"
 					@click="addToLibrary"
 					type="primary">
 					Add to Library
@@ -102,11 +102,11 @@ import OpenInNew from 'vue-material-design-icons/OpenInNew.vue';
 import AuthorEditList from './AuthorEditList.vue'
 
 import { showError } from '@nextcloud/dialogs'
-import { fetchScholarItemDetails } from './service/ScholarItemService'
+import { fetchInboxItemDetails } from './service/InboxItemService'
 import { createLibraryItemDetailed } from './service/LibraryItemService'
 
 export default {
-	name: 'ScholarItemDetails',
+	name: 'InboxItemDetails',
 	components: {
 		// components
 		NcAppContentDetails,
@@ -125,57 +125,58 @@ export default {
 	},
 	data() {
 		return {
-			scholarItem: null,
-			alertExcerpts: [],
+			inboxItem: null,
+			sourceInfo: [],
 			authorListDisplay: null,
 			authorList: [],
 		}
 	},
 	computed: {
-		scholarItemId() {
+		inboxItemId() {
 			return parseInt(this.$route.params.inboxItemId, 0)
 		},
 	},
 	watch: {
-		scholarItemId: async function (scholarItemId) {
-			if (!scholarItemId) return;
+		inboxItemId: async function (inboxItemId) {
+			if (!inboxItemId) return;
 			try {
-				let scholarItemDetails = await fetchScholarItemDetails(scholarItemId);
-				this.scholarItem = scholarItemDetails.scholarItem;
-				if (!this.scholarItem.journal) this.scholarItem.journal = "";
-				if (!this.scholarItem.authors) this.scholarItem.authors = "";
-				this.authorListDisplay = this.scholarItem.authors;
-				this.alertExcerpts = scholarItemDetails.alertExcerpts;
-				this.alertExcerpts.sort(function(a, b) {
+				let inboxItemDetails = await fetchInboxItemDetails(inboxItemId);
+				console.log(inboxItemDetails);
+				this.inboxItem = inboxItemDetails.inboxItem;
+				if (!this.inboxItem.journal) this.inboxItem.journal = "";
+				if (!this.inboxItem.authors) this.inboxItem.authors = "";
+				this.authorListDisplay = this.inboxItem.authors;
+				this.sourceInfo = inboxItemDetails.sourceInfo;
+				this.sourceInfo.sort(function(a, b) {
 					return parseFloat(a.importance) - parseFloat(b.importance);
 				});
 			} catch (e) {
 				console.error(e)
-				showError(t('athenaeum', 'Could not fetch scholar item details (route mounting failed)'))
+				showError(t('athenaeum', 'Could not fetch inbox item details (route mounting failed)'))
 			}
 		},
-		scholarItem: async function (scholarItem) {
-			if (!scholarItem || !this.$options || !this.$options.authorListInterface) return;
-			this.$options.authorListInterface.setAuthorListFromText(this.scholarItem.authors);
+		inboxItem: async function (inboxItem) {
+			if (!inboxItem || !this.$options || !this.$options.authorListInterface) return;
+			this.$options.authorListInterface.setAuthorListFromText(this.inboxItem.authors);
 		},
 	},
 	methods: {
 		// Setting the interface when emitted from child
 		setAuthorListInterface(authorListInterface) {
 			this.$options.authorListInterface = authorListInterface;
-			this.$options.authorListInterface.setAuthorListFromText(this.scholarItem.authors)
+			this.$options.authorListInterface.setAuthorListFromText(this.inboxItem.authors)
 		},
 		authorListUpdated(newAuthorList) {
 			this.authorList = newAuthorList;
 			this.authorListDisplay = newAuthorList.map(author => author.displayName).join(', ');
 		},
 		addToLibrary() {
-			let detailedItem = this.scholarItem;
+			let detailedItem = this.inboxItem;
 			detailedItem.authorList = this.authorList;
 			createLibraryItemDetailed(detailedItem);
 		},
-		markScholarItemDeleted() {
-			this.scholarItem = null
+		markInboxItemDeleted() {
+			this.inboxItem = null
 		},
 		hasEllipsis(text) {
 			return text.includes('…') || text.includes("...")

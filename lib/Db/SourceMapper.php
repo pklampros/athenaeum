@@ -12,22 +12,22 @@ use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 
 /**
- * @template-extends QBMapper<ScholarAlert>
+ * @template-extends QBMapper<Source>
  */
-class ScholarAlertMapper extends QBMapper {
+class SourceMapper extends QBMapper {
 	public function __construct(IDBConnection $db) {
-		parent::__construct($db, 'athm_schlr_alerts', ScholarAlert::class);
+		parent::__construct($db, 'athm_sources', Source::class);
 	}
 
 	/**
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function find(int $id): ScholarAlert {
+	public function find(int $id): Source {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
-			->from('athm_schlr_alerts')
+			->from('athm_sources')
 			->where($qb->expr()->eq('id', $qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
 		return $this->findEntity($qb);
 	}
@@ -36,11 +36,11 @@ class ScholarAlertMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function findByScholarId(string $scholarId): ScholarAlert {
+	public function findByUid(string $uid): Source {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
-			->from('athm_schlr_alerts')
-			->where($qb->expr()->eq('scholar_id', $qb->createNamedParameter($scholarId)));
+			->from('athm_sources')
+			->where($qb->expr()->eq('uid', $qb->createNamedParameter($uid)));
 		return $this->findEntity($qb);
 	}
 
@@ -51,7 +51,19 @@ class ScholarAlertMapper extends QBMapper {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
-			->from('athm_schlr_alerts');
+			->from('athm_sources');
 		return $this->findEntities($qb);
+	}
+
+	public function getOrInsertByUid(string $uid, string $sourceType): Source {
+		try {
+			$source = $this->findByUid($uid);
+		} catch (DoesNotExistException $e) {
+			$entity = new Source();
+			$entity->setUid($uid);
+			$entity->setSourceType($sourceType);
+			$source = $this->insert($entity);
+		}
+		return $source;
 	}
 }

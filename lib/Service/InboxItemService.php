@@ -10,19 +10,19 @@ use Exception;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 
-use OCA\Athenaeum\Db\ScholarItem;
-use OCA\Athenaeum\Db\ScholarItemMapper;
-use OCA\Athenaeum\Db\ScholarItemDetails;
+use OCA\Athenaeum\Db\InboxItem;
+use OCA\Athenaeum\Db\ItemMapper;
+use OCA\Athenaeum\Db\InboxItemDetails;
 
-class ScholarItemService {
-	private ScholarItemMapper $mapper;
+class InboxItemService {
+	private ItemMapper $mapper;
 
-	public function __construct(ScholarItemMapper $mapper) {
+	public function __construct(ItemMapper $mapper) {
 		$this->mapper = $mapper;
 	}
 
 	/**
-	 * @return list<ScholarItem>
+	 * @return list<InboxItem>
 	 */
 	public function findAll(
 		string $userId,
@@ -42,13 +42,13 @@ class ScholarItemService {
 	private function handleException(Exception $e) {
 		if ($e instanceof DoesNotExistException ||
 			$e instanceof MultipleObjectsReturnedException) {
-			throw new ScholarItemNotFound($e->getMessage());
+			throw new InboxItemNotFound($e->getMessage());
 		} else {
 			throw $e;
 		}
 	}
 
-	public function find(int $id, string $userId): ScholarItem {
+	public function find(int $id, string $userId): InboxItem {
 		try {
 			return $this->mapper->find($id, $userId);
 
@@ -61,15 +61,15 @@ class ScholarItemService {
 		}
 	}
 
-	public function getWithDetails(int $id, string $userId): ScholarItemDetails {
+	public function getWithDetails(int $id, string $userId): InboxItemDetails {
 		try {
-			return $this->mapper->getWithDetails($id, $userId);
+			return $this->mapper->getInboxItemDetails($id, $userId);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}
 	}
 
-	public function findByUrl(string $url): ScholarItem {
+	public function findByUrl(string $url): InboxItem {
 		try {
 			return $this->mapper->findByUrl($url);
 		} catch (Exception $e) {
@@ -79,9 +79,9 @@ class ScholarItemService {
 
 	public function create(string $url, string $title, string $authors,
 						   string $journal, string $published, bool $read,
-						   int $importance, bool $needsReview, string $userId): ScholarItem {
+						   int $importance, bool $needsReview, string $userId): InboxItem {
 		try {
-			$entity = new ScholarItem();
+			$entity = new InboxItem();
 			$entity->setUrl($url);
 			$entity->setTitle($title);
 			$entity->setAuthors($authors);
@@ -99,7 +99,10 @@ class ScholarItemService {
 
 	public function createFromEML(array $emlData, string $userId): array {
 		try {
-			return $this->mapper->createFromEML($emlData, $userId);
+			$currentDate = new \DateTime;
+			return $this->mapper->createFromEML(
+				$emlData, $currentDate,$currentDate, $userId
+			);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}
@@ -107,7 +110,7 @@ class ScholarItemService {
 
 	public function update(int $id, string $url, string $title, string $authors,
 						   string $journal, string $published, bool $read,
-						   int $importance, bool $needsReview, string $userId): ScholarItem {
+						   int $importance, bool $needsReview, string $userId): InboxItem {
 		try {
 			$entity = $this->mapper->find($id, $userId);
 			$entity->setUrl($url);
@@ -125,7 +128,7 @@ class ScholarItemService {
 		}
 	}
 
-	public function delete(int $id, string $userId): ScholarItem {
+	public function delete(int $id, string $userId): InboxItem {
 		try {
 			$entity = $this->mapper->find($id, $userId);
 			$this->mapper->delete($entity);

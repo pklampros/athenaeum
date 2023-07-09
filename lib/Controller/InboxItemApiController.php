@@ -6,20 +6,20 @@ declare(strict_types=1);
 namespace OCA\Athenaeum\Controller;
 
 use OCA\Athenaeum\AppInfo\Application;
-use OCA\Athenaeum\Service\ScholarItemService;
+use OCA\Athenaeum\Service\InboxItemService;
 use OCP\AppFramework\ApiController;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Http;
 use OCP\IRequest;
 
-class ScholarItemApiController extends ApiController {
-	private ScholarItemService $service;
+class InboxItemApiController extends ApiController {
+	private InboxItemService $service;
 	private ?string $userId;
 
 	use Errors;
 
 	public function __construct(IRequest $request,
-								ScholarItemService $service,
+								InboxItemService $service,
 								?string $userId) {
 		parent::__construct(Application::APP_ID, $request);
 		$this->service = $service;
@@ -48,7 +48,7 @@ class ScholarItemApiController extends ApiController {
 	 * @NoAdminRequired
 	 */
 	public function findByUrl(string $url): DataResponse {
-        // GET /scholarId/<id>
+        // GET /url/<id>
 		$decodedURL = urldecode(urldecode($url));
 		return $this->handleNotFound(function () use ($decodedURL) {
             return $this->service->findByUrl($decodedURL);

@@ -56,6 +56,23 @@ class ItemFieldValueMapper extends QBMapper {
 	}
 
 	/**
+	 * @throws DoesNotExistException
+	 */
+	public function findAllByFieldId(int $itemId, int $fieldId): array {
+		/* @var $qb IQueryBuilder */
+		$qb = $this->db->getQueryBuilder();
+		$qb->select('*')
+			->from('athm_item_field_values')
+			->where($qb->expr()
+					   ->eq('item_id',
+					    	$qb->createNamedParameter($itemId, IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()
+						  ->eq('field_id',
+							   $qb->createNamedParameter($fieldId, IQueryBuilder::PARAM_INT)));
+		return $this->findEntities($qb);
+	}
+
+	/**
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */

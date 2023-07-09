@@ -4,36 +4,36 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
 	<NcListItem
-		:title="scholarItem.title ? scholarItem.title : t('athenaeum', 'New scholar item')"
-		:class="{active: currentScholarItemId === scholarItem.id}"
-		:counter-number="scholarItem.alertImportance"
+		:title="inboxItem.title ? inboxItem.title : t('athenaeum', 'New inbox item')"
+		:class="{active: currentInboxItemId === inboxItem.id}"
+		:counter-number="inboxItem.alertImportance"
 		:to="link">
 		<template #icon>
 			<google-scholar-icon size="20"/>
 		</template>
 		<template #subtitle>
 			<div
-				v-if="scholarItem.journal">
+				v-if="inboxItem.journal">
 				<span>
-					{{ scholarItem.journal }}
+					{{ inboxItem.journal }}
 				</span>
 			</div>
 			<div
-				v-if="scholarItem.authors">
+				v-if="inboxItem.authors">
 				<span>
-					{{ scholarItem.authors }}
+					{{ inboxItem.authors }}
 				</span>
 			</div>
 		</template>
 		<template #actions>
-			<NcActionButton v-if="scholarItem.id === -1"
+			<NcActionButton v-if="inboxItem.id === -1"
 				icon="icon-close"
-				@click="cancelNewScholarItem(scholarItem)">
+				@click="cancelNewInboxItem(inboxItem)">
 				{{ t('athenaeum', 'Cancel item creation') }}
 			</NcActionButton>
 			<NcActionButton v-else
 				icon="icon-delete"
-				@click="deleteScholarItem(scholarItem)">
+				@click="deleteInboxItem(inboxItem)">
 				{{ t('athenaeum', 'Delete item') }}
 			</NcActionButton>
 		</template>
@@ -52,7 +52,7 @@ import Bookshelf from 'vue-material-design-icons/Bookshelf.vue';
 import { GoogleScholarIcon } from 'vue-simple-icons'
 
 export default {
-	name: 'ScholarItem',
+	name: 'InboxItem',
 	components: {
 		// components
 		NcListItem,
@@ -63,7 +63,7 @@ export default {
 		GoogleScholarIcon,
 	},
 	props: {
-		scholarItem: {
+		inboxItem: {
 			type: Object,
 			required: true,
 		},
@@ -74,7 +74,7 @@ export default {
 				name: 'inbox_item',
 				params: {
 					//filter: this.$route.params.filter ? this.$route.params.filter : undefined,
-					inboxItemId: this.scholarItem.id,
+					inboxItemId: this.inboxItem.id,
 				},
 				exact: true,
 			}

@@ -8,8 +8,8 @@ import axios from '@nextcloud/axios'
 
 import { convertAxiosError } from '../errors/convert'
 
-export function fetchScholarItems(query, cursor, limit) {
-	const url = generateUrl('/apps/athenaeum/scholar_items')
+export function fetchInboxItems(query, cursor, limit) {
+	const url = generateUrl('/apps/athenaeum/inbox_items')
 	const params = {
 	}
 
@@ -33,8 +33,8 @@ export function fetchScholarItems(query, cursor, limit) {
 		})
 }
 
-export function fetchScholarItemDetails(id) {
-	const url = generateUrl('/apps/athenaeum/scholar_items/details/' + id)
+export function fetchInboxItemDetails(id) {
+	const url = generateUrl('/apps/athenaeum/inbox_items/details/' + id)
 	const params = {
 	}
 

@@ -12,22 +12,22 @@ use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 
 /**
- * @template-extends QBMapper<ScholarEmail>
+ * @template-extends QBMapper<ItemSource>
  */
-class ScholarEmailMapper extends QBMapper {
+class ItemSourceMapper extends QBMapper {
 	public function __construct(IDBConnection $db) {
-		parent::__construct($db, 'athm_schlr_emails', ScholarEmail::class);
+		parent::__construct($db, 'athm_item_sources', ItemSource::class);
 	}
 
 	/**
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function find(int $id): ScholarEmail {
+	public function find(int $id): ItemSource {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
-			->from('athm_schlr_emails')
+			->from('athm_item_sources')
 			->where($qb->expr()
 					   ->eq('id', $qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
 		return $this->findEntity($qb);
@@ -37,13 +37,31 @@ class ScholarEmailMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function findBySubjectReceived(string $subject, \DateTime $received): ScholarEmail {
+	public function findByItemSource(int $itemId, int $sourceId): ItemSource {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
-			->from('athm_schlr_emails')
-			->where($qb->expr()->eq('subject', $qb->createNamedParameter($subject)))
-			->andWhere($qb->expr()->eq('received', $qb->createNamedParameter($received, IQueryBuilder::PARAM_DATE)));
+			->from('athm_item_sources')
+			->where($qb->expr()
+					   ->eq('item_id',
+							$qb->createNamedParameter($itemId,
+													  IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()
+						  ->eq('source_id',
+							   $qb->createNamedParameter($sourceId,
+														 IQueryBuilder::PARAM_INT)));
 		return $this->findEntity($qb);
+	}
+
+	/**
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 */
+	public function itemSourceExists(int $itemId, int $sourceId): bool {
+		try {
+			$this->findByItemSource($itemId, $sourceId);
+		} catch(DoesNotExistException $ie) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -53,7 +71,7 @@ class ScholarEmailMapper extends QBMapper {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
-			->from('athm_schlr_emails');
+			->from('athm_item_sources');
 		return $this->findEntities($qb);
 	}
 }

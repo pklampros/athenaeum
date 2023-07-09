@@ -7,23 +7,23 @@ namespace OCA\Athenaeum\Controller;
 
 use PhpMimeMailParser\Parser;
 use OCA\Athenaeum\AppInfo\Application;
-use OCA\Athenaeum\Service\ScholarItemService;
+use OCA\Athenaeum\Service\InboxItemService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Http;
 use OCP\IRequest;
 
-class ScholarItemController extends Controller {
-	private ScholarItemService $scholarItemService;
+class InboxItemController extends Controller {
+	private InboxItemService $inboxItemService;
 	private ?string $userId;
 
 	use Errors;
 
 	public function __construct(IRequest $request,
-								ScholarItemService $scholarItemService,
+								InboxItemService $inboxItemService,
 								?string $userId) {
 		parent::__construct(Application::APP_ID, $request);
-		$this->scholarItemService = $scholarItemService;
+		$this->inboxItemService = $inboxItemService;
 		$this->userId = $userId;
 	}
 
@@ -31,7 +31,7 @@ class ScholarItemController extends Controller {
 	 * @NoAdminRequired
 	 */
 	public function index(): DataResponse {
-		return new DataResponse($this->scholarItemService->findAll($this->userId));
+		return new DataResponse($this->inboxItemService->findAll($this->userId));
 	}
 
 	/**
@@ -39,7 +39,7 @@ class ScholarItemController extends Controller {
 	 */
 	public function show(int $id): DataResponse {
 		return $this->handleNotFound(function () use ($id) {
-			return $this->scholarItemService->find($id, $this->userId);
+			return $this->inboxItemService->find($id, $this->userId);
 		});
 	}
 
@@ -48,7 +48,7 @@ class ScholarItemController extends Controller {
 	 */
 	public function getWithDetails(int $id): DataResponse {
 		return $this->handleNotFound(function () use ($id) {
-			return $this->scholarItemService->getWithDetails($id, $this->userId);
+			return $this->inboxItemService->getWithDetails($id, $this->userId);
 		});
 	}
 
@@ -67,7 +67,7 @@ class ScholarItemController extends Controller {
 	public function getAlertData(\DOMDocument $doc, string $emailSubject) {
 		$links = $doc->getElementsByTagName('a');
 		$searchTerm = "";
-		$alertID = "";
+		$alertId = "";
 		$termIncomplete = false;
 
 		foreach ($links as $link) {
@@ -80,7 +80,7 @@ class ScholarItemController extends Controller {
 			}
 			if (preg_match("/.*?\/scholar_alerts\?.*?cancel_alert_options.*?&alert_id=(.*?)&/",
 						   $href, $matches)) {
-				$alertID = $matches[1];
+				$alertId = $matches[1];
 			}
 		}
 		if ($searchTerm == "") {
@@ -126,11 +126,11 @@ class ScholarItemController extends Controller {
 			$cleanSearchTerm = substr($cleanSearchTerm, 0, -strlen(" - new results"));
 		}
 
-		if ($alertID == "") {
+		if ($alertId == "") {
 			throw new \Exception( "Alert ID not found in email!" );
 		}
 		return array(
-			"alertID" => $alertID,
+			"alertId" => $alertId,
 			"searchTerm" => $searchTerm,
 			"cleanSearchTerm" => $cleanSearchTerm,
 			"termIncomplete" => $termIncomplete
@@ -256,13 +256,13 @@ class ScholarItemController extends Controller {
 				
 				$result["subject"] = $emailSubject;
 				$result["received"] = $receivedDate;
-				$result["alertID"] = $alertData["alertID"];
+				$result["alertId"] = $alertData["alertId"];
 				$result["searchTerm"] = $alertData["searchTerm"];
 				$result["cleanSearchTerm"] = $alertData["cleanSearchTerm"];
 				$result["termIncomplete"] = $alertData["termIncomplete"];
 				$result["items"] = $this->getItems($doc);
 				
-				return new DataResponse($this->scholarItemService->createFromEML($result, $this->userId));
+				return new DataResponse($this->inboxItemService->createFromEML($result, $this->userId));
 			}
 		} else {
 			return new DataResponse("No file sent", Http::STATUS_NOT_FOUND);
@@ -278,7 +278,7 @@ class ScholarItemController extends Controller {
 		$importance = 0;
 		$needsReview = false;
 		
-		return new DataResponse($this->scholarItemService->create($url, $title, $authors,
+		return new DataResponse($this->inboxItemService->create($url, $title, $authors,
 								$journal, $published, $read, $importance,
 								$needsReview, $this->userId));
 	}
@@ -292,7 +292,7 @@ class ScholarItemController extends Controller {
 		return $this->handleNotFound(function () use ($id, $url, $title, $authors, $journal,
 													  $published, $read, $importance,
 													  $needsReview) {
-			return $this->scholarItemService->update($id, $url, $title, $authors,
+			return $this->inboxItemService->update($id, $url, $title, $authors,
 										  $journal, $published, $read,
 										  $importance, $needsReview, $this->userId);
 		});
@@ -303,7 +303,7 @@ class ScholarItemController extends Controller {
 	 */
 	public function destroy(int $id): DataResponse {
 		return $this->handleNotFound(function () use ($id) {
-			return $this->scholarItemService->delete($id, $this->userId);
+			return $this->inboxItemService->delete($id, $this->userId);
 		});
 	}
 }

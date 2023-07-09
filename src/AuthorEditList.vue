@@ -289,8 +289,8 @@ export default {
 			}
 			return nameData;
 		},
-		markScholarItemDeleted() {
-			this.scholarItemBeingFiled = null
+		markInboxItemDeleted() {
+			this.inboxItemBeingFiled = null
 			this.authorList = null
 		},
 		updateDisplayName(authorIndex) {

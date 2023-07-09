@@ -12,28 +12,26 @@ use OCP\AppFramework\Db\Entity;
 /**
  * @method getId(): int
  * 
- * @method getScholarId(): string
- * @method setScholarId(string $scholarId): void
- * @method getTerm(): string
- * @method setTerm(string $term): void
+ * @method getUid(): string
+ * @method setUid(string $uid): void
+ * @method getSourceType(): string
+ * @method setSourceType(string $sourceType): void
  * @method getImportance(): string
  * @method setImportance(int $importance): void
  * @method getImportanceDecided(): bool
  * @method setImportanceDecided(bool $importanceDecided): void
  */
-class ScholarAlert extends Entity implements JsonSerializable {
-	protected string $scholarId = '';
-	protected string $term = '';
+class Source extends Entity implements JsonSerializable {
+	protected string $uid = '';
+	protected string $sourceType = '';
 	protected int $importance = 0;
-	protected bool $importanceDecided = false;
 
 	public function jsonSerialize(): array {
 		return [
 			'id' => $this->id,
-			'scholarId' => $this->scholarId,
-			'term' => $this->term,
-			'importance' => $this->importance,
-			'importanceDecided' => $this->importanceDecided
+			'uid' => $this->uid,
+			'sourceType' => $this->sourceType,
+			'importance' => $this->importance
 		];
 	}
 }

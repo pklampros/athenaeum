@@ -3,15 +3,15 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-export default class ScholarItemNotFoundError extends Error {
+export default class InboxItemNotFoundError extends Error {
 
 	constructor(message) {
 		super(message)
-		this.name = ScholarItemNotFoundError.getName()
+		this.name = InboxItemNotFoundError.getName()
 	}
 
 	static getName() {
-		return 'ScholarItemNotFoundError'
+		return 'InboxItemNotFoundError'
 	}
 
 }
