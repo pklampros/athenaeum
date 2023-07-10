@@ -48,12 +48,11 @@ export function fetchLibraryItemDetails(id) {
 		})
 }
 
-export function createLibraryItemDetailed(itemData) {
-	const url = generateUrl('/apps/athenaeum/items/new/detailed')
-
+export function convertToLibraryItemDetailed(itemData) {
+	const url = generateUrl('/apps/athenaeum/inbox_items/tolibrary')
 	return axios
 		.post(url, {
-			itemData,
+			'itemData': itemData,
 		}, {
 			headers: {
 				'Content-Type': 'application/json'

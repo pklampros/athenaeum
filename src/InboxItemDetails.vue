@@ -103,7 +103,7 @@ import AuthorEditList from './AuthorEditList.vue'
 
 import { showError } from '@nextcloud/dialogs'
 import { fetchInboxItemDetails } from './service/InboxItemService'
-import { createLibraryItemDetailed } from './service/LibraryItemService'
+import { convertToLibraryItemDetailed } from './service/LibraryItemService'
 
 export default {
 	name: 'InboxItemDetails',
@@ -143,6 +143,7 @@ export default {
 				let inboxItemDetails = await fetchInboxItemDetails(inboxItemId);
 				console.log(inboxItemDetails);
 				this.inboxItem = inboxItemDetails.inboxItem;
+				this.inboxItem.id = inboxItemId;
 				if (!this.inboxItem.journal) this.inboxItem.journal = "";
 				if (!this.inboxItem.authors) this.inboxItem.authors = "";
 				this.authorListDisplay = this.inboxItem.authors;
@@ -173,7 +174,7 @@ export default {
 		addToLibrary() {
 			let detailedItem = this.inboxItem;
 			detailedItem.authorList = this.authorList;
-			createLibraryItemDetailed(detailedItem);
+			convertToLibraryItemDetailed(detailedItem);
 		},
 		markInboxItemDeleted() {
 			this.inboxItem = null

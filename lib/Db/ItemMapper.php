@@ -202,11 +202,11 @@ class ItemMapper extends QBMapper {
 	 */
 	public function findAll(
 		string $userId,
+		int $folderId,
 		int $limit = 50,
 		int $offset = 0,
 		?bool $showAll = false,
-		string $search = '',
-		int $folderId
+		string $search = ''
 	): array {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
@@ -352,7 +352,7 @@ class ItemMapper extends QBMapper {
 	 */
 	public function updateWithData(int $itemId, string $title, int $itemType, int $folder,
 								   \DateTime $dateModified,
-								   array $itemData, string $userId) {
+								   array $itemData, string $userId): Item {
 		$item = $this->find($itemId, $userId);
 		$item->setTitle($title);
 		$item->setItemTypeId($itemType);
@@ -360,42 +360,45 @@ class ItemMapper extends QBMapper {
 		$item->setDateModified($dateModified);
 		$item->setUserId($userId);
 
+		$this->update($item);
+		
 		foreach ($itemData as $field=>$value) {
 			$fieldId = $this->findFieldId($field);
 			$nextOrder = $this->getNextOrder($itemId, $fieldId);
 			$this->insertItemFieldOrderedValue($itemId, $fieldId, $nextOrder, $value);
 		}
+		return $item;
 	}
 
 	/**
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function insertDetailed(array $itemData, \DateTime $dateAdded,
-	\DateTime $dateModified, string $userId): Item {
-        return $this->atomic(function () use (&$itemData, &$dateAdded, &$dateModified, &$userId) {
+	public function inboxToLibrary(int $id, array $itemData, \DateTime $dateAdded,
+								   \DateTime $dateModified, string $userId): Item {
+        return $this->atomic(function () use (&$id, &$itemData, &$dateAdded,
+											  &$dateModified, &$userId) {
 			$newItemData = array();
 			if (array_key_exists('url', $itemData)) {
 				$itemData['url'] = $itemData['url'];
 			}
 			$itemTypeId = 1; # paper
 			$folderId = 2; # library
-			$newItem = $this->insertWithData(
-				$itemData['title'], $itemTypeId, $folderId, $dateAdded, $dateModified,
-				$newItemData, $userId
+			$item = $this->updateWithData(
+				$id, $itemData['title'], $itemTypeId, $folderId,
+				$dateModified, $newItemData, $userId
 			);
 			if (array_key_exists('authorList', $itemData)) {
 				foreach ($itemData['authorList'] as $index=>$author) {
-					
 					$newContributorId = $this->insertContributor(
 						$author['firstName'], $author['name'],
 						$author['onlyLastName']);
 					
-					$this->insertContribution($newItem->id, $newContributorId,
+					$this->insertContribution($id, $newContributorId,
 						$author['displayName'], 1, $index + 1);
 				}
 			}
-			return $newItem;
+			return $item;
         }, $this->db);
 	}
 

@@ -34,8 +34,8 @@ return [
 			'url' => '/api/0.1/items/{itemId}/setField/{fieldName}/{fieldValue}',
 			'verb' => 'GET', 'escape' => false],
 
-		['name' => 'item#createDetailed',
-			'url' => '/items/new/detailed',
+		['name' => 'inbox_item#toLibrary',
+			'url' => '/inbox_items/tolibrary',
 			'verb' => 'POST'],
 
 		// ['name' => 'item_field_value_api#findByFieldId',

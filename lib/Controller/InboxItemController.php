@@ -272,6 +272,18 @@ class InboxItemController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 */
+	public function toLibrary(): DataResponse {
+		$currentTime = new \DateTime;
+		$itemData = $this->request->post['itemData'];
+		$id = $itemData['id'];
+		return new DataResponse($this->inboxItemService->toLibrary(
+									$id, $itemData, $currentTime, $currentTime,
+									$this->userId));
+	}
+
+	/**
+	 * @NoAdminRequired
+	 */
 	public function create(string $url, string $title, string $authors, string $journal,
 						   string $published): DataResponse {
 		$read = false;

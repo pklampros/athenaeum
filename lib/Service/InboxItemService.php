@@ -11,8 +11,9 @@ use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 
 use OCA\Athenaeum\Db\InboxItem;
-use OCA\Athenaeum\Db\ItemMapper;
 use OCA\Athenaeum\Db\InboxItemDetails;
+use OCA\Athenaeum\Db\Item;
+use OCA\Athenaeum\Db\ItemMapper;
 
 class InboxItemService {
 	private ItemMapper $mapper;
@@ -32,7 +33,7 @@ class InboxItemService {
         string $search = ''
 	): array {
 		return $this->mapper->findAll(
-			$userId, $limit, $offset, $showAll, $search, 1
+			$userId, 1 /* inbox */, $limit, $offset, $showAll, $search
 		);
 	}
 
@@ -92,6 +93,18 @@ class InboxItemService {
 			$entity->setNeedsReview($needsReview);
 			$entity->setUserId($userId);
 			return $this->mapper->insert($entity);
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
+	}
+
+	public function toLibrary(int $id, array $itemData, \DateTime $dateAdded,
+	                       \DateTime $dateModified, string $userId): Item {
+		try {
+			return $this->mapper->inboxToLibrary(
+				$id, $itemData, $dateAdded,
+				$dateModified, $userId
+			);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}

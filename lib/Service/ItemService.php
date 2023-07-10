@@ -32,7 +32,7 @@ class ItemService {
         string $search = ''
 	): array {
 		return $this->mapper->findAll(
-			$userId, $limit, $offset, $showAll, $search, 2
+			$userId, 2 /* library */, $limit, $offset, $showAll, $search
 		);
 	}
 
