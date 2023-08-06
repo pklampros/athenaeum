@@ -35,9 +35,19 @@ class DefaultDataRepairStep implements IRepairStep {
 		$query->insert('athm_item_types')
 			   ->setValue('name', $query->createParameter('new_item_type'));
 
-		$query->setParameter('new_item_type', 'author');
+		$query->setParameter('new_item_type', 'paper');
 		$query->executeStatement();
-		$query->setParameter('new_item_type', 'editor');
+		$query->setParameter('new_item_type', 'article');
+		$query->executeStatement();
+		$query->setParameter('new_item_type', 'book');
+		$query->executeStatement();
+		$query->setParameter('new_item_type', 'document');
+		$query->executeStatement();
+		$query->setParameter('new_item_type', 'presentation');
+		$query->executeStatement();
+		$query->setParameter('new_item_type', 'video');
+		$query->executeStatement();
+		$query->setParameter('new_item_type', 'audio');
 		$query->executeStatement();
 
 		// add default item folders
@@ -46,6 +56,8 @@ class DefaultDataRepairStep implements IRepairStep {
 			   ->setValue('path', $query->createParameter('new_folder'));
 
 		$query->setParameter('new_folder', 'inbox');
+		$query->executeStatement();
+		$query->setParameter('new_folder', 'inbox/decide_later');
 		$query->executeStatement();
 		$query->setParameter('new_folder', 'library');
 		$query->executeStatement();
@@ -75,6 +87,7 @@ class DefaultDataRepairStep implements IRepairStep {
 			  ->setValue('name', $query->createParameter('new_contribn_type'));
 
 		$query->setParameter('new_contribn_type', 'author');
+		$query->executeStatement();
 		$query->setParameter('new_contribn_type', 'editor');
 		$query->executeStatement();
 	}

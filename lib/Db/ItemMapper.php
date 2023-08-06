@@ -228,12 +228,59 @@ class ItemMapper extends QBMapper {
 		return $this->findEntities($qb);
 	}
 
-	private function findFieldId(string $fieldName): int {
+	/**
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws DoesNotExistException
+	 * This asssumes that the tables have an "id" field
+	 */
+	private function getIdFromColumnValue(string $table, string $colName,
+										  string $value): int {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('id')
-		  ->from('athm_fields')
-		  ->where($qb->expr()->eq('name', $qb->createNamedParameter($fieldName)));
-		return $this->findEntity($qb)->id;
+		  ->from($table)
+		  ->where($qb->expr()->eq($colName, $qb->createNamedParameter($value)));
+		
+		$result = $qb->executeQuery();
+		$resultId = 0; # functions as null
+		try {
+			$sourceInfo = array();
+			while ($fieldData = $result->fetch()) {
+				if ($resultId != 0) {
+					throw new MultipleObjectsReturnedException();
+				}
+				$resultId = $fieldData["id"];
+			}
+		} finally {
+			$result->closeCursor();
+		}
+		if ($resultId == 0) {
+			throw new DoesNotExistException();
+		}
+		return $resultId;
+	}
+
+	/**
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws DoesNotExistException
+	 */
+	public function findFieldId(string $fieldName): int {
+		return $this->getIdFromColumnValue('athm_fields', 'name', $fieldName);
+	}
+
+	/**
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws DoesNotExistException
+	 */
+	public function findItemTypeId(string $itemTypeName): int {
+		return $this->getIdFromColumnValue('athm_item_types', 'name', $itemTypeName);
+	}
+
+	/**
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws DoesNotExistException
+	 */
+	public function findFolderId(string $folderPath): int {
+		return $this->getIdFromColumnValue('athm_folders', 'path', $folderPath);
 	}
 
 	/**
@@ -286,7 +333,6 @@ class ItemMapper extends QBMapper {
 		$this->insertItemFieldOrderedValue($itemId, $fieldId, $nextOrder, $value);
 	}
 
-
 	/**
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
@@ -335,13 +381,13 @@ class ItemMapper extends QBMapper {
 	 * @throws DoesNotExistException
 	 * This function should be called within an atomic
 	 */
-	public function insertWithData(string $title, int $itemType, int $folder,
+	public function insertWithData(string $title, int $itemTypeId, int $folderId,
 								   \DateTime $dateAdded, \DateTime $dateModified,
 								   array $itemData, string $userId): Item {
 		$item = new Item();
 		$item->setTitle($title);
-		$item->setItemTypeId($itemType);
-		$item->setFolderId($folder);
+		$item->setItemTypeId($itemTypeId);
+		$item->setFolderId($folderId);
 		$item->setDateAdded($dateAdded);
 		$item->setDateModified($dateModified);
 		$item->setUserId($userId);
@@ -357,14 +403,28 @@ class ItemMapper extends QBMapper {
 	/**
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
+	 */
+	public function changeItemFolder(int $itemId, int $folderId, string $userId): Item {
+		$item = $this->find($itemId, $userId);
+		$item->setFolderId($folderId);
+		$item->setDateModified(new \DateTime);
+
+		$this->update($item);
+		
+		return $item;
+	}
+
+	/**
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws DoesNotExistException
 	 * This function should be called within an atomic
 	 */
-	public function updateWithData(int $itemId, string $title, int $itemType, int $folder,
+	public function updateWithData(int $itemId, string $title, int $itemTypeId, int $folder,
 								   \DateTime $dateModified,
 								   array $itemData, string $userId): Item {
 		$item = $this->find($itemId, $userId);
 		$item->setTitle($title);
-		$item->setItemTypeId($itemType);
+		$item->setItemTypeId($itemTypeId);
 		$item->setFolderId($folder);
 		$item->setDateModified($dateModified);
 		$item->setUserId($userId);
@@ -383,6 +443,15 @@ class ItemMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
+	public function inboxToDecideLater(int $id, string $userId): Item {
+		$folderId = $this->findFolderId("inbox/decide_later");
+        $this->changeItemFolder($id, $folderId);
+	}
+
+	/**
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws DoesNotExistException
+	 */
 	public function inboxToLibrary(int $id, array $itemData, \DateTime $dateAdded,
 								   \DateTime $dateModified, string $userId): Item {
         return $this->atomic(function () use (&$id, &$itemData, &$dateAdded,
@@ -391,8 +460,8 @@ class ItemMapper extends QBMapper {
 			if (array_key_exists('url', $itemData)) {
 				$itemData['url'] = $itemData['url'];
 			}
-			$itemTypeId = 1; # paper
-			$folderId = 2; # library
+			$itemTypeId = $this->findItemTypeId("paper");
+			$folderId = $this->findFolderId("library");
 			$item = $this->updateWithData(
 				$id, $itemData['title'], $itemTypeId, $folderId,
 				$dateModified, $newItemData, $userId
@@ -450,8 +519,8 @@ class ItemMapper extends QBMapper {
 				'searchTerm' => $emlData["searchTerm"],
 				'emailReceived' => $emlData["received"]
 			);
-			$itemType = 1; # paper
-			$folder = 1; # inbox
+			$itemTypeId = $this->findItemTypeId("paper");
+			$folderId = $this->findFolderId("inbox");
 
 
 			foreach ($emlData["items"] as $emlItem) {
@@ -477,7 +546,7 @@ class ItemMapper extends QBMapper {
 					);
 					
 					$item = $this->insertWithData(
-						$emlItem["title"], $itemType, $folder, $dateAdded,
+						$emlItem["title"], $itemTypeId, $folderId, $dateAdded,
 						$dateModified, $newItemData, $userId
 					);
 					$itemIsNew = true;

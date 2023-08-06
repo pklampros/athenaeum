@@ -33,7 +33,7 @@ class ItemService {
         string $search = ''
 	): array {
 		return $this->mapper->findAll(
-			$userId, 2 /* library */, $limit, $offset, $showAll, $search
+			$userId, $this->mapper->findFolderId("library"), $limit, $offset, $showAll, $search
 		);
 	}
 
@@ -138,9 +138,9 @@ class ItemService {
 		try {
 			$entity = new Item();
 			$entity->setTitle($title);
-			$itemTypeId = 1; # paper
+			$itemTypeId = $this->mapper->findItemTypeId("paper");
 			$entity->setItemTypeId($itemTypeId);
-			$folderId = 1; # inbox
+			$folderId = $this->mapper->findFolderId("inbox");
 			$entity->setFolderId($folderId);
 			$currentDate = new \DateTime;
 			$entity->setDateAdded($currentDate);
