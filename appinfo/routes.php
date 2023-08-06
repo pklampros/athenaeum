@@ -63,6 +63,9 @@ return [
 		['name' => 'item#getWithDetails',
 			'url' => '/items/details/{id}',
 			'verb' => 'GET'],
+		['name' => 'item#attachFile',
+			'url' => '/items/attachFile',
+			'verb' => 'POST'],
 
 		['name' => 'contributor_api#findByFullFirstName',
 			'url' => '/api/0.1/contributors/firstName/{firstName}',

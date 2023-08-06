@@ -11,8 +11,9 @@ use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 
 use OCA\Athenaeum\Db\Item;
-use OCA\Athenaeum\Db\ItemMapper;
+use OCA\Athenaeum\Db\ItemAttachment;
 use OCA\Athenaeum\Db\ItemDetails;
+use OCA\Athenaeum\Db\ItemMapper;
 
 class ItemService {
 	private ItemMapper $mapper;
@@ -59,6 +60,16 @@ class ItemService {
 	public function getWithDetails(int $id, string $userId): ItemDetails {
 		try {
 			return $this->mapper->getWithDetails($id, $userId);
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
+	}
+
+	public function attachFile(int $itemId, string $fileName, string $fileMime,
+	                           int $fileSize, $fileData, string $userId): ItemAttachment {
+		try {
+			return $this->mapper->attachFile($itemId, $fileName, $fileMime, $fileSize,
+											 $fileData, $userId);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}

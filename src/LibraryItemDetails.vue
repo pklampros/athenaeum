@@ -39,6 +39,7 @@
 			Item: <pre>{{ JSON.stringify(this.item, null, 2) }}</pre><br /><br />
 			FieldData: <pre>{{ JSON.stringify(this.itemFieldData, null, 2) }}</pre><br /><br />
 			Contributions: <pre>{{ JSON.stringify(this.contributions, null, 2) }}</pre><br /><br />
+			Attachments: <pre>{{ JSON.stringify(this.attachments, null, 2) }}</pre><br /><br />
 
 			<div style="padding:0px 10px; border-radius: 16px; border: 2px solid var(--color-border);">
 				<div class="field-label">
@@ -65,6 +66,10 @@
 				&nbsp;
 			</div>
 			<div style="display: flex; justify-content: right; align-items: center; padding: 16px;">
+				<label>File
+					<input type="file" id="file" ref="file" v-on:change="handleFileUpload($event)"/>
+				</label>
+				<button v-on:click="submitFile()">Submit</button>
 				<NcButton
 					ariaLabel="Remove item"
 					:disabled="!this.item.title || !this.item.url"
@@ -109,6 +114,8 @@ import AuthorEditList from './AuthorEditList.vue'
 
 import { showError } from '@nextcloud/dialogs'
 import { fetchLibraryItemDetails } from './service/LibraryItemService'
+import { generateUrl } from '@nextcloud/router'
+import axios from '@nextcloud/axios'
 
 export default {
 	name: 'LibraryItemDetails',
@@ -158,6 +165,7 @@ export default {
 				this.contributions.sort(function(a, b) {
 					return parseFloat(a.orde) - parseFloat(b.order);
 				});
+				this.attachments = itemDetails.attachments;
 			} catch (e) {
 				console.error(e)
 				showError(t('athenaeum', 'Could not fetch item details (route mounting failed)'))
@@ -183,6 +191,27 @@ export default {
 		},
 		hasEllipsis(text) {
 			return text.includes('…') || text.includes("...")
+		},
+		handleFileUpload( event ){
+			console.log(event);
+			this.file = event.target.files[0];
+			console.log(this.file);
+		},
+		submitFile(){
+			let formData = new FormData();
+			formData.append('file', this.file);
+			formData.append('item_id', this.itemId);
+			console.log(this.file);
+			console.log(formData.get('file'));
+			axios.post( generateUrl('/apps/athenaeum/items/attachFile'), formData, {
+				headers: {
+					'Content-Type': 'multipart/form-data'
+				}
+			}).then(function(){
+				console.log('SUCCESS!!');
+			}).catch(function(){
+				console.log('FAILURE!!');
+			});
 		},
 	},
 }

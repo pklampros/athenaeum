@@ -10,6 +10,7 @@ use OCP\AppFramework\Db\Entity;
 use OCP\AppFramework\Db\QBMapper;
 use OCP\AppFramework\Db\TTransactional;
 use OCP\DB\QueryBuilder\IQueryBuilder;
+use OCP\Files\IRootFolder;
 use OCP\IDBConnection;
 
 /**
@@ -17,8 +18,11 @@ use OCP\IDBConnection;
  */
 class ItemMapper extends QBMapper {
     use TTransactional;
-	public function __construct(IDBConnection $db) {
+    private IRootFolder $storage;
+
+	public function __construct(IDBConnection $db, IRootFolder $storage) {
 		parent::__construct($db, 'athm_items', Item::class);
+        $this->storage = $storage;
 	}
 
 	/**
@@ -92,6 +96,11 @@ class ItemMapper extends QBMapper {
 			$result->closeCursor();
 		}
 		$itemDetails->setFieldData($fieldData);
+
+		$itemAttachmentMapper = new ItemAttachmentMapper($this->db, $this->storage);
+
+		$attachments = $itemAttachmentMapper->findAllByItem($id, $userId);
+		$itemDetails->setAttachments($attachments);
 
 		return $itemDetails;
 	}
@@ -491,5 +500,61 @@ class ItemMapper extends QBMapper {
 			}
 			return $newItemIds;
         }, $this->db);
+	}
+
+
+	/**
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws DoesNotExistException
+	 */
+	public function attachFile(int $itemId, string $fileName, string $fileMime,
+							   int $fileSize, $fileData, string $userId): ItemAttachment {
+		return $this->atomic(function () use (&$itemId, &$fileName, &$fileMime,
+											  &$fileSize, &$fileData, &$userId) {
+
+			// try to find the item, excepts if none/many found
+			$this->find($itemId, $userId);
+
+			$itemAttachmentMapper = new ItemAttachmentMapper($this->db, $this->storage);
+
+			// increment dupeCount (up to 1000) until we find
+			// a filename that doesn't exist
+			$givenFileName = $fileName;
+			for ($dupeCount = 1; $dupeCount <= 1000; $dupeCount+=1) {
+				if (!$itemAttachmentMapper->pathExists($itemId, $givenFileName)) {
+					// path does not exist in the database, try to create the file
+					try {
+						$newFilePath = $itemAttachmentMapper->createAttachmentFile(
+							$itemId, $givenFileName, $fileData, $userId);
+						// file does not exist, create and continue
+						break;
+					} catch(FileExistsException $e) {
+						// file already exists, keep trying names
+					}
+				}
+				$path_info = pathinfo($fileName);
+				$givenFileName = $path_info['filename'] . '_' . $dupeCount .
+								 '.' . $path_info['extension'];
+			}
+
+			$itemAttachment = new ItemAttachment();
+			$itemAttachment->setItemId($itemId);
+			$itemAttachment->setPath($newFilePath->getPath());
+			$itemAttachment->setMimeType($fileMime);
+
+			try {
+				$newItemAttachment = $itemAttachmentMapper->insert($itemAttachment);
+			} catch (Exception $e) {
+				// failed to add file to the database, delete from filesystem
+				$itemAttachment->delete();
+				throw new AttachmentNotAddedError();
+			}
+
+			// $rqst = json_encode($itemAttachment);
+			// throw new \Exception( "\$rqst = $rqst" );
+
+			return $newItemAttachment;
+        }, $this->db);
+		return null;
 	}
 }

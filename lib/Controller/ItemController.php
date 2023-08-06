@@ -9,6 +9,7 @@ use OCA\Athenaeum\AppInfo\Application;
 use OCA\Athenaeum\Service\ItemService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\DataResponse;
+use OCP\AppFramework\Http;
 use OCP\IRequest;
 
 class ItemController extends Controller {
@@ -54,6 +55,31 @@ class ItemController extends Controller {
 	public function getWithDetails(int $id): DataResponse {
 		return $this->handleNotFound(function () use ($id) {
 			return $this->itemService->getWithDetails($id, $this->userId);
+		});
+	}
+
+	/**
+	 * @NoAdminRequired
+	 */
+	public function attachFile(): DataResponse {
+		$newFile = $this->request->getUploadedFile('file');
+		$itemId = $this->request->post['item_id'];
+		if (!$newFile) {
+			return new DataResponse("No file sent", Http::STATUS_NOT_FOUND);
+		}
+		if (!$itemId) {
+			return new DataResponse("No item id given", Http::STATUS_NOT_FOUND);
+		}
+		$fileName = $newFile['name'];
+		$fileMime = $newFile['type'];
+		$fileSize = $newFile['size'];
+		$fileData = file_get_contents($newFile['tmp_name']);
+
+		
+		return $this->handleNotFound(function () use ($itemId, $fileName, $fileMime,
+													  $fileSize, $fileData) {
+			return $this->itemService->attachFile((int) $itemId, $fileName, $fileMime,
+												  $fileSize, $fileData, $this->userId);
 		});
 	}
 

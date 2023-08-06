@@ -145,6 +145,31 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			$table->addUniqueConstraint(['path']);
 		}
 
+		if (!$schema->hasTable('athm_item_attchm')) {
+			$table = $schema->createTable('athm_item_attchm');
+			$table->addColumn('id', 'integer', [
+				'autoincrement' => true,
+				'notnull' => true,
+			]);
+			$table->addColumn('item_id', 'integer', [
+				'notnull' => true
+			]);
+			$table->addColumn('path', 'string', [
+				'notnull' => true
+			]);
+			$table->addColumn('mime_type', 'string', [
+				'notnull' => false
+			]);
+			$table->addColumn('notes', 'string', [
+				'notnull' => false
+			]);
+
+			$table->setPrimaryKey(['id']);
+			$table->addForeignKeyConstraint('athm_items', ['item_id'], ['id'], [],
+											'item_id_fk');
+			$table->addUniqueConstraint(['item_id', 'path']);
+		}
+
 		if (!$schema->hasTable('athm_items')) {
 			$table = $schema->createTable('athm_items');
 			$table->addColumn('id', 'integer', [
@@ -177,6 +202,46 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 											'item_type_id_fk');
 			$table->addForeignKeyConstraint('athm_folders', ['folder_id'], ['id'], [],
 											'item_folder_id_fk');
+		}
+
+		if (!$schema->hasTable('athm_item_rel_types')) {
+			$table = $schema->createTable('athm_item_rel_types');
+			$table->addColumn('id', 'integer', [
+				'autoincrement' => true,
+				'notnull' => true,
+			]);
+			$table->addColumn('name', 'string', [
+				'notnull' => true
+			]);
+
+			$table->setPrimaryKey(['id']);
+			$table->addUniqueConstraint(['name']);
+		}
+
+		if (!$schema->hasTable('athm_item_item_rel')) {
+			$table = $schema->createTable('athm_item_item_rel');
+			$table->addColumn('id', 'integer', [
+				'autoincrement' => true,
+				'notnull' => true,
+			]);
+			$table->addColumn('item_id_a', 'integer', [
+				'notnull' => true
+			]);
+			$table->addColumn('item_id_b', 'integer', [
+				'notnull' => true
+			]);
+			$table->addColumn('rel_type_id', 'integer', [
+				'notnull' => true
+			]);
+
+			$table->setPrimaryKey(['id']);
+			$table->addForeignKeyConstraint('athm_items', ['item_id_a'], ['id'], [],
+											'item_id_a_fk');
+			$table->addForeignKeyConstraint('athm_items', ['item_id_b'], ['id'], [],
+											'item_id_b_fk');
+			$table->addForeignKeyConstraint('athm_item_rel_types', ['rel_type_id'], ['id'], [],
+											'item_rel_type_id_fk');
+			$table->addUniqueConstraint(['item_id_a', 'item_id_b', 'rel_type_id']);
 		}
 
 		if (!$schema->hasTable('athm_item_field_values')) {

@@ -13,6 +13,7 @@ class ItemDetails extends Entity implements JsonSerializable {
 	protected ?Item $item = null;
 	protected Array $contributions = [];
 	protected Array $fieldData = [];
+	protected Array $attachments = [];
 
 	public function jsonSerialize(): array {
 		$jsonItem = [];
@@ -22,7 +23,8 @@ class ItemDetails extends Entity implements JsonSerializable {
 		return [
 			'item' => $jsonItem,
 			'contributions' => $this->contributions,
-			'fieldData' => $this->fieldData
+			'fieldData' => $this->fieldData,
+			'attachments' => $this->attachments
 		];
 	}
 }
