@@ -10,7 +10,16 @@
 					:name="t('athenaeum', 'Inbox')"
 					:disabled="false"
 					button-id="inbox-button"
-					to="/inbox" >
+					to="/items/inbox" >
+					<template #icon>
+						<Inbox :size="20" />
+					</template>
+				</NcAppNavigationItem>
+				<NcAppNavigationItem v-if="!loading"
+					:name="t('athenaeum', 'Inbox/Decide Later')"
+					:disabled="false"
+					button-id="decide-later-button"
+					to="/items/inbox:decide_later" >
 					<template #icon>
 						<Inbox :size="20" />
 					</template>
@@ -19,7 +28,7 @@
 					:name="t('athenaeum', 'Library')"
 					:disabled="false"
 					button-id="library-button"
-					to="/library" >
+					to="/items/library" >
 					<template #icon>
 						<Bookshelf :size="20"/>
 					</template>
@@ -43,8 +52,7 @@
       		<button v-on:click="submitFile()">Submit</button>
 		</NcAppNavigation>
 
-		<InboxView v-if="currentView === ViewMode.INBOX" />
-		<LibraryView v-if="currentView === ViewMode.LIBRARY" />
+		<ItemView v-if="currentView === ViewMode.ITEMS || currentView === ViewMode.ITEMS_DETAILS" :key="currentView"/>
 			
 	</div>
 </template>
@@ -58,8 +66,7 @@ import NcAppNavigationNew from '@nextcloud/vue/dist/Components/NcAppNavigationNe
 import Bookshelf from 'vue-material-design-icons/Bookshelf.vue';
 import Inbox from 'vue-material-design-icons/Inbox.vue';
 
-import InboxView from './InboxView.vue'
-import LibraryView from './LibraryView.vue'
+import ItemView from './ItemView.vue'
 
 import '@nextcloud/dialogs/dist/index.css'
 import { generateUrl } from '@nextcloud/router'
@@ -82,8 +89,7 @@ export default {
 		Inbox,
 
 		// project components
-		InboxView,
-		LibraryView,
+		ItemView,
 	},
 	data() {
 		return {
@@ -93,9 +99,8 @@ export default {
 	},
 	computed: {
 		currentView() {
-			let pathParts = this.$route.path.split('/');
-			if (pathParts.length > 1) return pathParts[1];
-			return ViewMode.INBOX;
+			console.log("currentView", this.$route);
+			return this.$route.name;
 		},
 	},
 
@@ -111,7 +116,7 @@ export default {
 			formData.append('file', this.file);
 			console.log(this.file);
 			console.log(formData.get('file'));
-			axios.post( generateUrl('/apps/athenaeum/inbox_items/extractFromEML'), formData, {
+			axios.post( generateUrl('/apps/athenaeum/items/extractFromEML'), formData, {
 				headers: {
 					'Content-Type': 'multipart/form-data'
 				}

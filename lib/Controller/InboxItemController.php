@@ -30,8 +30,16 @@ class InboxItemController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 */
-	public function index(): DataResponse {
-		return new DataResponse($this->inboxItemService->findAll($this->userId));
+	public function index(
+		string $folder = "",
+        int $limit = 50,
+        int $offset = 0,
+        ?bool $showAll = false,
+        string $search = ''
+	): DataResponse {
+		return new DataResponse($this->inboxItemService->findAll(
+			$this->userId, $folder, $limit, $offset, $showAll, $search
+		));
 	}
 
 	/**
@@ -39,7 +47,7 @@ class InboxItemController extends Controller {
 	 */
 	public function show(int $id): DataResponse {
 		return $this->handleNotFound(function () use ($id) {
-			return $this->inboxItemService->find($id, $this->userId);
+			return $this->inboxItemService->getWithDetails($id, $this->userId);
 		});
 	}
 
@@ -49,6 +57,15 @@ class InboxItemController extends Controller {
 	public function getWithDetails(int $id): DataResponse {
 		return $this->handleNotFound(function () use ($id) {
 			return $this->inboxItemService->getWithDetails($id, $this->userId);
+		});
+	}
+
+	/**
+	 * @NoAdminRequired
+	 */
+	public function decideLater(int $id): DataResponse {
+		return $this->handleNotFound(function () use ($id) {
+			return $this->inboxItemService->decideLater($id, $this->userId);
 		});
 	}
 

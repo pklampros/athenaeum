@@ -8,11 +8,14 @@ import axios from '@nextcloud/axios'
 
 import { convertAxiosError } from '../errors/convert'
 
-export function fetchInboxItems(query, cursor, limit) {
-	const url = generateUrl('/apps/athenaeum/inbox_items')
+export function fetchItems(folder, query, cursor, limit) {
+	const url = generateUrl('/apps/athenaeum/res/items')
 	const params = {
 	}
 
+	if (folder) {
+		params.folder = folder
+	}
 	if (query) {
 		params.filter = query
 	}
@@ -33,9 +36,27 @@ export function fetchInboxItems(query, cursor, limit) {
 		})
 }
 
-export function fetchInboxItemDetails(id) {
-	const url = generateUrl('/apps/athenaeum/inbox_items/details/' + id)
+export function fetchItemDetails(id) {
+	const url = generateUrl('/apps/athenaeum/res/items/' + id)
 	const params = {
+	}
+
+	return axios
+		.get(url, {
+			params,
+		})
+		.then((resp) => resp.data)
+		.catch((error) => {
+			throw convertAxiosError(error)
+		})
+}
+
+
+export function itemChangeFolder(id, newFolder) {
+	const url = generateUrl('/apps/athenaeum/items/move_to_folder/')
+	const params = {
+		id: id,
+	    folder: newFolder
 	}
 
 	return axios

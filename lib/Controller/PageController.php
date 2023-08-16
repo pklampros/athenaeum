@@ -53,7 +53,7 @@ class PageController extends Controller {
 	 * 
 	 * @return TemplateResponse
 	 */
-	public function inbox(): TemplateResponse {
+	public function items(): TemplateResponse {
 		return $this->index();
 	}
 
@@ -63,27 +63,7 @@ class PageController extends Controller {
 	 * 
 	 * @return TemplateResponse
 	 */
-	public function showInboxItem(int $inboxItemId): TemplateResponse {
-		return $this->index();
-	}
-
-	/**
-	 * @NoAdminRequired
-	 * @NoCSRFRequired
-	 * 
-	 * @return TemplateResponse
-	 */
-	public function library(): TemplateResponse {
-		return $this->index();
-	}
-
-	/**
-	 * @NoAdminRequired
-	 * @NoCSRFRequired
-	 * 
-	 * @return TemplateResponse
-	 */
-	public function showLibraryItem(int $libraryItemId): TemplateResponse {
+	public function itemsDetails(): TemplateResponse {
 		return $this->index();
 	}
 }

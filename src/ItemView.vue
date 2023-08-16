@@ -6,69 +6,73 @@
 	<NcAppContent>
 		<div slot="list" class='header__button'>
 			<div id="toptitle">
-				<h2 >Library</h2>
+				<h2>Item</h2>
 			</div>
 			<NcAppContentList
 				class="main-items-list"
-				:show-details="true" >
-				<LibraryItem v-for="item in items"
+				:show-details="true">
+				<Item v-for="item in items"
 					:key="item.id"
 					:item="item">
-				</LibraryItem>
+				</Item>
 			</NcAppContentList>
 		</div>
-
-		<LibraryItemDetails slot="default" />
+		<ItemDetails slot="default" :itemId="currentItemId"/>
 	</NcAppContent>
 </template>
+
 
 <script>
 
 import NcAppContent from '@nextcloud/vue/dist/Components/NcAppContent'
 import NcAppContentList from '@nextcloud/vue/dist/Components/NcAppContentList'
-import NcActionButton from '@nextcloud/vue/dist/Components/NcActionButton'
-import NcListItem from '@nextcloud/vue/dist/Components/NcListItem'
 
-import LibraryItem from './LibraryItem.vue'
-import LibraryItemDetails from './LibraryItemDetails.vue'
+import Item from './Item.vue'
+import ItemDetails from './ItemDetails.vue'
 
-import { fetchLibraryItems } from './service/LibraryItemService'
+import { fetchItems } from './service/ItemService'
 
 export default {
-	name: 'LibraryItemList',
+	name: 'ItemView',
 	components: {
 		// components
 		NcAppContent,
 		NcAppContentList,
-		NcActionButton,
-		NcListItem,
 
 		// project components
-		LibraryItem,
-		LibraryItemDetails,
+		Item,
+		ItemDetails,
 	},
 	data() {
 		return {
 			items: [],
-			currentItemId: null,
+			// currentItemId: null,
 			updating: false,
 			loading: true,
 		}
 	},
 	computed: {
+		currentFolder() {
+			return this.$route.params.folder;
+		},
+		currentItemId() {
+			return parseInt(this.$route.params.itemId, null);
+		},
 		currentItem() {
 			if (this.currentItemId === null) {
 				return null
 			}
 			return this.items.find((item) => item.id === this.currentItemId)
 		},
-		savePossible() {
+
+		saveItemPossible() {
 			return this.currentItem && this.currentItem.title !== ''
 		},
 	},
 	async mounted() {
 		try {
-			this.items = await fetchLibraryItems();
+			this.items = await fetchItems(this.currentFolder)
+			console.log("Items", this.items)
 		} catch (e) {
 			console.error(e)
 			showError(t('athenaeum', 'Could not fetch items (route mounting failed)'))
@@ -77,48 +81,30 @@ export default {
 	},
 
 	methods: {
-
-		setViewMode(newViewMode) {
-			this.viewMode = newViewMode;
-		},
-
-		/**
-		 * Create a new item and focus the item content field automatically
-		 * @param {Object} item Item object
-		 */
-		openItem(item) {
-			if (this.updating) {
-				return
-			}
-			this.currentItemId = item.id
-			this.$nextTick(() => {
-				this.$refs.title.focus()
-			})
-		},
-		/**
-		 * Action tiggered when clicking the save button
-		 * create a new item or save
-		 */
-		saveItem() {
-			if (this.currentItemId === -1) {
-				this.createItem(this.currentItem)
-			} else {
-				this.updateItem(this.currentItem)
-			}
-		},
 		newItem() {
 			if (this.currentItemId !== -1) {
 				this.currentItemId = -1
 				this.items.push({
 					id: -1,
+					url: '',
 					title: '',
-					itemTypeId: 1,
-					folderId: 1
+					authors: '',
+					journal: '',
+					published: ''
 				})
 				this.$nextTick(() => {
 					this.$refs.title.focus()
 				})
 			}
+		},
+		getSubtitle(item) {
+			const authors = item.authors ? item.authors : ''
+			const journal = item.journal ? item.journal : ''
+			if (authors && journal) {
+				return authors + ' - ' + journal
+			}
+			return authors + journal
+		
 		},
 		cancelNewItem() {
 			this.items.splice(this.items.findIndex((item) => item.id === -1), 1)
@@ -127,7 +113,7 @@ export default {
 		async createItem(item) {
 			this.updating = true
 			try {
-				const response = await axios.post(generateUrl('/apps/athenaeum/items'), item)
+				const response = await axios.post(generateUrl('/apps/athenaeum/res/items'), item)
 				const index = this.items.findIndex((match) => match.id === this.currentItemId)
 				this.$set(this.items, index, response.data)
 				this.currentItemId = response.data.id
@@ -140,7 +126,7 @@ export default {
 		async updateItem(item) {
 			this.updating = true
 			try {
-				await axios.put(generateUrl(`/apps/athenaeum/items/${item.id}`), item)
+				await axios.put(generateUrl(`/apps/athenaeum/res/items/${item.id}`), item)
 			} catch (e) {
 				console.error(e)
 				showError(t('athenaeum', 'Could not update the item'))
@@ -149,12 +135,12 @@ export default {
 		},
 		async deleteItem(item) {
 			try {
-				await axios.delete(generateUrl(`/apps/athenaeum/items/${item.id}`))
+				await axios.delete(generateUrl(`/apps/athenaeum/res/items/${item.id}`))
 				this.items.splice(this.items.indexOf(item), 1)
 				if (this.currentItemId === item.id) {
 					this.currentItemId = null
 				}
-				showSuccess(t('athenaeum', 'Item deleted'))
+				showSuccess(t('athenaeum', 'Scholar Item deleted'))
 			} catch (e) {
 				console.error(e)
 				showError(t('athenaeum', 'Could not delete the item'))
@@ -175,10 +161,6 @@ export default {
 		align-items: center;
 		min-height: var(--athenaeum-navigation-height);
 	    padding: 0 var(--athenaeum-navigation-height);
-	}
-
-	.input-field {
-		margin: 12px 0px;
 	}
 	
 	:deep(.app-content-wrapper) {

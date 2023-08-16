@@ -27,13 +27,18 @@ class InboxItemService {
 	 */
 	public function findAll(
 		string $userId,
+		string $folder = "",
         int $limit = 50,
         int $offset = 0,
         ?bool $showAll = false,
         string $search = ''
 	): array {
+		$fullFolder = "inbox";
+		if ($folder) {
+			$fullFolder = $fullFolder . "/" . $folder;
+		}
 		return $this->mapper->findAll(
-			$userId, 1 /* inbox */, $limit, $offset, $showAll, $search
+			$userId, $this->mapper->findFolderId($fullFolder), $limit, $offset, $showAll, $search
 		);
 	}
 
@@ -65,6 +70,15 @@ class InboxItemService {
 	public function getWithDetails(int $id, string $userId): InboxItemDetails {
 		try {
 			return $this->mapper->getInboxItemDetails($id, $userId);
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
+	}
+
+	public function decideLater(int $id, string $userId): bool {
+		try {
+			$this->mapper->decideLater($id, $userId);
+			return true;
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}

@@ -4,36 +4,36 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
 	<NcListItem
-		:title="inboxItem.title ? inboxItem.title : t('athenaeum', 'New inbox item')"
-		:class="{active: currentInboxItemId === inboxItem.id}"
-		:counter-number="inboxItem.alertImportance"
+		:title="item.title ? item.title : t('athenaeum', 'New item')"
+		:class="{active: currentItemId === item.id}"
+		:counter-number="item.alertImportance"
 		:to="link">
 		<template #icon>
 			<google-scholar-icon size="20"/>
 		</template>
 		<template #subtitle>
 			<div
-				v-if="inboxItem.journal">
+				v-if="item.journal">
 				<span>
-					{{ inboxItem.journal }}
+					{{ item.journal }}
 				</span>
 			</div>
 			<div
-				v-if="inboxItem.authors">
+				v-if="item.authors">
 				<span>
-					{{ inboxItem.authors }}
+					{{ item.authors }}
 				</span>
 			</div>
 		</template>
 		<template #actions>
-			<NcActionButton v-if="inboxItem.id === -1"
+			<NcActionButton v-if="item.id === -1"
 				icon="icon-close"
-				@click="cancelNewInboxItem(inboxItem)">
+				@click="cancelNewItem(item)">
 				{{ t('athenaeum', 'Cancel item creation') }}
 			</NcActionButton>
 			<NcActionButton v-else
 				icon="icon-delete"
-				@click="deleteInboxItem(inboxItem)">
+				@click="deleteItem(item)">
 				{{ t('athenaeum', 'Delete item') }}
 			</NcActionButton>
 		</template>
@@ -52,7 +52,7 @@ import Bookshelf from 'vue-material-design-icons/Bookshelf.vue';
 import { GoogleScholarIcon } from 'vue-simple-icons'
 
 export default {
-	name: 'InboxItem',
+	name: 'Item',
 	components: {
 		// components
 		NcListItem,
@@ -63,7 +63,7 @@ export default {
 		GoogleScholarIcon,
 	},
 	props: {
-		inboxItem: {
+		item: {
 			type: Object,
 			required: true,
 		},
@@ -71,10 +71,10 @@ export default {
 	computed: {
 		link() {
 			return {
-				name: 'inbox_item',
+				name: 'items_details',
 				params: {
 					//filter: this.$route.params.filter ? this.$route.params.filter : undefined,
-					inboxItemId: this.inboxItem.id,
+					itemId: this.item.id,
 				},
 				exact: true,
 			}

@@ -30,13 +30,14 @@ class ItemController extends Controller {
 	 * @NoAdminRequired
 	 */
 	public function index(
+		string $folder = "",
         int $limit = 50,
         int $offset = 0,
         ?bool $showAll = false,
         string $search = ''
 	): DataResponse {
 		return new DataResponse($this->itemService->findAll(
-			$this->userId, $limit, $offset, $showAll, $search
+			$this->userId, $folder, $limit, $offset, $showAll, $search
 		));
 	}
 
@@ -45,7 +46,7 @@ class ItemController extends Controller {
 	 */
 	public function show(int $id): DataResponse {
 		return $this->handleNotFound(function () use ($id) {
-			return $this->itemService->find($id, $this->userId);
+			return $this->itemService->getWithDetails($id, $this->userId);
 		});
 	}
 

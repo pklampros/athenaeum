@@ -39,18 +39,7 @@ class ItemMapper extends QBMapper {
 		return $this->findEntity($qb);
 	}
 
-	/**
-	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
-	 * @throws DoesNotExistException
-	 */
-	public function getWithDetails(int $id, string $userId): ItemDetails {
-		$contributionMapper = new ContributionMapper($this->db);
-		$contributorMapper = new ContributorMapper($this->db);
-		$fieldMapper = new FieldMapper($this->db);
-
-		$itemDetails = new ItemDetails();
-		$itemDetails->setItem($this->find($id, $userId));
-
+	private function getContributions($id) {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('co.id')
 			->addSelect('co.first_name')
@@ -73,9 +62,10 @@ class ItemMapper extends QBMapper {
 		} finally {
 			$result->closeCursor();
 		}
-		$itemDetails->setContributions($contributions);
+		return $contributions;
+	}
 
-
+	private function getFieldData($id) {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('ifv.order')
 			->addSelect('ifv.value')
@@ -95,12 +85,67 @@ class ItemMapper extends QBMapper {
 		} finally {
 			$result->closeCursor();
 		}
-		$itemDetails->setFieldData($fieldData);
+		return $fieldData;
+	}
 
+	private function getAttachments($id, $userId) {
 		$itemAttachmentMapper = new ItemAttachmentMapper($this->db, $this->storage);
 
-		$attachments = $itemAttachmentMapper->findAllByItem($id, $userId);
-		$itemDetails->setAttachments($attachments);
+		return $itemAttachmentMapper->findAllByItem($id, $userId);
+	}
+
+	private function getSourceInfo($id) {
+
+		$qb = $this->db->getQueryBuilder();
+		$qb->select('its.extra')
+			->addSelect('s.importance')
+			->addSelect('s.source_type')
+			->from('athm_item_sources', 'its')
+			->innerJoin("its", "athm_sources", "s", "s.id = its.source_id")
+			->where($qb->expr()->eq('its.item_id',
+									$qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
+		
+		$result = $qb->executeQuery();
+		$sourceInfo = array();
+		try {
+			while ($fieldData = $result->fetch()) {
+				$fieldData['extra'] = json_decode($fieldData["extra"], true);
+				$sourceInfo[] = $fieldData;
+				// $sourceData = json_decode($fieldData["extra"], true);
+				// unset($sourceData['sourceId']);
+				// $inboxItem->setAuthors($sourceData['authors']);
+				// $inboxItem->setJournal($sourceData['journal']);
+				// $inboxItem->setPublished($sourceData['published']);
+				// $extra[] = array(
+				// 	'importance' => $fieldData['importance'],
+				// 	'type' => $fieldData['source_type'],
+				// 	'extra' => array(
+				// 		'searchTerm' => $sourceData['searchTerm'],
+				// 		'excerpt' => $sourceData['excerpt']
+				// 	)
+				// );
+			}
+		} finally {
+			$result->closeCursor();
+		}
+		return $sourceInfo;
+	}
+
+	/**
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws DoesNotExistException
+	 */
+	public function getWithDetails(int $id, string $userId): ItemDetails {
+		$contributionMapper = new ContributionMapper($this->db);
+		$contributorMapper = new ContributorMapper($this->db);
+		$fieldMapper = new FieldMapper($this->db);
+
+		$itemDetails = new ItemDetails();
+		$itemDetails->setItem($this->find($id, $userId));
+		$itemDetails->setContributions($this->getContributions($id));
+		$itemDetails->setFieldData($this->getFieldData($id));
+		$itemDetails->setAttachments($this->getAttachments($id, $userId));
+		$itemDetails->setSourceInfo($this->getSourceInfo($id));
 
 		return $itemDetails;
 	}
@@ -153,41 +198,16 @@ class ItemMapper extends QBMapper {
 			$result->closeCursor();
 		}
 
-		$qb = $this->db->getQueryBuilder();
-		$qb->select('its.extra')
-			->addSelect('s.importance')
-			->addSelect('s.source_type')
-			->from('athm_item_sources', 'its')
-			->innerJoin("its", "athm_sources", "s", "s.id = its.source_id")
-			->where($qb->expr()->eq('its.item_id',
-									$qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
 		
-		$result = $qb->executeQuery();
-		try {
-			$sourceInfo = array();
-			while ($fieldData = $result->fetch()) {
-				$sourceData = json_decode($fieldData["extra"], true);
-				unset($sourceData['sourceId']);
-				$inboxItem->setAuthors($sourceData['authors']);
-				$inboxItem->setJournal($sourceData['journal']);
-				$inboxItem->setPublished($sourceData['published']);
-				$extra[] = array(
-					'importance' => $fieldData['importance'],
-					'type' => $fieldData['source_type'],
-					'extra' => array(
-						'searchTerm' => $sourceData['searchTerm'],
-						'excerpt' => $sourceData['excerpt']
-					)
-				);
-			}
-			$itemDetails->setSourceInfo($extra);
-		} finally {
-			$result->closeCursor();
-		}
+		$itemDetails->setSourceInfo($this->getSourceInfo($id));
 
 		return $itemDetails;
 	}
 
+	public function decideLater(int $id, string $userId) {
+		$this->changeItemFolder($id, $this->findFolderId("inbox/decide_later", $userId));
+	}
+	
 	/**
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
