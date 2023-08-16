@@ -52,7 +52,7 @@
       		<button v-on:click="submitFile()">Submit</button>
 		</NcAppNavigation>
 
-		<ItemView v-if="currentView === ViewMode.ITEMS || currentView === ViewMode.ITEMS_DETAILS" :key="currentView"/>
+		<ItemView v-if="isItemView()" :key="currentView"/>
 			
 	</div>
 </template>
@@ -100,7 +100,10 @@ export default {
 	computed: {
 		currentView() {
 			console.log("currentView", this.$route);
-			return this.$route.name;
+			return {
+				"view": this.$route.name,
+				"folder": this.$route.params.folder
+			};
 		},
 	},
 
@@ -125,6 +128,10 @@ export default {
 			}).catch(function(){
 				console.log('FAILURE!!');
 			});
+		},
+		isItemView() {
+			return this.currentView.view === ViewMode.ITEMS ||
+				this.currentView.view === ViewMode.ITEMS_DETAILS;
 		},
 	},
 }
