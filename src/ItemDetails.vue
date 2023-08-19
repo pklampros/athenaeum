@@ -21,7 +21,7 @@
 					<span v-for="(contributor, index) in item.contributorData.contributors"
 								:key="contributor" style="display: flex;">
 						<span v-if="index !== 0">,&nbsp;</span>
-						<span v-if="contributor.displayName.contains('…')">…</span> 
+						<span v-if="contributor.displayName.includes('…')">…</span> 
 						<NcUserBubble v-else :margin="4" :size="30"
 								  :display-name="contributor.displayName">
 							<span style="padding: 4px 10px; border-radius: 5px;">
