@@ -70,7 +70,7 @@ export function itemChangeFolder(id, newFolder) {
 }
 
 export function convertToLibraryItemDetailed(itemData) {
-	const url = generateUrl('/apps/athenaeum/inbox_items/tolibrary')
+	const url = generateUrl('/apps/athenaeum/inbox_items/toLibrary')
 	return axios
 		.post(url, {
 			'itemData': itemData,

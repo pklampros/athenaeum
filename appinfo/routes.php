@@ -47,7 +47,7 @@ return [
 		// 	'verb' => 'GET', 'escape' => false],
 
 		['name' => 'inbox_item#toLibrary',
-			'url' => '/inbox_items/tolibrary',
+			'url' => '/inbox_items/toLibrary',
 			'verb' => 'POST'],
 		['name' => 'inbox_item#extractFromEML',
 			'url' => '/inbox_items/extractFromEML',
