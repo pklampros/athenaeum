@@ -119,7 +119,7 @@ export default {
 			formData.append('file', this.file);
 			console.log(this.file);
 			console.log(formData.get('file'));
-			axios.post( generateUrl('/apps/athenaeum/items/extractFromEML'), formData, {
+			axios.post( generateUrl('/apps/athenaeum/inbox_items/extractFromEML'), formData, {
 				headers: {
 					'Content-Type': 'multipart/form-data'
 				}

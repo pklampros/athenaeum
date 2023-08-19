@@ -13,7 +13,37 @@
 					<a :href="item.url" target="_blank"><OpenInNew></a>
 				</h2>
 				<h3> {{ item.journal }} </h3>
-				<h3> {{ authorListDisplay }} </h3>
+				<h3 v-if="item.contributorData.type === 'text'"> {{ item.contributorData.text }} </h3>
+				<div v-else-if="item.contributorData.contributors"
+					 style="display: flex; height: 44px; align-items: center;"
+				     @mouseenter="visible.cbButton = true"
+					 @mouseleave="visible.cbButton = false">
+					<span v-for="(contributor, index) in item.contributorData.contributors"
+								:key="contributor" style="display: flex;">
+						<span v-if="index !== 0">,&nbsp;</span>
+						<span v-if="contributor.displayName.contains('…')">…</span> 
+						<NcUserBubble v-else :margin="4" :size="30"
+								  :display-name="contributor.displayName">
+							<span style="padding: 4px 10px; border-radius: 5px;">
+								{{ contributor.firstName + contributor.name }}
+							</span>
+						</NcUserBubble>
+					</span>
+					<div v-show="visible.cbButton">
+						<NcButton @click="editing.contributors = !editing.contributors">
+							<template #icon>
+								<Pencil :size="18" />
+							</template>
+						</NcButton>
+					</div>
+				</div>
+				<!-- Enabling but hiding this so that the processing works -->
+				<div v-show="editing.contributors"
+					 style="padding:0px 10px; border-radius: 16px; border: 2px solid var(--color-border);">
+					<AuthorEditList
+						@interface="setAuthorListInterface"
+						@authorListUpdated="authorListUpdated"/>
+				</div>
 				&nbsp;
 				<h3 style="font-weight: bold;">Excerpts:</h3>
 				<ul style="list-style: inherit; padding: 4px 0 4px 44px;">
@@ -53,9 +83,6 @@
 					placeholder="Journal"
 					:error="hasEllipsis(item.journal)"
 					:value.sync="item.journal"/>
-				<AuthorEditList
-					@interface="setAuthorListInterface"
-					@authorListUpdated="authorListUpdated"/>
 				&nbsp;
 			</div>
 			<div style="display: flex; justify-content: right; align-items: center; padding: 16px;">
@@ -101,10 +128,12 @@ import NcRichContenteditable from '@nextcloud/vue/dist/Components/NcRichContente
 import NcEmptyContent from '@nextcloud/vue/dist/Components/NcEmptyContent'
 import NcRichText from '@nextcloud/vue/dist/Components/NcRichText'
 import NcButton from '@nextcloud/vue/dist/Components/NcButton'
+import NcUserBubble from '@nextcloud/vue/dist/Components/NcUserBubble'
 
 import Delete from 'vue-material-design-icons/Delete.vue';
 import School from 'vue-material-design-icons/School.vue';
 import OpenInNew from 'vue-material-design-icons/OpenInNew.vue';
+import Pencil from 'vue-material-design-icons/Pencil.vue'
 
 import AuthorEditList from './AuthorEditList.vue'
 
@@ -121,11 +150,13 @@ export default {
 		NcEmptyContent,
 		NcRichText,
 		NcButton,
+		NcUserBubble,
 
 		// icons
 		Delete,
 		School,
 		OpenInNew,
+		Pencil,
 
 		// project components
 		AuthorEditList
@@ -139,8 +170,13 @@ export default {
 	data() {
 		return {
 			item: null,
-			authorListDisplay: null,
-			authorList: [],
+			fixes: [],
+			visible: {
+				'cbButton': false,
+			},
+			editing: {
+				'contributors': false,
+			},
 		}
 	},
 	async mounted() {
@@ -160,22 +196,31 @@ export default {
 		},
 		item: async function (item) {
 			if (!item || !this.$options || !this.$options.authorListInterface) return;
-			this.$options.authorListInterface.setAuthorListFromText(item.authors);
+
+			if (item.contributorData.type == "text") {
+				this.$options.authorListInterface.setAuthorListFromText(item.contributorData.text);
+			} else {
+				this.$options.authorListInterface.setAuthorList(item.contributorData.contributors);
+			}
 		},
 	},
 	methods: {
 		// Setting the interface when emitted from child
 		setAuthorListInterface(authorListInterface) {
 			this.$options.authorListInterface = authorListInterface;
-			this.$options.authorListInterface.setAuthorListFromText(this.item.authors)
+			if (this.item.contributorData.type == "text") {
+				this.$options.authorListInterface.setAuthorListFromText(this.item.contributorData.text);
+			} else {
+				this.$options.authorListInterface.setAuthorList(this.item.contributorData.contributors);
+			}
 		},
 		authorListUpdated(newAuthorList) {
-			this.authorList = newAuthorList;
-			this.authorListDisplay = newAuthorList.map(author => author.displayName).join(', ');
+			this.item.contributorData.contributors = newAuthorList;
+			this.item.contributorData.type = "list";
 		},
 		addToLibrary() {
 			let detailedItem = this.item;
-			detailedItem.authorList = this.authorList;
+			detailedItem.authorList = this.item.contributorData.contributors;
 			// convertToLibraryItemDetailed(detailedItem);
 		},
 		decideLater() {
@@ -187,40 +232,91 @@ export default {
 		hasEllipsis(text) {
 			return text.includes('…') || text.includes("...")
 		},
-		async getItem(itemId) {
-			try {
-				let itemDetails = await fetchItemDetails(itemId);
-				console.log(itemDetails);
-				let item = itemDetails.item;
-				// go over the inbox-specific fieldData?
-				for (let fieldData of itemDetails.fieldData) {
-					let fieldName = fieldData['name']; 
-					if (fieldName == 'url') {
-						item['url'] = fieldData['value'];
-					} else if (fieldName == 'journal') {
-						item['journal'] = fieldData['value'];
-					} else if (fieldName == 'authors') {
-						item['authors'] = fieldData['value'];
+		extractSourceData(unmappedSourceData) {
+			let sourceData = [];
+			for (let sourceInfo of unmappedSourceData) {
+				let newSource = {};
+				console.log(sourceInfo.extra)
+				for (let [key, value] of Object.entries(sourceInfo.extra)) {
+					if (key == 'journal') {
+						newSource['journal'] = value;
+					} else if (key == 'authors') {
+						newSource['authors'] = value;
 					}
 				}
-				for (let sourceInfo of itemDetails.sourceInfo) {
-					console.log(sourceInfo.extra)
-					for (let [key, value] of Object.entries(sourceInfo.extra)) {
-						if (key == 'journal') {
-							item['journal'] = value;
-						} else if (key == 'authors') {
-							item['authors'] = value;
+				sourceData.push(newSource);
+			}
+			return sourceData;
+		},
+		extractFieldData(unmappedFieldData) {
+			let itemFieldData = {};
+			for (let fieldData of unmappedFieldData) {
+				let fieldName = fieldData['name']; 
+				if (fieldName == 'url') {
+					itemFieldData['url'] = fieldData['value'];
+				} else if (fieldName == 'journal') {
+					itemFieldData['journal'] = fieldData['value'];
+				} else if (fieldName == 'authors') {
+					itemFieldData['authors'] = fieldData['value'];
+				}
+			}
+			return itemFieldData;
+		},
+		getContributorData(itemDetails, itemFieldData, sourceData) {
+			let contributorData = {
+				type: "list"
+			};
+			if (itemDetails.contributions) {
+				contributorData.contributors = [];
+				// contributor
+				for (let contributor of itemDetails.contributions) {
+					contributorData.contributors.push({
+						'name': contributor['last_name'],
+						'firstName': contributor['first_name'],
+						'displayName': contributor['contributor_name_display']
+					});
+				}
+			}
+			if (!contributorData.contributors || contributorData.contributors.length === 0) {
+				// not found as contributors, look elsewhere
+				contributorData.type = "text";
+				contributorData.text = "";
+				if (itemFieldData['authors']) {
+					// found as a field
+					contributorData.text = itemFieldData['authors']
+				} else {
+					// look into the sources
+					for (let source of sourceData) {
+						if (source['authors']) {
+							contributorData.text = source['authors']
 						}
 					}
 				}
+			}
+			return contributorData;
+		},
+		async getItem(itemId) {
+			try {
+				let itemDetails = await fetchItemDetails(itemId);
+				console.log("ItemDetails", itemDetails);
+				let itemFieldData = this.extractFieldData(itemDetails.fieldData);
+				let sourceData = this.extractSourceData(itemDetails.sourceInfo);
+				let contributorData = this.getContributorData(itemDetails,
+					itemFieldData, sourceData);
+				// go over the inbox-specific fieldData?
+				
+				let item = itemDetails.item;
+
+				
 				item.id = itemId;
 				if (!item.journal) item.journal = "";
-				if (!item.authors) item.authors = "";
+				
 				item.sourceInfo = itemDetails.sourceInfo;
 				item.sourceInfo.sort(function(a, b) {
 					return parseFloat(a.importance) - parseFloat(b.importance);
 				});
-				console.log(item);
+				item.contributorData = contributorData;
+				console.log("item", item);
 				return item;
 			} catch (e) {
 				console.error(e)
@@ -231,7 +327,6 @@ export default {
 		async updateDetails(itemId) {
 			if (!itemId) return;
 			this.item = await this.getItem(itemId);
-			this.authorListDisplay = this.item.authors;
 		},
 	},
 }

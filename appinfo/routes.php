@@ -48,9 +48,9 @@ return [
 		// ['name' => 'inbox_item_api#findByUrl',
 		// 	'url' => '/api/0.1/inbox_items/url/{url}',
 		// 	'verb' => 'GET', 'escape' => false],
-		// ['name' => 'inbox_item#extractFromEML',
-		// 	'url' => '/inbox_items/extractFromEML',
-		// 	'verb' => 'POST'],
+		['name' => 'inbox_item#extractFromEML',
+			'url' => '/inbox_items/extractFromEML',
+			'verb' => 'POST'],
 
 		['name' => 'item#getWithDetails',
 			'url' => '/items/details/{id}',

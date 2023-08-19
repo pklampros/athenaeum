@@ -195,9 +195,11 @@ import DatabaseCheck from 'vue-material-design-icons/DatabaseCheck.vue';
 import SimilarAuthorsModal from './SimilarAuthorsModal.vue'
 
 import { findSimilar } from './service/ContributorService'
+import { authorMxn } from './mixins/authors.js'
 
 export default {
 	name: 'AuthorEditList',
+	mixins: [authorMxn],
 	components: {
 		// components
 		NcTextField,
@@ -235,59 +237,11 @@ export default {
 		}
 	},
 	methods: {
-		setAuthorListFromText(authors) {
-			this.authorList = authors.split(",");
-			let hasMoreAuthors = false;
-			this.authorList = this.authorList.map((author) => {
-				if (author.endsWith("…")) {
-					author = author.slice(0, -1);
-					hasMoreAuthors = true;
-				}
-				author = author.trim()
-				let authorData = this.getAuthorNameData(author)
-				authorData.isNew = true;
-				return authorData;
-			});
-			if (hasMoreAuthors) {
-				this.authorList.push({
-					"name": "…",
-					"firstName": "…",
-					"displayName": "…",
-					"displayNameModified": false,
-					"onlyLastName": true,
-					"isNew": true,
-					"potentialContributors": {
-						"found": [],
-						"loading": false,
-						"error": "",
-						"popoverVisible": false
-					},
-					"existingContributor": null,
-				})
-			}
+		setAuthorList(authors) {
+			this.authorList = authorMxn.getContributorList(authors, true);
 		},
-		getAuthorNameData(author) {
-			let authorNameParts = author.trim().split(" ");
-			let name = authorNameParts.at(-1).trim()
-			let nameData = {
-				"name": name,
-				"firstName": "",
-				"displayName": author,
-				"displayNameModified": authorNameParts > 1 && name != "",
-				"onlyLastName": authorNameParts > 1,
-				"potentialContributors": {
-					"found": [],
-					"loading": false,
-					"error": "",
-					"popoverVisible": false
-				},
-				"existingContributor": null,
-			}
-			if (authorNameParts.length > 1) {
-				nameData.firstName = authorNameParts.slice(0, -1).join(' ').trim();
-				nameData.onlyLastName = false;
-			}
-			return nameData;
+		setAuthorListFromText(text) {
+			this.authorList = authorMxn.getContributorListFromTxt(text);
 		},
 		markInboxItemDeleted() {
 			this.inboxItemBeingFiled = null
@@ -323,7 +277,7 @@ export default {
 			}
 			if (!author.onlyLastName && author.firstName == "") {
 				let authorMarkedNew = author.isNew;
-				author = this.getAuthorNameData(author.name);
+				author = authorMxn.getAuthorNameData(author.name);
 				author.isNew = authorMarkedNew;
 				author.onlyLastName = false;
 			}
@@ -383,7 +337,7 @@ export default {
 			this.$set(this.authorList, authorIndex, author);
 		},
 		addAuthor() {
-			let authorData = this.getAuthorNameData("")
+			let authorData = authorMxn.getAuthorNameData("")
 			authorData.onlyLastName = false;
 			authorData.isNew = true;
 			authorData.existingContributor = null;
@@ -391,6 +345,7 @@ export default {
 		},
 		emitInterface() {
 			this.$emit("interface", {
+				setAuthorList: (authors) => this.setAuthorList(authors),
 				setAuthorListFromText: (authors) => this.setAuthorListFromText(authors)
 			});
 		},
