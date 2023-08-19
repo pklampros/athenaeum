@@ -308,8 +308,6 @@ export default {
 				// go over the inbox-specific fieldData?
 				
 				let item = itemDetails.item;
-
-				
 				item.id = itemId;
 				item.journal = "";
 				if (itemFieldData['journal']) {
