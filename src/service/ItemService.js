@@ -68,3 +68,19 @@ export function itemChangeFolder(id, newFolder) {
 			throw convertAxiosError(error)
 		})
 }
+
+export function convertToLibraryItemDetailed(itemData) {
+	const url = generateUrl('/apps/athenaeum/inbox_items/tolibrary')
+	return axios
+		.post(url, {
+			'itemData': itemData,
+		}, {
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		})
+		.then((resp) => resp.data)
+		.catch((error) => {
+			throw convertAxiosError(error)
+		})
+}

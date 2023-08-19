@@ -30,9 +30,6 @@ return [
 			'url' => '/api/0.1/items/{itemId}/setField/{fieldName}/{fieldValue}',
 			'verb' => 'GET', 'escape' => false],
 
-		// ['name' => 'inbox_item#toLibrary',
-		// 	'url' => '/inbox_items/tolibrary',
-		// 	'verb' => 'POST'],
 
 		['name' => 'source_api#findByUid',
 			'url' => '/api/0.1/sources/uid/{uid}',
@@ -48,6 +45,10 @@ return [
 		// ['name' => 'inbox_item_api#findByUrl',
 		// 	'url' => '/api/0.1/inbox_items/url/{url}',
 		// 	'verb' => 'GET', 'escape' => false],
+
+		['name' => 'inbox_item#toLibrary',
+			'url' => '/inbox_items/tolibrary',
+			'verb' => 'POST'],
 		['name' => 'inbox_item#extractFromEML',
 			'url' => '/inbox_items/extractFromEML',
 			'verb' => 'POST'],

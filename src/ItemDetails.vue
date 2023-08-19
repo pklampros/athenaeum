@@ -140,8 +140,7 @@ import Pencil from 'vue-material-design-icons/Pencil.vue'
 import AuthorEditList from './AuthorEditList.vue'
 
 import { showError } from '@nextcloud/dialogs'
-import { fetchItemDetails } from './service/ItemService'
-// import { convertToLibraryItemDetailed } from './service/LibraryItemService'
+import { fetchItemDetails, convertToLibraryItemDetailed } from './service/ItemService'
 
 export default {
 	name: 'ItemDetails',
@@ -223,7 +222,7 @@ export default {
 		addToLibrary() {
 			let detailedItem = this.item;
 			detailedItem.authorList = this.item.contributorData.contributors;
-			// convertToLibraryItemDetailed(detailedItem);
+			convertToLibraryItemDetailed(detailedItem);
 		},
 		decideLater() {
 			itemDecideLater(this.item.id);
