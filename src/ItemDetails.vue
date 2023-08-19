@@ -311,7 +311,21 @@ export default {
 
 				
 				item.id = itemId;
-				if (!item.journal) item.journal = "";
+				item.journal = "";
+				if (itemFieldData['journal']) {
+					// found as a field
+					item.journal = itemFieldData['journal']
+				} else {
+					// look into the sources
+					for (let source of sourceData) {
+						if (source['journal']) {
+							item.journal = source['journal']
+						}
+					}
+				}
+				if (itemFieldData['url']) {
+					item.url = itemFieldData['url']
+				}
 				
 				item.sourceInfo = itemDetails.sourceInfo;
 				item.sourceInfo.sort(function(a, b) {
