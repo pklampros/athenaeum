@@ -30,7 +30,9 @@
 						</NcUserBubble>
 					</span>
 					<div v-show="visible.cbButton">
-						<NcButton @click="editing.contributors = !editing.contributors">
+						<NcButton
+							aria-label="Edit authors"
+							@click="editing.contributors = !editing.contributors">
 							<template #icon>
 								<Pencil :size="18" />
 							</template>
