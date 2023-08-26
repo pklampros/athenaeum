@@ -14,14 +14,22 @@ use OCP\AppFramework\Db\Entity;
  * 
  * @method getName(): string
  * @method setName(string $name): void
+ * @method getColuor(): string
+ * @method setColour(string $colour): void
+ * @method getUserId(): string
+ * @method setUserId(string $userId): void
  */
 class Tag extends Entity implements JsonSerializable {
-	protected string $name = 0;
+	protected string $name = '';
+	protected string $colour = '';
+	protected string $userId = '';
 
 	public function jsonSerialize(): array {
 		return [
 			'id' => $this->id,
-			'name' => $this->name
+			'name' => $this->name,
+			'colour' => $this->colour,
+			'userId' => $this->userId
 		];
 	}
 }
