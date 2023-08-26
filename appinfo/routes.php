@@ -46,6 +46,9 @@ return [
 		// 	'url' => '/api/0.1/inbox_items/url/{url}',
 		// 	'verb' => 'GET', 'escape' => false],
 
+		['name' => 'item#toWasteBasket',
+			'url' => '/items/toWasteBasket',
+			'verb' => 'POST'],
 		['name' => 'inbox_item#toLibrary',
 			'url' => '/inbox_items/toLibrary',
 			'verb' => 'POST'],

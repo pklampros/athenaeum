@@ -61,6 +61,8 @@ class DefaultDataRepairStep implements IRepairStep {
 		$query->executeStatement();
 		$query->setParameter('new_folder', 'library');
 		$query->executeStatement();
+		$query->setParameter('new_folder', 'wastebasket');
+		$query->executeStatement();
 
 		// add default fields
 		$query = $this->connection->getQueryBuilder();
