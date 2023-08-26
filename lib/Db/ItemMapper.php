@@ -205,7 +205,7 @@ class ItemMapper extends QBMapper {
 	}
 
 	public function decideLater(int $id, string $userId) {
-		$this->changeItemFolder($id, $this->findFolderId("inbox/decide_later", $userId));
+		$this->changeFolder($id, $this->findFolderId("inbox/decide_later", $userId));
 	}
 	
 	/**
@@ -424,7 +424,7 @@ class ItemMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function changeItemFolder(int $itemId, int $folderId, string $userId): Item {
+	public function changeFolder(int $itemId, int $folderId, string $userId): Item {
 		$item = $this->find($itemId, $userId);
 		$item->setFolderId($folderId);
 		$item->setDateModified(new \DateTime);
@@ -465,7 +465,7 @@ class ItemMapper extends QBMapper {
 	 */
 	public function inboxToDecideLater(int $id, string $userId): Item {
 		$folderId = $this->findFolderId("inbox/decide_later");
-        $this->changeItemFolder($id, $folderId);
+        $this->changeFolder($id, $folderId);
 	}
 
 	/**

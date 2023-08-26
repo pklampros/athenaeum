@@ -5,32 +5,16 @@
 	-->
 	<div id="content" class="app-athenaeum">
 		<NcAppNavigation>
-			<ul>
-				<NcAppNavigationItem v-if="!loading"
-					:name="t('athenaeum', 'Inbox')"
+			<ul v-if="!loading">
+				<NcAppNavigationItem 
+					v-for="folder in folders"
+					:key="folder.id"
+					:name="t('athenaeum', folder.name)"
 					:disabled="false"
-					button-id="inbox-button"
-					to="/items/inbox" >
+					:to="'/items/' + folder.path" >
 					<template #icon>
-						<Inbox :size="20" />
-					</template>
-				</NcAppNavigationItem>
-				<NcAppNavigationItem v-if="!loading"
-					:name="t('athenaeum', 'Inbox/Decide Later')"
-					:disabled="false"
-					button-id="decide-later-button"
-					to="/items/inbox:decide_later" >
-					<template #icon>
-						<Inbox :size="20" />
-					</template>
-				</NcAppNavigationItem>
-				<NcAppNavigationItem v-if="!loading"
-					:name="t('athenaeum', 'Library')"
-					:disabled="false"
-					button-id="library-button"
-					to="/items/library" >
-					<template #icon>
-						<Bookshelf :size="20"/>
+						<Inbox v-if="folder.isinbox" :size="20" />
+						<Bookshelf v-else :size="20"/>
 					</template>
 				</NcAppNavigationItem>
 			</ul>
@@ -72,6 +56,8 @@ import '@nextcloud/dialogs/dist/index.css'
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
 
+import { fetchFolders } from './service/FolderService'
+
 import {
 	ViewMode
 } from "./enums";
@@ -95,6 +81,8 @@ export default {
 		return {
 			fileItemTrigger: 0,
 			ViewMode: ViewMode,
+			folders: [],
+			loading: false,
 		}
 	},
 	computed: {
@@ -106,7 +94,16 @@ export default {
 			};
 		},
 	},
-
+	async mounted() {
+		this.loading = true
+		try {
+			this.folders = await fetchFolders();
+		} catch (e) {
+			console.error(e)
+			showError(t('athenaeum', 'Could not fetch folders (route mounting failed)'))
+		}
+		this.loading = false
+	},
 	methods: {
 
 		handleFileUpload( event ){

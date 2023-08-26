@@ -16,6 +16,7 @@ return [
 		'item' => ['url' => '/res/items'],
 		'item_api' => ['url' => '/api/0.1/items'],
 		'source_api' => ['url' => '/api/0.1/sources'],
+		'folder' => ['url' => '/res/folders'],
 		'contributor_api' => ['url' => '/api/0.1/contributors'],
 		'contribution_api' => ['url' => '/api/0.1/contributions'],
 	],
@@ -46,8 +47,8 @@ return [
 		// 	'url' => '/api/0.1/inbox_items/url/{url}',
 		// 	'verb' => 'GET', 'escape' => false],
 
-		['name' => 'item#toWasteBasket',
-			'url' => '/items/toWasteBasket',
+		['name' => 'item#changeFolder',
+			'url' => '/mod/items/folder',
 			'verb' => 'POST'],
 		['name' => 'inbox_item#toLibrary',
 			'url' => '/inbox_items/toLibrary',

@@ -20,9 +20,12 @@ use OCP\Migration\IRepairStep;
 class DefaultDataRepairStep implements IRepairStep {
 	
 	protected $connection;
+	private string $userId;
 	
-	public function __construct(IDBConnection $connection) {
+	public function __construct(IDBConnection $connection,
+								string $userId) {
 		$this->connection = $connection;
+		$this->userId = $userId;
 	}
 	
 	public function getName() {
@@ -53,15 +56,35 @@ class DefaultDataRepairStep implements IRepairStep {
 		// add default item folders
 		$query = $this->connection->getQueryBuilder();
 		$query->insert('athm_folders')
-			   ->setValue('path', $query->createParameter('new_folder'));
+			->setValue('path', $query->createParameter('new_path'))
+			->setValue('name', $query->createParameter('new_name'))
+			->setValue('editable', $query->createParameter('new_editable'))
+			->setValue('icon', $query->createParameter('new_icon'))
+			->setValue('user_id', $query->createParameter('new_user_id'));
 
-		$query->setParameter('new_folder', 'inbox');
+		$query->setParameter('new_path', 'inbox');
+		$query->setParameter('new_name', 'Inbox');
+		$query->setParameter('new_editable', false);
+		$query->setParameter('new_icon', 'Inbox');
+		$query->setParameter('new_user_id', $this->userId);
 		$query->executeStatement();
-		$query->setParameter('new_folder', 'inbox/decide_later');
+		$query->setParameter('new_path', 'inbox:decide_later');
+		$query->setParameter('new_name', 'Decide Later');
+		$query->setParameter('new_editable', true);
+		$query->setParameter('new_icon', 'Inbox');
+		$query->setParameter('new_user_id', $this->userId);
 		$query->executeStatement();
-		$query->setParameter('new_folder', 'library');
+		$query->setParameter('new_path', 'library');
+		$query->setParameter('new_name', 'Library');
+		$query->setParameter('new_editable', false);
+		$query->setParameter('new_icon', 'Bookshelf');
+		$query->setParameter('new_user_id', $this->userId);
 		$query->executeStatement();
-		$query->setParameter('new_folder', 'wastebasket');
+		$query->setParameter('new_path', 'wastebasket');
+		$query->setParameter('new_name', 'Wastebasket');
+		$query->setParameter('new_editable', false);
+		$query->setParameter('new_icon', 'Bookshelf');
+		$query->setParameter('new_user_id', $this->userId);
 		$query->executeStatement();
 
 		// add default fields

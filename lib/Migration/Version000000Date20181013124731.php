@@ -140,9 +140,25 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 				'notnull' => true,
 				'length' => 200
 			]);
+			$table->addColumn('name', 'string', [
+				'notnull' => true,
+				'length' => 200
+			]);
+			$table->addColumn('editable', 'boolean', [
+				'notnull' => false, # null is used for false
+				'default' => false
+			]);
+			$table->addColumn('icon', 'string', [
+				'notnull' => true,
+				'length' => 200
+			]);
+			$table->addColumn('user_id', 'string', [
+				'notnull' => true,
+				'length' => 200,
+			]);
 
 			$table->setPrimaryKey(['id']);
-			$table->addUniqueConstraint(['path']);
+			$table->addUniqueConstraint(['path', 'user_id']);
 		}
 
 		if (!$schema->hasTable('athm_item_attchm')) {

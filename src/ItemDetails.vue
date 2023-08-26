@@ -140,7 +140,7 @@ import Pencil from 'vue-material-design-icons/Pencil.vue'
 import AuthorEditList from './AuthorEditList.vue'
 
 import { showError } from '@nextcloud/dialogs'
-import { fetchItemDetails, convertToLibraryItemDetailed } from './service/ItemService'
+import { fetchItemDetails, convertToLibraryItemDetailed, itemChangeFolder } from './service/ItemService'
 
 export default {
 	name: 'ItemDetails',
@@ -228,6 +228,7 @@ export default {
 			itemDecideLater(this.item.id);
 		},
 		markItemDeleted() {
+			itemChangeFolder(this.item.id, "wastebasket");
 			this.item = null
 		},
 		hasEllipsis(text) {

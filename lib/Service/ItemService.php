@@ -182,4 +182,13 @@ class ItemService {
 			$this->handleException($e);
 		}
 	}
+
+	public function changeFolder(int $id, string $folder, string $userId) {
+		try {
+			$folderId = $this->mapper->findFolderId($folder);
+			return $this->mapper->changeFolder($id, $folderId, $userId);
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
+	}
 }

@@ -53,15 +53,16 @@ export function fetchItemDetails(id) {
 
 
 export function itemChangeFolder(id, newFolder) {
-	const url = generateUrl('/apps/athenaeum/items/move_to_folder/')
-	const params = {
-		id: id,
-	    folder: newFolder
-	}
+	const url = generateUrl('/apps/athenaeum/mod/items/folder')
 
 	return axios
-		.get(url, {
-			params,
+		.post(url, {
+			'id': id,
+			'folder': newFolder
+		}, {
+			headers: {
+				'Content-Type': 'application/json'
+			}
 		})
 		.then((resp) => resp.data)
 		.catch((error) => {

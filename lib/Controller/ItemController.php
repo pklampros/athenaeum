@@ -118,6 +118,17 @@ class ItemController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 */
+	public function changeFolder(): DataResponse {
+		$id = $this->request->post['id'];
+		$folder = $this->request->post['folder'];
+		return $this->handleNotFound(function () use ($id, $folder) {
+			return $this->itemService->changeFolder($id, $folder, $this->userId);
+		});
+	}
+
+	/**
+	 * @NoAdminRequired
+	 */
 	public function destroy(int $id): DataResponse {
 		return $this->handleNotFound(function () use ($id) {
 			return $this->itemService->delete($id, $this->userId);
