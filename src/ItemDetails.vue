@@ -223,6 +223,7 @@ export default {
 			let detailedItem = this.item;
 			detailedItem.authorList = this.item.contributorData.contributors;
 			convertToLibraryItemDetailed(detailedItem);
+			this.item = null;
 		},
 		decideLater() {
 			itemChangeFolder(this.item.id, "inbox:decide_later");
