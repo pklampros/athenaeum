@@ -31,9 +31,9 @@
 				button-class="icon-add"
 				@click="newItem" />
 			<label>File
-				<input type="file" id="file" ref="file" v-on:change="handleFileUpload($event)"/>
+				<input type="file" id="file" ref="file" v-on:change="handleFileUpload($event)" multiple/>
 			</label>
-      		<button v-on:click="submitFile()">Submit</button>
+      		<button v-on:click="submitFiles()">Submit</button>
 		</NcAppNavigation>
 
 		<ItemView v-if="isItemView()" :key="currentView"/>
@@ -83,6 +83,7 @@ export default {
 			ViewMode: ViewMode,
 			folders: [],
 			loading: false,
+			uploading: false
 		}
 	},
 	computed: {
@@ -108,23 +109,31 @@ export default {
 
 		handleFileUpload( event ){
 			console.log(event);
-			this.file = event.target.files[0];
+			this.files = event.target.files;
 			console.log(this.file);
 		},
-		submitFile(){
+		submitFiles(){
+			this.uploading = true;
 			let formData = new FormData();
-			formData.append('file', this.file);
-			console.log(this.file);
-			console.log(formData.get('file'));
-			axios.post( generateUrl('/apps/athenaeum/inbox_items/extractFromEML'), formData, {
-				headers: {
-					'Content-Type': 'multipart/form-data'
-				}
-			}).then(function(){
-				console.log('SUCCESS!!');
-			}).catch(function(){
-				console.log('FAILURE!!');
-			});
+			for (let i = 0; i < this.files.length; i++) {
+				formData.append(i, this.files[i]);
+			};
+			formData.set('fileCount', this.files.length);
+			let thisClass = this;
+			axios.post(
+				generateUrl('/apps/athenaeum/inbox_items/extractFromEML'),
+				formData,
+				{
+					headers: {
+						'Content-Type': 'multipart/form-data'
+					}
+				}).then(function(){
+					console.log('SUCCESS!!');
+				}).catch(function(){
+					console.log('FAILURE!!');
+				}).finally(function() {
+					thisClass.uploading = false;
+				});
 		},
 		isItemView() {
 			return this.currentView.view === ViewMode.ITEMS ||
