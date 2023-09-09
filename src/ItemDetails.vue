@@ -225,7 +225,8 @@ export default {
 			convertToLibraryItemDetailed(detailedItem);
 		},
 		decideLater() {
-			itemDecideLater(this.item.id);
+			itemChangeFolder(this.item.id, "inbox:decide_later");
+			this.item = null
 		},
 		markItemDeleted() {
 			itemChangeFolder(this.item.id, "wastebasket");
