@@ -1,0 +1,7 @@
+FROM php:8.2-cli
+RUN apt-get update && apt-get install -y npm
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" && \
+    pear config-set php_ini "$PHP_INI_DIR/php.ini" && \
+    pecl install mailparse
+ENV COMPOSER_ALLOW_SUPERUSER=1
+CMD /src/makeApp.sh
