@@ -1,17 +1,17 @@
 #!/bin/bash
 
 # install container
-podman build --tag athenaeum-container .
-
-# if you are having webpack problems try npm install (necessary anyway after make distclean)
+podman build -t athenaeum-builder \
+--build-arg PHP_EXTRA_CONFIGURE_ARGS="--enable-mailparse" \
+-<< EOF
+FROM php:8.2-cli
+RUN apt-get update && apt-get install -y npm
+RUN pecl install mailparse && docker-php-ext-enable mailparse
+ENV COMPOSER_ALLOW_SUPERUSER=1
+CMD /src/makeApp.sh
+EOF
 
 podman run \
     --volume=../:/src/ \
     --workdir=/src \
-    athenaeum-container:latest \
-#    -i
-#    makeApp.sh
-#    /bin/bash  -c "pwd" #/src/makeApp.sh
-
-#        "php build/tools/composer.phar update && make"
-#make
+    athenaeum-builder:latest \
