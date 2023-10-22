@@ -87,7 +87,25 @@
 					:value.sync="item.journal"/>
 				&nbsp;
 			</div>
+			<div v-if="item.attachments"
+			     style="margin-top: 10px; padding:0px 10px; border-radius: 16px; border: 2px solid var(--color-border);">
+				<div class="field-label">
+					<h3>Attachments</h3>
+				</div>
+				 <ul>
+					<NcListItem v-for="attachment in item.attachments"
+					    :key="attachment.id"
+						:title="attachment.path"
+						:compact="true">
+					</NcListItem>
+				 </ul>
+				 <!-- <pre>{{ JSON.stringify(item.attachments, null, 2) }}</pre> -->
+			</div>
 			<div style="display: flex; justify-content: right; align-items: center; padding: 16px;">
+				<label>File
+					<input type="file" id="file" ref="file" v-on:change="handleFileUpload($event)"/>
+				</label>
+				<button v-on:click="submitFile()">Submit</button>
 				<NcButton
 					ariaLabel="Remove item"
 					:disabled="!this.item.title || !this.item.url"
@@ -131,6 +149,7 @@ import NcEmptyContent from '@nextcloud/vue/dist/Components/NcEmptyContent'
 import NcRichText from '@nextcloud/vue/dist/Components/NcRichText'
 import NcButton from '@nextcloud/vue/dist/Components/NcButton'
 import NcUserBubble from '@nextcloud/vue/dist/Components/NcUserBubble'
+import NcListItem from '@nextcloud/vue/dist/Components/NcListItem'
 
 import Delete from 'vue-material-design-icons/Delete.vue';
 import School from 'vue-material-design-icons/School.vue';
@@ -140,7 +159,7 @@ import Pencil from 'vue-material-design-icons/Pencil.vue'
 import AuthorEditList from './AuthorEditList.vue'
 
 import { showError } from '@nextcloud/dialogs'
-import { fetchItemDetails, convertToLibraryItemDetailed, itemChangeFolder } from './service/ItemService'
+import { fetchItemDetails, convertToLibraryItemDetailed, itemChangeFolder, attachFile } from './service/ItemService'
 
 export default {
 	name: 'ItemDetails',
@@ -152,6 +171,7 @@ export default {
 		NcRichText,
 		NcButton,
 		NcUserBubble,
+		NcListItem,
 
 		// icons
 		Delete,
@@ -311,6 +331,7 @@ export default {
 				let sourceData = this.extractSourceData(itemDetails.sourceInfo);
 				let contributorData = this.getContributorData(itemDetails,
 					itemFieldData, sourceData);
+				let attachmentData = itemDetails.attachments;
 				// go over the inbox-specific fieldData?
 				
 				let item = itemDetails.item;
@@ -336,6 +357,7 @@ export default {
 					return parseFloat(a.importance) - parseFloat(b.importance);
 				});
 				item.contributorData = contributorData;
+				item.attachments = attachmentData;
 				console.log("item", item);
 				return item;
 			} catch (e) {
@@ -347,6 +369,15 @@ export default {
 		async updateDetails(itemId) {
 			if (!itemId) return;
 			this.item = await this.getItem(itemId);
+		},
+		handleFileUpload( event ){
+			console.log(event);
+			this.file = event.target.files[0];
+			console.log(this.file);
+		},
+		async submitFile(){
+			let response = await attachFile(this.file, this.item.id);
+			console.log("submitResponse:", response);
 		},
 	},
 }

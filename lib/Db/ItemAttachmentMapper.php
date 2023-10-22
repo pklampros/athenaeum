@@ -51,15 +51,20 @@ class ItemAttachmentMapper extends QBMapper {
 		return $newFolder;
 	}
 
-	private function getAttachmentsFolder($userId) : Folder {
+	private function getAllItemDataFolder($userId) : Folder {
 		$userFolder = $this->getUserFolder($userId);
 		$mainFolder = $this->getOrCreateSubFolder($userFolder, $this->mainFolderName);
-		return $this->getOrCreateSubFolder($mainFolder, 'attachments');
+		return $this->getOrCreateSubFolder($mainFolder, 'itemdata');
+	}
+
+	private function getItemDataFolder($userId, $itemId) : Folder {
+		$allItemDataFolder = $this->getAllItemDataFolder($userId);
+		return $this->getOrCreateSubFolder($allItemDataFolder, $itemId);
 	}
 
 	public function createAttachmentFile($itemId, string $fileName, $fileData, string $userId) {
-		$attachmentsFolder = $this->getAttachmentsFolder($userId);
-		$itemAttachmentsFolder = $this->getOrCreateSubFolder($attachmentsFolder, $itemId);
+		$itemDataFolder = $this->getItemDataFolder($userId, $itemId);
+		$itemAttachmentsFolder = $this->getOrCreateSubFolder($itemDataFolder, 'attachments');
 		try {
 			try {
 				$itemAttachmentsFolder->get($fileName);

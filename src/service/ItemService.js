@@ -83,5 +83,24 @@ export function convertToLibraryItemDetailed(itemData) {
 		.then((resp) => resp.data)
 		.catch((error) => {
 			throw convertAxiosError(error)
+		});
+}
+
+export function attachFile(file, itemId) {
+	const url = generateUrl('/apps/athenaeum/items/attachFile');
+
+	let formData = new FormData();
+	formData.append('file', file);
+	formData.append('item_id', itemId);
+	return axios
+	    .post(url, formData,
+		{
+			headers: {
+				'Content-Type': 'multipart/form-data'
+			}
 		})
+		.then((resp) => resp.data)
+		.catch((error) => {
+			throw convertAxiosError(error)
+		});
 }
