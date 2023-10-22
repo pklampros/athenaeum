@@ -1,5 +1,8 @@
 #!/bin/bash
 
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+cd $SCRIPT_DIR
+
 # install container
 podman build -t athenaeum-builder \
 --build-arg PHP_EXTRA_CONFIGURE_ARGS="--enable-mailparse" \
