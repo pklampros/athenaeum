@@ -219,19 +219,23 @@ export default {
 			this.item.contributorData.contributors = newAuthorList;
 			this.item.contributorData.type = "list";
 		},
+		itemChangedFolder() {
+			this.item = null;
+			//window.location = '/apps/athenaeum/items/' + this.$route.params.folder;
+		},
 		addToLibrary() {
 			let detailedItem = this.item;
 			detailedItem.authorList = this.item.contributorData.contributors;
 			convertToLibraryItemDetailed(detailedItem);
-			this.item = null;
+			this.itemChangedFolder();
 		},
 		decideLater() {
 			itemChangeFolder(this.item.id, "inbox:decide_later");
-			this.item = null
+			this.itemChangedFolder();
 		},
 		markItemDeleted() {
 			itemChangeFolder(this.item.id, "wastebasket");
-			this.item = null
+			this.itemChangedFolder();
 		},
 		hasEllipsis(text) {
 			return text.includes('…') || text.includes("...")
