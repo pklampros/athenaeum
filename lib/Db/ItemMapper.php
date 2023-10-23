@@ -628,7 +628,7 @@ class ItemMapper extends QBMapper {
 
 			$itemAttachment = new ItemAttachment();
 			$itemAttachment->setItemId($itemId);
-			$itemAttachment->setPath($newFilePath->getPath());
+			$itemAttachment->setPath($newFilePath);
 			$itemAttachment->setMimeType($fileMime);
 
 			try {

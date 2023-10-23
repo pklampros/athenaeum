@@ -21,9 +21,13 @@ class FilesystemHandler {
 		return $this->storage->getUserFolder($userId);
 	}
 
-	private function getAllItemDataFolder($userId) : Folder {
+	public function getMainFolder($userId) : Folder {
 		$userFolder = $this->getUserFolder($userId);
-		$mainFolder = $this->getOrCreateSubFolder($userFolder, $this->mainFolderName);
+		return $this->getOrCreateSubFolder($userFolder, $this->mainFolderName);
+	}
+
+	private function getAllItemDataFolder($userId) : Folder {
+		$mainFolder = $this->getMainFolder($userId);
 		return $this->getOrCreateSubFolder($mainFolder, 'itemdata');
 	}
 

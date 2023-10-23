@@ -25,7 +25,7 @@ class ItemAttachmentMapper extends QBMapper {
 	}
 
 
-	public function createAttachmentFile($itemId, string $fileName, $fileData, string $userId) {
+	public function createAttachmentFile($itemId, string $fileName, $fileData, string $userId) : string {
 		$fsh = new FilesystemHandler($this->storage);
 		$itemAttachmentsFolder = $fsh->getItemAttachmentsFolder($userId, $itemId);
 		try {
@@ -36,7 +36,9 @@ class ItemAttachmentMapper extends QBMapper {
 				// does not exist, continue
 			}
 			$itemAttachmentsFolder->newFile($fileName, $fileData);
-			return $itemAttachmentsFolder->get($fileName);
+			$mainFolder = $fsh->getMainFolder($userId);
+			$finalFile = $itemAttachmentsFolder->get($fileName)->getPath();
+			return $mainFolder->getRelativePath($finalFile);
 		} catch(\OCP\Files\NotPermittedException $e) {
 			// can not access or create main folder
 			throw new StorageException('Cant access or create file ' . $fileName);
