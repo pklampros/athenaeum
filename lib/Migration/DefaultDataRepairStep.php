@@ -33,6 +33,38 @@ class DefaultDataRepairStep implements IRepairStep {
 	}
 	
 	public function run(IOutput $output) {
+
+		// add default config fields
+		$query = $this->connection->getQueryBuilder();
+		$query->insert('athm_cfg_fields')
+			  ->setValue('name', $query->createParameter('new_field_name'))
+			  ->setValue('type_hint', $query->createParameter('new_field_type_hint'));
+
+	    $dbid_field = 'dbid';
+		$query->setParameter('new_field_name', $dbid_field);
+		$query->setParameter('new_field_type_hint', 'string');
+
+		// get the newly added field's id
+		$query = $this->connection->getQueryBuilder();
+		$query->select('id')
+			  ->from('athm_cfg_fields')
+			  ->where($query->expr()->eq('name', $query->createNamedParameter($dbid_field)));
+		$cursor = $query->execute();
+		$row = $cursor->fetch();
+		$cursor->closeCursor();
+		$dbid_field_id = $row['id'];
+
+		// add first config fields values
+		$query = $this->connection->getQueryBuilder();
+		$query->insert('athm_cfg_field_values')
+			  ->setValue('user_id', $query->createParameter('new_user_id'))
+			  ->setValue('field_id', $query->createParameter('new_field_id'))
+			  ->setValue('value', $query->createParameter('new_value'));
+
+		$query->setParameter('new_user_id', $this->userId);
+		$query->setParameter('new_field_id', $dbid_field_id);
+		$query->setParameter('new_value', uniqid());
+
 		// add default item types
 		$query = $this->connection->getQueryBuilder();
 		$query->insert('athm_item_types')
