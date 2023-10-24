@@ -5,32 +5,16 @@
 	-->
 	<div id="content" class="app-athenaeum">
 		<NcAppNavigation>
-			<ul>
-				<NcAppNavigationItem v-if="!loading"
-					:name="t('athenaeum', 'Inbox')"
+			<ul v-if="!loading">
+				<NcAppNavigationItem 
+					v-for="folder in folders"
+					:key="folder.id"
+					:name="t('athenaeum', folder.name)"
 					:disabled="false"
-					button-id="inbox-button"
-					to="/items/inbox" >
+					:to="'/items/' + folder.path" >
 					<template #icon>
-						<Inbox :size="20" />
-					</template>
-				</NcAppNavigationItem>
-				<NcAppNavigationItem v-if="!loading"
-					:name="t('athenaeum', 'Inbox/Decide Later')"
-					:disabled="false"
-					button-id="decide-later-button"
-					to="/items/inbox:decide_later" >
-					<template #icon>
-						<Inbox :size="20" />
-					</template>
-				</NcAppNavigationItem>
-				<NcAppNavigationItem v-if="!loading"
-					:name="t('athenaeum', 'Library')"
-					:disabled="false"
-					button-id="library-button"
-					to="/items/library" >
-					<template #icon>
-						<Bookshelf :size="20"/>
+						<Inbox v-if="folder.isinbox" :size="20" />
+						<Bookshelf v-else :size="20"/>
 					</template>
 				</NcAppNavigationItem>
 			</ul>
@@ -47,9 +31,9 @@
 				button-class="icon-add"
 				@click="newItem" />
 			<label>File
-				<input type="file" id="file" ref="file" v-on:change="handleFileUpload($event)"/>
+				<input type="file" id="file" ref="file" v-on:change="handleFileUpload($event)" multiple/>
 			</label>
-      		<button v-on:click="submitFile()">Submit</button>
+      		<button v-on:click="submitFiles()">Submit</button>
 		</NcAppNavigation>
 
 		<ItemView v-if="isItemView()" :key="currentView"/>
@@ -71,6 +55,8 @@ import ItemView from './ItemView.vue'
 import '@nextcloud/dialogs/dist/index.css'
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
+
+import { fetchFolders } from './service/FolderService'
 
 import {
 	ViewMode
@@ -95,6 +81,9 @@ export default {
 		return {
 			fileItemTrigger: 0,
 			ViewMode: ViewMode,
+			folders: [],
+			loading: false,
+			uploading: false
 		}
 	},
 	computed: {
@@ -106,28 +95,45 @@ export default {
 			};
 		},
 	},
-
+	async mounted() {
+		this.loading = true
+		try {
+			this.folders = await fetchFolders();
+		} catch (e) {
+			console.error(e)
+			showError(t('athenaeum', 'Could not fetch folders (route mounting failed)'))
+		}
+		this.loading = false
+	},
 	methods: {
 
 		handleFileUpload( event ){
 			console.log(event);
-			this.file = event.target.files[0];
+			this.files = event.target.files;
 			console.log(this.file);
 		},
-		submitFile(){
+		submitFiles(){
+			this.uploading = true;
 			let formData = new FormData();
-			formData.append('file', this.file);
-			console.log(this.file);
-			console.log(formData.get('file'));
-			axios.post( generateUrl('/apps/athenaeum/inbox_items/extractFromEML'), formData, {
-				headers: {
-					'Content-Type': 'multipart/form-data'
-				}
-			}).then(function(){
-				console.log('SUCCESS!!');
-			}).catch(function(){
-				console.log('FAILURE!!');
-			});
+			for (let i = 0; i < this.files.length; i++) {
+				formData.append(i, this.files[i]);
+			};
+			formData.set('fileCount', this.files.length);
+			let thisClass = this;
+			axios.post(
+				generateUrl('/apps/athenaeum/inbox_items/extractFromEML'),
+				formData,
+				{
+					headers: {
+						'Content-Type': 'multipart/form-data'
+					}
+				}).then(function(){
+					console.log('SUCCESS!!');
+				}).catch(function(){
+					console.log('FAILURE!!');
+				}).finally(function() {
+					thisClass.uploading = false;
+				});
 		},
 		isItemView() {
 			return this.currentView.view === ViewMode.ITEMS ||

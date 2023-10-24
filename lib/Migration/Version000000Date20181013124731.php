@@ -23,6 +23,49 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 		/** @var ISchemaWrapper $schema */
 		$schema = $schemaClosure();
 
+
+		if (!$schema->hasTable('athm_cfg_fields')) {
+			$table = $schema->createTable('athm_cfg_fields');
+			$table->addColumn('id', 'integer', [
+				'autoincrement' => true,
+				'notnull' => true,
+			]);
+			$table->addColumn('name', 'string', [
+				'notnull' => true,
+				'length' => 200
+			]);
+			$table->addColumn('type_hint', 'string', [
+				'notnull' => true,
+				'length' => 200
+			]);
+
+			$table->setPrimaryKey(['id']);
+			$table->addUniqueConstraint(['name']);
+		}
+
+		if (!$schema->hasTable('athm_cfg_field_values')) {
+			$table = $schema->createTable('athm_cfg_field_values');
+			$table->addColumn('id', 'integer', [
+				'autoincrement' => true,
+				'notnull' => true,
+			]);
+			$table->addColumn('user_id', 'integer', [
+				'notnull' => true
+			]);
+			$table->addColumn('field_id', 'integer', [
+				'notnull' => true
+			]);
+			$table->addColumn('value', 'text', [
+				'notnull' => true,
+				'default' => ''
+			]);
+
+			$table->setPrimaryKey(['id']);
+			$table->addForeignKeyConstraint('athm_cfg_fields', ['field_id'], ['id'], [],
+											'cfg_field_id_fk');
+			$table->addUniqueConstraint(['user_id', 'field_id']);
+		}
+
 		if (!$schema->hasTable('athm_contribn_types')) {
 			$table = $schema->createTable('athm_contribn_types');
 			$table->addColumn('id', 'integer', [
@@ -110,7 +153,6 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			$table->setPrimaryKey(['id']);
 		}
 
-
 		if (!$schema->hasTable('athm_fields')) {
 			$table = $schema->createTable('athm_fields');
 			$table->addColumn('id', 'integer', [
@@ -140,9 +182,25 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 				'notnull' => true,
 				'length' => 200
 			]);
+			$table->addColumn('name', 'string', [
+				'notnull' => true,
+				'length' => 200
+			]);
+			$table->addColumn('editable', 'boolean', [
+				'notnull' => false, # null is used for false
+				'default' => false
+			]);
+			$table->addColumn('icon', 'string', [
+				'notnull' => true,
+				'length' => 200
+			]);
+			$table->addColumn('user_id', 'string', [
+				'notnull' => true,
+				'length' => 200,
+			]);
 
 			$table->setPrimaryKey(['id']);
-			$table->addUniqueConstraint(['path']);
+			$table->addUniqueConstraint(['path', 'user_id']);
 		}
 
 		if (!$schema->hasTable('athm_item_attchm')) {
@@ -350,8 +408,18 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 				'notnull' => true,
 				'length' => 200
 			]);
+			$table->addColumn('colour', 'string', [
+				'notnull' => true,
+				'length' => 32,
+				'default' => 'default'
+			]);
+			$table->addColumn('user_id', 'string', [
+				'notnull' => true,
+				'length' => 200,
+			]);
 
 			$table->setPrimaryKey(['id']);
+			$table->addUniqueConstraint(['name', 'user_id']);
 		}
 		
 		return $schema;

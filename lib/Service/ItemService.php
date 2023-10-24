@@ -66,6 +66,15 @@ class ItemService {
 		}
 	}
 
+
+	public function dumpItemDetailsToJSON(int $itemId, string $userId) {
+		try {
+			return $this->mapper->dumpItemDetailsToJSON($itemId, $userId);
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
+	}
+
 	public function attachFile(int $itemId, string $fileName, string $fileMime,
 	                           int $fileSize, $fileData, string $userId): ItemAttachment {
 		try {
@@ -178,6 +187,15 @@ class ItemService {
 			$entity = $this->mapper->find($id, $userId);
 			$this->mapper->delete($entity);
 			return $entity;
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
+	}
+
+	public function changeFolder(int $id, string $folder, string $userId) {
+		try {
+			$folderId = $this->mapper->findFolderId($folder);
+			return $this->mapper->changeFolder($id, $folderId, $userId);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}

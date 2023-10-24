@@ -12,24 +12,36 @@ use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 
 /**
- * @template-extends QBMapper<Tag>
+ * @template-extends QBMapper<Folder>
  */
-class TagMapper extends QBMapper {
+class FolderMapper extends QBMapper {
 	public function __construct(IDBConnection $db) {
-		parent::__construct($db, 'athm_tags', Tag::class);
+		parent::__construct($db, 'athm_folders', Folder::class);
 	}
 
 	/**
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function find(int $id, string $userId): Tag {
+	public function find(int $id, string $userId): Folder {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
-			->from('athm_tags')
+			->from('athm_folders')
 			->where($qb->expr()->eq('id', $qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)))
-			->andWhere($qb->expr()->eq('user_id', $qb->createNamedParameter($userId, IQueryBuilder::PARAM_TEXT)));
+			->andWhere($qb->expr()->eq('user_id', $qb->createNamedParameter($userId, IQueryBuilder::PARAM_STR)));
 		return $this->findEntity($qb);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function findAll(string $userId): array {
+		/* @var $qb IQueryBuilder */
+		$qb = $this->db->getQueryBuilder();
+		$qb->select('*')
+			->from('athm_folders')
+			->where($qb->expr()->eq('user_id', $qb->createNamedParameter($userId, IQueryBuilder::PARAM_STR)));
+		return $this->findEntities($qb);
 	}
 }

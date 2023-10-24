@@ -59,6 +59,15 @@ class ItemController extends Controller {
 		});
 	}
 
+
+	/**
+	 * @NoAdminRequired
+	 */
+	public function dumpItemDetailsToJSON(int $id): DataResponse {
+		return $this->handleNotFound(function () use ($id) {
+			return $this->itemService->dumpItemDetailsToJSON($id, $this->userId);
+		});
+	}
 	/**
 	 * @NoAdminRequired
 	 */
@@ -112,6 +121,17 @@ class ItemController extends Controller {
 													  $dateAdded, $dateModified) {
 			return $this->itemService->update($id, $title, $itemTypeId, $folderId, $dateAdded,
 										  $dateModified, $this->userId);
+		});
+	}
+
+	/**
+	 * @NoAdminRequired
+	 */
+	public function changeFolder(): DataResponse {
+		$id = $this->request->post['id'];
+		$folder = $this->request->post['folder'];
+		return $this->handleNotFound(function () use ($id, $folder) {
+			return $this->itemService->changeFolder($id, $folder, $this->userId);
 		});
 	}
 

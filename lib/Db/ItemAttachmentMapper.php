@@ -18,48 +18,16 @@ use OCP\IDBConnection;
  */
 class ItemAttachmentMapper extends QBMapper {
     private IRootFolder $storage;
-	private string $mainFolderName;
 	
 	public function __construct(IDBConnection $db, IRootFolder $storage) {
 		parent::__construct($db, 'athm_item_attchm', ItemAttachment::class);
 		$this->storage = $storage;
-		$this->mainFolderName = "Athenaeum";
 	}
 
-	private function getUserFolder($userId) : Folder {
-		return $this->storage->getUserFolder($userId);
-	}
 
-	private function getOrCreateSubFolder($rootFolder, $newFolderName) : Folder {
-        try {
-			try {
-				$newFolder = $rootFolder->get($newFolderName);
-			} catch(\OCP\Files\NotFoundException $e) {
-				// folder not found, try to create it
-				$rootFolder->newFolder($newFolderName);
-				$newFolder = $rootFolder->get($newFolderName);
-			}
-			if ($newFolder instanceof \OCP\Files\File) {
-				throw new StorageException('Can not access folder ' .
-										$newFolderName . ' because it is a file');
-			}
-		} catch(\OCP\Files\NotPermittedException $e) {
-			// can not access or create folder
-			throw new StorageException('Cant access or create folder ' .
-									   $newFolderName);
-		}
-		return $newFolder;
-	}
-
-	private function getAttachmentsFolder($userId) : Folder {
-		$userFolder = $this->getUserFolder($userId);
-		$mainFolder = $this->getOrCreateSubFolder($userFolder, $this->mainFolderName);
-		return $this->getOrCreateSubFolder($mainFolder, 'attachments');
-	}
-
-	public function createAttachmentFile($itemId, string $fileName, $fileData, string $userId) {
-		$attachmentsFolder = $this->getAttachmentsFolder($userId);
-		$itemAttachmentsFolder = $this->getOrCreateSubFolder($attachmentsFolder, $itemId);
+	public function createAttachmentFile($itemId, string $fileName, $fileData, string $userId) : string {
+		$fsh = new FilesystemHandler($this->storage);
+		$itemAttachmentsFolder = $fsh->getItemAttachmentsFolder($userId, $itemId);
 		try {
 			try {
 				$itemAttachmentsFolder->get($fileName);
@@ -68,7 +36,9 @@ class ItemAttachmentMapper extends QBMapper {
 				// does not exist, continue
 			}
 			$itemAttachmentsFolder->newFile($fileName, $fileData);
-			return $itemAttachmentsFolder->get($fileName);
+			$mainFolder = $fsh->getMainFolder($userId);
+			$finalFile = $itemAttachmentsFolder->get($fileName)->getPath();
+			return $mainFolder->getRelativePath($finalFile);
 		} catch(\OCP\Files\NotPermittedException $e) {
 			// can not access or create main folder
 			throw new StorageException('Cant access or create file ' . $fileName);

@@ -20,9 +20,12 @@ use OCP\Migration\IRepairStep;
 class DefaultDataRepairStep implements IRepairStep {
 	
 	protected $connection;
+	private string $userId;
 	
-	public function __construct(IDBConnection $connection) {
+	public function __construct(IDBConnection $connection,
+								string $userId) {
 		$this->connection = $connection;
+		$this->userId = $userId;
 	}
 	
 	public function getName() {
@@ -30,6 +33,40 @@ class DefaultDataRepairStep implements IRepairStep {
 	}
 	
 	public function run(IOutput $output) {
+
+		// add default config fields
+		$query = $this->connection->getQueryBuilder();
+		$query->insert('athm_cfg_fields')
+			  ->setValue('name', $query->createParameter('new_field_name'))
+			  ->setValue('type_hint', $query->createParameter('new_field_type_hint'));
+
+	    $dbid_field = 'dbid';
+		$query->setParameter('new_field_name', $dbid_field);
+		$query->setParameter('new_field_type_hint', 'string');
+		$query->executeStatement();
+
+		// get the newly added field's id
+		$query = $this->connection->getQueryBuilder();
+		$query->select('id')
+			  ->from('athm_cfg_fields')
+			  ->where($query->expr()->eq('name', $query->createNamedParameter($dbid_field)));
+		$cursor = $query->execute();
+		$row = $cursor->fetch();
+		$cursor->closeCursor();
+		$dbid_field_id = $row['id'];
+
+		// add first config fields values
+		$query = $this->connection->getQueryBuilder();
+		$query->insert('athm_cfg_field_values')
+			  ->setValue('user_id', $query->createParameter('new_user_id'))
+			  ->setValue('field_id', $query->createParameter('new_field_id'))
+			  ->setValue('value', $query->createParameter('new_value'));
+
+		$query->setParameter('new_user_id', $this->userId);
+		$query->setParameter('new_field_id', $dbid_field_id);
+		$query->setParameter('new_value', uniqid());
+		$query->executeStatement();
+
 		// add default item types
 		$query = $this->connection->getQueryBuilder();
 		$query->insert('athm_item_types')
@@ -53,13 +90,35 @@ class DefaultDataRepairStep implements IRepairStep {
 		// add default item folders
 		$query = $this->connection->getQueryBuilder();
 		$query->insert('athm_folders')
-			   ->setValue('path', $query->createParameter('new_folder'));
+			->setValue('path', $query->createParameter('new_path'))
+			->setValue('name', $query->createParameter('new_name'))
+			->setValue('editable', $query->createParameter('new_editable'))
+			->setValue('icon', $query->createParameter('new_icon'))
+			->setValue('user_id', $query->createParameter('new_user_id'));
 
-		$query->setParameter('new_folder', 'inbox');
+		$query->setParameter('new_path', 'inbox');
+		$query->setParameter('new_name', 'Inbox');
+		$query->setParameter('new_editable', false);
+		$query->setParameter('new_icon', 'Inbox');
+		$query->setParameter('new_user_id', $this->userId);
 		$query->executeStatement();
-		$query->setParameter('new_folder', 'inbox/decide_later');
+		$query->setParameter('new_path', 'inbox:decide_later');
+		$query->setParameter('new_name', 'Decide Later');
+		$query->setParameter('new_editable', true);
+		$query->setParameter('new_icon', 'Inbox');
+		$query->setParameter('new_user_id', $this->userId);
 		$query->executeStatement();
-		$query->setParameter('new_folder', 'library');
+		$query->setParameter('new_path', 'library');
+		$query->setParameter('new_name', 'Library');
+		$query->setParameter('new_editable', false);
+		$query->setParameter('new_icon', 'Bookshelf');
+		$query->setParameter('new_user_id', $this->userId);
+		$query->executeStatement();
+		$query->setParameter('new_path', 'wastebasket');
+		$query->setParameter('new_name', 'Wastebasket');
+		$query->setParameter('new_editable', false);
+		$query->setParameter('new_icon', 'Bookshelf');
+		$query->setParameter('new_user_id', $this->userId);
 		$query->executeStatement();
 
 		// add default fields

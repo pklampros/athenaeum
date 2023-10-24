@@ -51,17 +51,17 @@ export function fetchItemDetails(id) {
 		})
 }
 
-
 export function itemChangeFolder(id, newFolder) {
-	const url = generateUrl('/apps/athenaeum/items/move_to_folder/')
-	const params = {
-		id: id,
-	    folder: newFolder
-	}
+	const url = generateUrl('/apps/athenaeum/mod/items/folder')
 
 	return axios
-		.get(url, {
-			params,
+		.post(url, {
+			'id': id,
+			'folder': newFolder
+		}, {
+			headers: {
+				'Content-Type': 'application/json'
+			}
 		})
 		.then((resp) => resp.data)
 		.catch((error) => {
@@ -70,7 +70,7 @@ export function itemChangeFolder(id, newFolder) {
 }
 
 export function convertToLibraryItemDetailed(itemData) {
-	const url = generateUrl('/apps/athenaeum/inbox_items/tolibrary')
+	const url = generateUrl('/apps/athenaeum/inbox_items/toLibrary')
 	return axios
 		.post(url, {
 			'itemData': itemData,
@@ -82,5 +82,38 @@ export function convertToLibraryItemDetailed(itemData) {
 		.then((resp) => resp.data)
 		.catch((error) => {
 			throw convertAxiosError(error)
+		});
+}
+
+export function dumpToJSON(id) {
+	const url = generateUrl('/apps/athenaeum/items/dump/' + id)
+	const params = {}
+
+	return axios
+		.get(url, {
+			params,
 		})
+		.then((resp) => resp.data)
+		.catch((error) => {
+			throw convertAxiosError(error)
+		})
+}
+
+export function attachFile(file, itemId) {
+	const url = generateUrl('/apps/athenaeum/items/attachFile');
+
+	let formData = new FormData();
+	formData.append('file', file);
+	formData.append('item_id', itemId);
+	return axios
+	    .post(url, formData,
+		{
+			headers: {
+				'Content-Type': 'multipart/form-data'
+			}
+		})
+		.then((resp) => resp.data)
+		.catch((error) => {
+			throw convertAxiosError(error)
+		});
 }

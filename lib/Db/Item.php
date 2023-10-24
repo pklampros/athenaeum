@@ -46,8 +46,8 @@ class Item extends Entity implements JsonSerializable {
 			'title' => $this->title,
 			'itemTypeId' => $this->itemTypeId,
 			'folderId' => $this->folderId,
-			'dateAdded' => $this->dateAdded,
-			'dateModified' => $this->dateModified,
+			'dateAdded' => $this->dateAdded->getTimeStamp(),
+			'dateModified' => $this->dateModified->getTimeStamp(),
 			'userId' => $this->userId
 		];
 	}

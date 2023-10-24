@@ -234,8 +234,10 @@ class InboxItemController extends Controller {
 	 * @NoAdminRequired
 	 */
 	public function extractFromEML(): DataResponse {
-		$newFile = $this->request->getUploadedFile('file');
-		if ($newFile) {
+		$fileCount = $this->request->post['fileCount'];
+		$responses = array();
+		for ($i = 0; $i < $fileCount; $i++) {
+			$newFile = $this->request->getUploadedFile("" . $i);
 			$parser = new Parser();
 			$parser->setText(file_get_contents($newFile['tmp_name']));
 
@@ -246,15 +248,15 @@ class InboxItemController extends Controller {
 			);
 
 			if (preg_match("/Scholar Alert - \[ (.*) \]/",
-						   $emailSubject, $matches)) {
+						$emailSubject, $matches)) {
 				# up to 03/10/2017
 				$result["isResultsEmail"] = true;
 			} else if (preg_match("/\[ (.*) \] - new results/",
-								  $emailSubject, $matches)) {
+								$emailSubject, $matches)) {
 				# only on 05/10/2017
 				$result["isResultsEmail"] = true;
 			} else if (preg_match("/(.*) - new results/",
-								  $emailSubject, $matches)) {
+								$emailSubject, $matches)) {
 				# from 07/10/2017
 				$result["isResultsEmail"] = true;
 			}
@@ -278,9 +280,14 @@ class InboxItemController extends Controller {
 				$result["cleanSearchTerm"] = $alertData["cleanSearchTerm"];
 				$result["termIncomplete"] = $alertData["termIncomplete"];
 				$result["items"] = $this->getItems($doc);
-				
-				return new DataResponse($this->inboxItemService->createFromEML($result, $this->userId));
+
+				$response = $this->inboxItemService->createFromEML($result, $this->userId);
+				array_push($responses, $response);
 			}
+		}
+		
+		if (count($responses) > 0) {
+			return new DataResponse($responses);
 		} else {
 			return new DataResponse("No file sent", Http::STATUS_NOT_FOUND);
 		}
