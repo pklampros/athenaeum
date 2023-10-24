@@ -66,6 +66,15 @@ class ItemService {
 		}
 	}
 
+
+	public function dumpItemDetailsToJSON(int $itemId, string $userId) {
+		try {
+			return $this->mapper->dumpItemDetailsToJSON($itemId, $userId);
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
+	}
+
 	public function attachFile(int $itemId, string $fileName, string $fileMime,
 	                           int $fileSize, $fileData, string $userId): ItemAttachment {
 		try {

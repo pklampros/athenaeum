@@ -129,6 +129,13 @@
 					type="primary">
 					Add to Library
 				</NcButton>
+				&nbsp;
+				<NcButton
+					:disabled="!this.item.title || !this.item.url"
+					@click="dumpToJSON"
+					type="primary">
+					DUMPJSON
+				</NcButton>
 			</div>
 		</div>
 	</NcAppContentDetails>
@@ -160,6 +167,7 @@ import AuthorEditList from './AuthorEditList.vue'
 
 import { showError } from '@nextcloud/dialogs'
 import { fetchItemDetails, convertToLibraryItemDetailed, itemChangeFolder, attachFile } from './service/ItemService'
+import { dumpToJSON } from './service/ItemService'
 
 export default {
 	name: 'ItemDetails',
@@ -377,6 +385,10 @@ export default {
 		},
 		async submitFile(){
 			let response = await attachFile(this.file, this.item.id);
+			console.log("submitResponse:", response);
+		},
+		async dumpToJSON(){
+			let response = await dumpToJSON(this.item.id);
 			console.log("submitResponse:", response);
 		},
 	},

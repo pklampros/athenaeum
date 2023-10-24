@@ -59,6 +59,15 @@ class ItemController extends Controller {
 		});
 	}
 
+
+	/**
+	 * @NoAdminRequired
+	 */
+	public function dumpItemDetailsToJSON(int $id): DataResponse {
+		return $this->handleNotFound(function () use ($id) {
+			return $this->itemService->dumpItemDetailsToJSON($id, $this->userId);
+		});
+	}
 	/**
 	 * @NoAdminRequired
 	 */

@@ -591,6 +591,55 @@ class ItemMapper extends QBMapper {
         }, $this->db);
 	}
 
+	/**
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws DoesNotExistException
+	 */
+	public function dumpItemDetailsToJSON(int $itemId, string $userId) {
+
+		// try to find the item, excepts if none/many found
+		$item = $this->find($itemId, $userId);
+		
+		$fsh = new FilesystemHandler($this->storage);
+		$itemDatafolder = $fsh->getItemDataFolder($userId, $itemId);
+
+		$fileName = 'item.json';
+
+		try {
+			$itemDatafolder->get($fileName);
+		} catch(\OCP\Files\NotFoundException $e) {
+			// does not exist, continue
+		}
+		$itemDetails = $this->getWithDetails($itemId, $userId);
+		
+		// get the dbid field's id
+		$dbid_field = 'dbid';
+		$qb = $this->db->getQueryBuilder();
+		$qb->select('id')
+			  ->from('athm_cfg_fields')
+			  ->where($qb->expr()->eq('name', $qb->createNamedParameter($dbid_field)));
+		$cursor = $qb->execute();
+		$row = $cursor->fetch();
+		$cursor->closeCursor();
+		$dbid_field_id = $row['id'];
+
+		// get the database's id
+		$qb = $this->db->getQueryBuilder();
+		$qb->select('value')
+			  ->from('athm_cfg_field_values')
+			  ->where($qb->expr()->eq('user_id', $qb->createNamedParameter($userId)))
+			  ->andWhere($qb->expr()->eq('field_id', $qb->createNamedParameter($dbid_field_id)));
+		$cursor = $qb->execute();
+		$row = $cursor->fetch();
+		$cursor->closeCursor();
+		$dbid = $row['value'];
+
+		$itemData = array();
+		$itemData['details'] = $itemDetails;
+		$itemData['dbid'] = $dbid;
+
+		$itemDatafolder->newFile($fileName, json_encode($itemData));
+	}
 
 	/**
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException

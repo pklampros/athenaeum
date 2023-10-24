@@ -51,7 +51,6 @@ export function fetchItemDetails(id) {
 		})
 }
 
-
 export function itemChangeFolder(id, newFolder) {
 	const url = generateUrl('/apps/athenaeum/mod/items/folder')
 
@@ -84,6 +83,20 @@ export function convertToLibraryItemDetailed(itemData) {
 		.catch((error) => {
 			throw convertAxiosError(error)
 		});
+}
+
+export function dumpToJSON(id) {
+	const url = generateUrl('/apps/athenaeum/items/dump/' + id)
+	const params = {}
+
+	return axios
+		.get(url, {
+			params,
+		})
+		.then((resp) => resp.data)
+		.catch((error) => {
+			throw convertAxiosError(error)
+		})
 }
 
 export function attachFile(file, itemId) {
