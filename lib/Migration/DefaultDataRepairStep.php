@@ -43,6 +43,7 @@ class DefaultDataRepairStep implements IRepairStep {
 	    $dbid_field = 'dbid';
 		$query->setParameter('new_field_name', $dbid_field);
 		$query->setParameter('new_field_type_hint', 'string');
+		$query->executeStatement();
 
 		// get the newly added field's id
 		$query = $this->connection->getQueryBuilder();
@@ -64,6 +65,7 @@ class DefaultDataRepairStep implements IRepairStep {
 		$query->setParameter('new_user_id', $this->userId);
 		$query->setParameter('new_field_id', $dbid_field_id);
 		$query->setParameter('new_value', uniqid());
+		$query->executeStatement();
 
 		// add default item types
 		$query = $this->connection->getQueryBuilder();
