@@ -532,7 +532,16 @@ class ItemMapper extends QBMapper {
 			$sourceMapper = new SourceMapper($this->db);
 
 			$newItemIds = array();
-			$source = $sourceMapper->getOrInsertByUid($emlData["alertId"], "scholarAlert");
+			$trimmedTerm = $emlData["searchTerm"];
+			if (strlen($trimmedTerm) > 7) {
+				$trimmedTerm = substr($trimmedTerm, 0, 6) . '...';
+			}
+			$source = $sourceMapper->getOrInsertByUid(
+				$emlData["alertId"], "scholarAlert", 0,
+				'Scholar alert (' . $trimmedTerm . ')',
+				'Scholar alert for the search term: ' . $emlData["searchTerm"],
+				$userId
+			);
 			$emailData = array(
 				'emailSubject' => $emlData["subject"],
 				'alertId' => $source->getUid(),

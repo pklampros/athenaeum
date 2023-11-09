@@ -6,6 +6,14 @@
 	<div id="content" class="app-athenaeum">
 		<NcAppNavigation>
 			<ul v-if="!loading">
+				<NcAppNavigationItem
+					:name="t('athenaeum', 'Sources')"
+					:disabled="false"
+					:to="'/sources'" >
+					<template #icon>
+						<Bookshelf :size="20"/>
+					</template>
+				</NcAppNavigationItem>
 				<NcAppNavigationItem 
 					v-for="folder in folders"
 					:key="folder.id"
@@ -37,6 +45,7 @@
 		</NcAppNavigation>
 
 		<ItemView v-if="isItemView()" :key="currentView"/>
+		<SourceView v-if="isSourceView()" :key="currentView"/>
 			
 	</div>
 </template>
@@ -51,6 +60,7 @@ import Bookshelf from 'vue-material-design-icons/Bookshelf.vue';
 import Inbox from 'vue-material-design-icons/Inbox.vue';
 
 import ItemView from './ItemView.vue'
+import SourceView from './SourceView.vue'
 
 import '@nextcloud/dialogs/dist/index.css'
 import { generateUrl } from '@nextcloud/router'
@@ -76,6 +86,7 @@ export default {
 
 		// project components
 		ItemView,
+		SourceView,
 	},
 	data() {
 		return {
@@ -138,6 +149,10 @@ export default {
 		isItemView() {
 			return this.currentView.view === ViewMode.ITEMS ||
 				this.currentView.view === ViewMode.ITEMS_DETAILS;
+		},
+		isSourceView() {
+			return this.currentView.view === ViewMode.SOURCES ||
+				this.currentView.view === ViewMode.SOURCES_DETAILS;
 		},
 	},
 }

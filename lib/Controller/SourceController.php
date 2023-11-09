@@ -13,6 +13,7 @@ use OCP\IRequest;
 
 class SourceController extends Controller {
 	private SourceService $service;
+	private string $userId;
 
 	use Errors;
 
@@ -21,13 +22,14 @@ class SourceController extends Controller {
 								?string $userId) {
 		parent::__construct(Application::APP_ID, $request);
 		$this->service = $service;
+		$this->userId = $userId;
 	}
 
 	/**
 	 * @NoAdminRequired
 	 */
 	public function index(): DataResponse {
-		return new DataResponse($this->service->findAll());
+		return new DataResponse($this->service->findAll($this->userId));
 	}
 
 	/**
@@ -35,28 +37,30 @@ class SourceController extends Controller {
 	 */
 	public function show(int $id): DataResponse {
 		return $this->handleNotFound(function () use ($id) {
-			return $this->service->find($id);
+			return $this->service->find($id, $this->userId);
 		});
 	}
 
 	/**
 	 * @NoAdminRequired
 	 */
-	public function create(string $uid, string $sourceType): DataResponse {
+	public function create(string $uid, string $sourceType, string $title, 
+						   string $description): DataResponse {
 		$importance = 0;
 		return new DataResponse($this->service->create($uid, $sourceType,
-								$importance));
+								$importance, $title, $description, $this->userId));
 	}
 
 	/**
 	 * @NoAdminRequired
 	 */
-	public function update(int $id, string $uid, string $sourceType,
-						   int $importance): DataResponse {
-		return $this->handleNotFound(function () use ($id, $uid, $sourceType,
-									 $importance) {
-			return $this->service->update($id, $uid, $sourceType,
-										  $importance);
+	public function update(int $id,
+						   int $importance, string $title, 
+						   string $description): DataResponse {
+		return $this->handleNotFound(function () use ($id,
+									 $importance, $title, $description) {
+			return $this->service->update($id, $importance,
+										  $title, $description, $this->userId);
 		});
 	}
 

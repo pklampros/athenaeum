@@ -15,6 +15,7 @@ return [
 	'resources' => [
 		'item' => ['url' => '/res/items'],
 		'item_api' => ['url' => '/api/0.1/items'],
+		'source' => ['url' => '/res/sources'],
 		'source_api' => ['url' => '/api/0.1/sources'],
 		'folder' => ['url' => '/res/folders'],
 		'contributor_api' => ['url' => '/api/0.1/contributors'],
@@ -92,6 +93,9 @@ return [
 
 		['name' => 'page#items', 'url' => '/items/{folder}', 'verb' => 'GET'],
 		['name' => 'page#itemsDetails', 'url' => '/items/{folder}/{itemId}', 'verb' => 'GET'],
+
+		['name' => 'page#sources', 'url' => '/sources', 'verb' => 'GET'],
+		['name' => 'page#sourcesDetails', 'url' => '/sources/{sourceId}', 'verb' => 'GET'],
 
 		// ['name' => 'page#inbox', 'url' => '/inbox', 'verb' => 'GET'],
 		// ['name' => 'page#showInboxItem',

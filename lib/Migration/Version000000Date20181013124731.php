@@ -370,6 +370,17 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 				'notnull' => true,
 				'default' => 0
 			]);
+			$table->addColumn('title', 'string', [
+				'notnull' => true,
+				'length' => 200,
+			]);
+			$table->addColumn('description', 'string', [
+				'notnull' => false,
+			]);
+			$table->addColumn('user_id', 'string', [
+				'notnull' => true,
+				'length' => 200,
+			]);
 
 			$table->setPrimaryKey(['id']);
 			$table->addUniqueConstraint(['uid']);

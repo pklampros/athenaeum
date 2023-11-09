@@ -31,5 +31,15 @@ export default new Router({
 			name: 'items_details',
 			component: App,
 		},
+		{
+			path: '/sources',
+			name: 'sources',
+			component: App,
+		},
+		{
+			path: '/sources/:sourceId',
+			name: 'sources_details',
+			component: App,
+		},
 	],
 })
