@@ -239,12 +239,17 @@ class ItemMapper extends QBMapper {
 	): array {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
-		$qb->select('*')
-			->from('athm_items')
-			->where($qb->expr()->eq('user_id', $qb->createNamedParameter($userId)))
-			->andWhere($qb->expr()->eq('folder_id', $qb->createNamedParameter($folderId)))
-			->setFirstResult($offset)
-			->setMaxResults($limit);
+		$qb->selectAlias($qb->createFunction('SUM(s.importance)'), 'source_importance')
+		   ->addSelect('it.*')
+		   ->from('athm_items', 'it')
+		   ->where($qb->expr()->eq('it.user_id', $qb->createNamedParameter($userId)))
+		   ->andWhere($qb->expr()->eq('it.folder_id', $qb->createNamedParameter($folderId)))
+		   ->innerJoin("it", "athm_item_sources", "its", "it.id = its.item_id")
+		   ->innerJoin("its", "athm_sources", "s", "s.id = its.source_id")
+		   ->groupBy('it.id')
+		   ->orderBy('source_importance', 'DESC')
+		   ->setFirstResult($offset)
+		   ->setMaxResults($limit);
 		return $this->findEntities($qb);
 	}
 
