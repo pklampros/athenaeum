@@ -14,7 +14,7 @@ use OCP\AppFramework\Db\Entity;
  * 
  * @method getName(): string
  * @method setName(string $name): void
- * @method getColuor(): string
+ * @method getColour(): string
  * @method setColour(string $colour): void
  * @method getUserId(): string
  * @method setUserId(string $userId): void
