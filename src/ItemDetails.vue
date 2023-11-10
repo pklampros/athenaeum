@@ -88,7 +88,7 @@
 				&nbsp;
 			</div>
 			<div v-if="item.attachments"
-			     style="margin-top: 10px; padding:0px 10px; border-radius: 16px; border: 2px solid var(--color-border);">
+			     style="margin-top: 10px; padding:0px 10px 10px 10px; border-radius: 16px; border: 2px solid var(--color-border);">
 				<div class="field-label">
 					<h3>Attachments</h3>
 				</div>
@@ -101,7 +101,7 @@
 				 </ul>
 				 <!-- <pre>{{ JSON.stringify(item.attachments, null, 2) }}</pre> -->
 			</div>
-			<div style="display: flex; justify-content: right; align-items: center; padding: 16px;">
+			<div class="details-footer">
 				<label>File
 					<input type="file" id="file" ref="file" v-on:change="handleFileUpload($event)"/>
 				</label>
@@ -398,6 +398,16 @@ export default {
 
 
 <style lang="scss" scoped>
+
+	.details-footer {
+        display: flex;
+		justify-content: right;
+		align-items: center;
+		padding: 16px 16px 4px 16px;
+		position: sticky;
+		bottom: 0;
+		background-image: linear-gradient(to top, var(--gradient-main-background));
+	}
 
 	.input-field {
 		margin: 8px 0px;
