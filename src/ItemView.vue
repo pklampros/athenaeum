@@ -59,7 +59,7 @@ export default {
 			return parseInt(this.$route.params.itemId, null);
 		},
 		currentItem() {
-			if (this.currentItemId === null) {
+			if (!this.currentItemId) {
 				return null
 			}
 			return this.items.find((item) => item.id === this.currentItemId)
@@ -72,6 +72,16 @@ export default {
 	async mounted() {
 		try {
 			this.items = await fetchItems(this.currentFolder)
+			if (!this.currentItemId && this.items.length > 0) {
+				// go directly to the first item
+				this.$router.push({
+					name: "items_details",
+					params: {
+						folder: "inbox",
+						itemId: this.items[0].id
+					}
+				});
+			}
 			console.log("Items", this.items)
 		} catch (e) {
 			console.error(e)

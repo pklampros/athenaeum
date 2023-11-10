@@ -249,7 +249,7 @@ export default {
 		},
 		itemChangedFolder() {
 			this.item = null;
-			//window.location = '/apps/athenaeum/items/' + this.$route.params.folder;
+			this.$router.push("/items/inbox/");
 		},
 		addToLibrary() {
 			let detailedItem = this.item;
