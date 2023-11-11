@@ -77,7 +77,7 @@ export default {
 				this.$router.push({
 					name: "items_details",
 					params: {
-						folder: "inbox",
+						folder: this.currentFolder,
 						itemId: this.items[0].id
 					}
 				});

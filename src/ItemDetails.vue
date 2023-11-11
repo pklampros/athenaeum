@@ -249,7 +249,12 @@ export default {
 		},
 		itemChangedFolder() {
 			this.item = null;
-			this.$router.push("/items/inbox/");
+			this.$router.push({
+				name: "items",
+				params: {
+					folder: this.$route.params.folder
+				}
+			});
 		},
 		addToLibrary() {
 			let detailedItem = this.item;
