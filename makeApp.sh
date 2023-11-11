@@ -8,5 +8,9 @@ if ! type php > /dev/null; then
     echo "----"
 fi
 
-php build/tools/composer.phar update
+if [ $1 = "y" ]; then
+    php build/tools/composer.phar update
+else
+    echo "Skippint composer update"
+fi
 make

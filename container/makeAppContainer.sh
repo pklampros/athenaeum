@@ -11,7 +11,16 @@ FROM php:8.2-cli
 RUN apt-get update && apt-get install -y npm
 RUN pecl install mailparse && docker-php-ext-enable mailparse
 ENV COMPOSER_ALLOW_SUPERUSER=1
-CMD /src/makeApp.sh
+#ENV build_tools_directory="/usr/bin"
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+
+#RUN curl -sS https://getcomposer.org/installer | php -d memory_limit=4096M && \
+#    mv composer.phar /usr/local/bin && \\
+#    php -d memory_limit=4096M /usr/local/bin/composer.phar install --prefer-dist
+
+#CMD mv /usr/local/bin/composer.phar /src/build/ && /src/makeApp.sh n
+CMD /src/makeApp.sh n
 EOF
 
 podman run \

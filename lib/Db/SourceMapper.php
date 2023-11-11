@@ -23,12 +23,15 @@ class SourceMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function find(int $id): Source {
+	public function find(int $id, string $userId): Source {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
 			->from('athm_sources')
-			->where($qb->expr()->eq('id', $qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
+			->where($qb->expr()->eq('id',
+				$qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()->eq('user_id',
+				$qb->createNamedParameter($userId, IQueryBuilder::PARAM_STR)));
 		return $this->findEntity($qb);
 	}
 	
@@ -36,32 +39,43 @@ class SourceMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function findByUid(string $uid): Source {
+	public function findByUid(string $uid, string $userId): Source {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
 			->from('athm_sources')
-			->where($qb->expr()->eq('uid', $qb->createNamedParameter($uid)));
+			->where($qb->expr()->eq('uid',
+				$qb->createNamedParameter($uid)))
+			->andWhere($qb->expr()->eq('user_id',
+				$qb->createNamedParameter($userId, IQueryBuilder::PARAM_STR)));
 		return $this->findEntity($qb);
 	}
 
 	/**
 	 * @return array
 	 */
-	public function findAll(): array {
+	public function findAll(string $userId): array {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
-			->from('athm_sources');
+			->from('athm_sources')
+			->where($qb->expr()->eq('user_id',
+				$qb->createNamedParameter($userId, IQueryBuilder::PARAM_STR)));
 		return $this->findEntities($qb);
 	}
 
-	public function getOrInsertByUid(string $uid, string $sourceType): Source {
+	public function getOrInsertByUid(string $uid, string $sourceType,
+									 int $importance, string $title, 
+									 string $description, string $userId): Source {
 		try {
-			$source = $this->findByUid($uid);
+			$source = $this->findByUid($uid, $userId);
 		} catch (DoesNotExistException $e) {
 			$entity = new Source();
 			$entity->setUid($uid);
 			$entity->setSourceType($sourceType);
+			$entity->setImportance($importance);
+			$entity->setTitle($title);
+			$entity->setDescription($description);
+			$entity->setUserId($userId);
 			$source = $this->insert($entity);
 		}
 		return $source;
