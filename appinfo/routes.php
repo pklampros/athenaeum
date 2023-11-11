@@ -97,7 +97,7 @@ return [
 		['name' => 'page#sources', 'url' => '/sources', 'verb' => 'GET'],
 		['name' => 'page#sourcesDetails', 'url' => '/sources/{sourceId}', 'verb' => 'GET'],
 
-		// ['name' => 'page#inbox', 'url' => '/inbox', 'verb' => 'GET'],
+		['name' => 'app_info_api#maxFileUploads', 'url' => '/api/0.1/app_info/max_file_uploads', 'verb' => 'GET'],
 		// ['name' => 'page#showInboxItem',
 		// 	'url' => '/inbox/id={itemId}',
 		// 	'verb' => 'GET'],
