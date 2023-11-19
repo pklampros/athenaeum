@@ -169,14 +169,15 @@ export default {
 		filesSelected(event) {
 			console.log(event);
 			this.files = [];
+			let selectedFiles = []
 			for (let i = 0; i < event.target.files.length; i++) {
 				let fo = event.target.files[i];
 				fo.state = "local";
 				fo.items = [];
 				fo.itemsVisible = false;
-				this.files.push(fo);
+				selectedFiles.push(fo);
 			};
-			console.log("Debug files", this.files);
+			this.files = selectedFiles;
 
 			// this ugly hack is required because it is not possible
 			// to address the parent node of the modal through CSS
