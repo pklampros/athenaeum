@@ -536,7 +536,7 @@ class ItemMapper extends QBMapper {
 		return $this->atomic(function () use (&$emlData, &$dateAdded, &$dateModified, &$userId) {
 			$sourceMapper = new SourceMapper($this->db);
 
-			$newItemIds = array();
+			$itemResultData = array();
 			$trimmedTerm = $emlData["searchTerm"];
 			if (strlen($trimmedTerm) > 7) {
 				$trimmedTerm = substr($trimmedTerm, 0, 6) . '...';
@@ -554,7 +554,8 @@ class ItemMapper extends QBMapper {
 				'emailReceived' => $emlData["received"]
 			);
 			$itemTypeId = $this->findItemTypeId("paper");
-			$folderId = $this->findFolderId("inbox");
+			$defaultFolder = "inbox";
+			$folderId = $this->findFolderId($defaultFolder);
 
 
 			foreach ($emlData["items"] as $emlItem) {
@@ -568,8 +569,12 @@ class ItemMapper extends QBMapper {
 				$itemUrl = $emlItem["url"];
 				$item = null;
 				$itemIsNew = false;
+				$itemFolderPath = $defaultFolder;
 				try {
 					$item = $this->findByFieldValue('url', $itemUrl, $userId);
+					$folderMapper = new FolderMapper($this->db);
+					$folder = $folderMapper->find($item->getFolderId(), $userId);
+					$itemFolderPath = $folder->getPath();
 				} catch (DoesNotExistException $ie) {
 					// new item
 					$newItemData = array(
@@ -585,23 +590,29 @@ class ItemMapper extends QBMapper {
 					);
 					$itemIsNew = true;
 				}
-				$addSourceItem = $itemIsNew;
+				$itemSourceIsNew = $itemIsNew;
 				$itemSourceMapper = new ItemSourceMapper($this->db);
 				if (!$itemIsNew) {
-					$addSourceItem = !$itemSourceMapper->itemSourceExists(
+					$itemSourceIsNew = !$itemSourceMapper->itemSourceExists(
 						$item->getId(), $source->getId()
 					);
 				}
-				if ($addSourceItem) {
+				if ($itemSourceIsNew) {
 					$itemSource = new ItemSource();
 					$itemSource->setItemId($item->getId());
 					$itemSource->setSourceId($source->getId());
 					$itemSource->setExtra($extra);
 					$itemSourceMapper->insert($itemSource);
 				}
-				$newItemIds[] = $item->getId();
+				$itemResultData[] = array(
+					'id' => $item->getId(),
+					'folderPath' => $itemFolderPath,
+					'title' => $item->getTitle(),
+					'item_new' => $itemIsNew,
+					'item_source_new' => $itemSourceIsNew
+				);
 			}
-			return $newItemIds;
+			return $itemResultData;
         }, $this->db);
 	}
 
