@@ -167,7 +167,6 @@ export default {
 			this.$set(this.files, fi, fo);
 		},
 		filesSelected(event) {
-			console.log(event);
 			this.files = [];
 			let selectedFiles = []
 			for (let i = 0; i < event.target.files.length; i++) {
@@ -198,7 +197,6 @@ export default {
 			let fileKeys = [...this.files.keys()];
 			for (let i = 0; i < fileKeys.length; i += maxFileUploads) {
 				const chunk = fileKeys.slice(i, i + maxFileUploads);
-				console.log("debug chunk", chunk);
 				await this.submitFileIndices(chunk);
 			}
 		},
@@ -230,7 +228,6 @@ export default {
 						'Content-Type': 'multipart/form-data'
 					}
 				}).then(function(response){
-					console.log("Debug success. response:", response);
 					for (let i of indices) {
 						let fo = thisClass.files[i];
 						fo.items = response.data[fo.sentFilename];
@@ -244,7 +241,6 @@ export default {
 						thisClass.$set(thisClass.files, i, fo)
 					}
 				}).catch(function(e){
-					console.log("Debug error:", e);
 					for (let i of indices) {
 						let fo = thisClass.files[i];
 						fo.state = "error"
@@ -255,7 +251,6 @@ export default {
 				});
 		},
 		closeModal() {
-			console.log('Closing modall!!');
 			this.$emit('modalClosed')
 
 		}
