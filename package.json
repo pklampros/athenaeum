@@ -28,6 +28,7 @@
     "vue-material-design-icons": "^5.2.0",
     "vue-router": "^3.6.5",
     "vue-simple-icons": "^7.5.0",
+    "vue-worker": "^1.2.1",
     "vuex-router-sync": "^5.0.0",
     "vuex-store": "^1.0.0"
   },
