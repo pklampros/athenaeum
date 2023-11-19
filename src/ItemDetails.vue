@@ -247,7 +247,7 @@ export default {
 			this.item.contributorData.contributors = newAuthorList;
 			this.item.contributorData.type = "list";
 		},
-		itemChangedFolder() {
+		itemFolderChanged() {
 			this.item = null;
 			this.$router.push({
 				name: "items",
@@ -256,19 +256,19 @@ export default {
 				}
 			});
 		},
-		addToLibrary() {
+		async addToLibrary() {
 			let detailedItem = this.item;
 			detailedItem.authorList = this.item.contributorData.contributors;
-			convertToLibraryItemDetailed(detailedItem);
-			this.itemChangedFolder();
+			await convertToLibraryItemDetailed(detailedItem);
+			this.itemFolderChanged();
 		},
-		decideLater() {
-			itemChangeFolder(this.item.id, "inbox:decide_later");
-			this.itemChangedFolder();
+		async decideLater() {
+			await itemChangeFolder(this.item.id, "inbox:decide_later");
+			this.itemFolderChanged();
 		},
-		markItemDeleted() {
-			itemChangeFolder(this.item.id, "wastebasket");
-			this.itemChangedFolder();
+		async markItemDeleted() {
+			await itemChangeFolder(this.item.id, "wastebasket");
+			this.itemFolderChanged();
 		},
 		hasEllipsis(text) {
 			return text.includes('…') || text.includes("...")

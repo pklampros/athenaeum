@@ -235,6 +235,7 @@ class InboxItemController extends Controller {
 	 */
 	public function extractFromEML(): DataResponse {
 		$fileCount = $this->request->post['fileCount'];
+		$fileMetadata = json_decode($this->request->post['fileMetadata']);
 		$responses = array();
 		for ($i = 0; $i < $fileCount; $i++) {
 			$newFile = $this->request->getUploadedFile("" . $i);
@@ -282,7 +283,7 @@ class InboxItemController extends Controller {
 				$result["items"] = $this->getItems($doc);
 
 				$response = $this->inboxItemService->createFromEML($result, $this->userId);
-				array_push($responses, $response);
+				$responses[$newFile['name']] = $response;
 			}
 		}
 		

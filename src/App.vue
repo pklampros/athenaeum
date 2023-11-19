@@ -38,15 +38,17 @@
 				button-id="new-item-button"
 				button-class="icon-add"
 				@click="newItem" />
-			<label>File
-				<input type="file" id="file" ref="file" v-on:change="handleFileUpload($event)" multiple/>
-			</label>
-      		<button v-on:click="submitFiles()">Submit</button>
+			<NcAppNavigationNew
+				:text="t('athenaeum', 'Import EML')"
+				button-id="toggle-eml-import-modal"
+				@click="showSubmitEMLModal" />
 		</NcAppNavigation>
-
+		
 		<ItemView v-if="isItemView()" :key="currentView"/>
 		<SourceView v-if="isSourceView()" :key="currentView"/>
-			
+
+		<EmlImportModal :visible="emlImportModalVisible"
+						@modalClosed="emlImportModalVisible = false"/>
 	</div>
 </template>
 
@@ -61,10 +63,9 @@ import Inbox from 'vue-material-design-icons/Inbox.vue';
 
 import ItemView from './ItemView.vue'
 import SourceView from './SourceView.vue'
+import EmlImportModal from './EmlImportModal.vue';
 
 import '@nextcloud/dialogs/dist/index.css'
-import { generateUrl } from '@nextcloud/router'
-import axios from '@nextcloud/axios'
 
 import { fetchFolders } from './service/FolderService'
 
@@ -87,6 +88,7 @@ export default {
 		// project components
 		ItemView,
 		SourceView,
+		EmlImportModal,
 	},
 	data() {
 		return {
@@ -94,7 +96,8 @@ export default {
 			ViewMode: ViewMode,
 			folders: [],
 			loading: false,
-			uploading: false
+			uploading: false,
+			emlImportModalVisible: false,
 		}
 	},
 	computed: {
@@ -117,35 +120,6 @@ export default {
 		this.loading = false
 	},
 	methods: {
-
-		handleFileUpload( event ){
-			console.log(event);
-			this.files = event.target.files;
-			console.log(this.file);
-		},
-		submitFiles(){
-			this.uploading = true;
-			let formData = new FormData();
-			for (let i = 0; i < this.files.length; i++) {
-				formData.append(i, this.files[i]);
-			};
-			formData.set('fileCount', this.files.length);
-			let thisClass = this;
-			axios.post(
-				generateUrl('/apps/athenaeum/inbox_items/extractFromEML'),
-				formData,
-				{
-					headers: {
-						'Content-Type': 'multipart/form-data'
-					}
-				}).then(function(){
-					console.log('SUCCESS!!');
-				}).catch(function(){
-					console.log('FAILURE!!');
-				}).finally(function() {
-					thisClass.uploading = false;
-				});
-		},
 		isItemView() {
 			return this.currentView.view === ViewMode.ITEMS ||
 				this.currentView.view === ViewMode.ITEMS_DETAILS;
@@ -154,10 +128,13 @@ export default {
 			return this.currentView.view === ViewMode.SOURCES ||
 				this.currentView.view === ViewMode.SOURCES_DETAILS;
 		},
+		showSubmitEMLModal() {
+			this.emlImportModalVisible = true;
+		},
 	},
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
 
 	input[type='text'] {
 		width: 100%;
