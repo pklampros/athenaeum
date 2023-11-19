@@ -184,26 +184,46 @@ export default {
 			// directly as it's a different component
 			this.$refs.modalContent.parentNode.style.display = "flex";
 		},
-		submitFiles() {
+		async getMaxFileUploads() {
+			let maxFileUploads = 1;
+			await axios.get(
+				generateUrl('/apps/athenaeum/api/0.1/app_info/max_file_uploads')
+				).then(function(response) {
+					maxFileUploads = ((response.data == 0) ? 1 : response.data);
+				});
+			return parseInt(maxFileUploads);
+		},
+		async submitFiles() {
+			const maxFileUploads = await this.getMaxFileUploads();
+			let fileKeys = [...this.files.keys()];
+			for (let i = 0; i < fileKeys.length; i += maxFileUploads) {
+				const chunk = fileKeys.slice(i, i + maxFileUploads);
+				console.log("debug chunk", chunk);
+				await this.submitFileIndices(chunk);
+			}
+		},
+		async submitFileIndices(indices) {
 			this.uploading = true;
 			let formData = new FormData();
 			let fileMetadata = {};
-			for (let i = 0; i < this.files.length; i++) {
+			let formDataIdx = 0;
+			for (let i of indices) {
 				let fo = this.files[i];
 				fo.state = "saving"
 				fo.id = i;
 				this.$set(this.files, i, fo);
-				let newFileName = i + ".eml"
-				formData.append(i, fo, "" + newFileName);
+				let newFileName = "" + i + ".eml"
+				formData.append(formDataIdx, fo, newFileName);
+				formDataIdx++;
 				fileMetadata[newFileName] = {
 					"name": fo.name,
 				}
 				fo.sentFilename = newFileName;
 			};
 			formData.set("fileMetadata", JSON.stringify(fileMetadata));
-			formData.set('fileCount', this.files.length);
+			formData.set('fileCount', indices.length);
 			let thisClass = this;
-			axios.post(
+			await axios.post(
 				generateUrl('/apps/athenaeum/inbox_items/extractFromEML'),
 				formData, {
 					headers: {
@@ -211,7 +231,7 @@ export default {
 					}
 				}).then(function(response){
 					console.log("Debug success. response:", response);
-					for (let i = 0; i < thisClass.files.length; i++) {
+					for (let i of indices) {
 						let fo = thisClass.files[i];
 						fo.items = response.data[fo.sentFilename];
 						fo.state = "exists"
@@ -225,7 +245,7 @@ export default {
 					}
 				}).catch(function(e){
 					console.log("Debug error:", e);
-					for (let i = 0; i < thisClass.files.length; i++) {
+					for (let i of indices) {
 						let fo = thisClass.files[i];
 						fo.state = "error"
 						thisClass.$set(thisClass.files, i, fo)
