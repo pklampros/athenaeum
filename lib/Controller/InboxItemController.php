@@ -175,7 +175,8 @@ class InboxItemController extends Controller {
                 if ($isDiv) {
                     if (($nextSibling->hasAttribute('style')
 							&& str_contains($nextSibling->getAttribute('style'), 'color'))
-                        || $nextSibling->children[0].hasAttribute('color')) {
+                        || ($nextSibling->hasChildNodes()
+							&& $nextSibling->childNodes[0]->hasAttribute('color'))) {
                         $authorsJournalDate = $nextSibling->textContent;
                         $nextSibling = $nextSibling->nextSibling;
                         $isDiv = $nextSibling->tagName == 'div';
