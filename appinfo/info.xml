@@ -9,7 +9,7 @@
 	<name>Athenaeum</name>
 	<summary>Atheneaum is a library app for Nextcloud</summary>
 	<description><![CDATA[library type thing]]></description>
-	<version>0.1</version>
+	<version>0.1.0</version>
 	<licence>agpl</licence>
 	<author mail="commits@pklampros.io" >Petros Koutsolampros</author>
 	<namespace>Athenaeum</namespace>
