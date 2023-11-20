@@ -7,9 +7,9 @@ import { sync } from 'vuex-router-sync'
 import { generateFilePath } from '@nextcloud/router'
 
 import Vue from 'vue'
-import App from './App'
-import router from './router'
-import store from './store'
+import App from './App.vue'
+import router from './router.js'
+import store from './store/index.js'
 
 // eslint-disable-next-line
 __webpack_public_path__ = generateFilePath(appName, '', 'js/')

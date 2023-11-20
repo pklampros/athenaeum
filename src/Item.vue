@@ -3,23 +3,20 @@
 	SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
-	<NcListItem
-		:title="item.title ? item.title : t('athenaeum', 'New item')"
+	<NcListItem :title="item.title ? item.title : t('athenaeum', 'New item')"
 		:class="{active: currentItemId === item.id}"
 		:counter-number="item.sourceImportance"
 		:to="link">
 		<template #icon>
-			<google-scholar-icon size="20"/>
+			<GoogleScholarIcon size="20" />
 		</template>
 		<template #subtitle>
-			<div
-				v-if="item.journal">
+			<div v-if="item.journal">
 				<span>
 					{{ item.journal }}
 				</span>
 			</div>
-			<div
-				v-if="item.authors">
+			<div v-if="item.authors">
 				<span>
 					{{ item.authors }}
 				</span>
@@ -45,10 +42,9 @@
 
 <script>
 
-import NcListItem from '@nextcloud/vue/dist/Components/NcListItem'
-import NcActionButton from '@nextcloud/vue/dist/Components/NcActionButton'
+import NcListItem from '@nextcloud/vue/dist/Components/NcListItem.js'
+import NcActionButton from '@nextcloud/vue/dist/Components/NcActionButton.js'
 
-import Bookshelf from 'vue-material-design-icons/Bookshelf.vue';
 import { GoogleScholarIcon } from 'vue-simple-icons'
 
 export default {
@@ -59,7 +55,6 @@ export default {
 		NcActionButton,
 
 		// icons
-		Bookshelf,
 		GoogleScholarIcon,
 	},
 	props: {
@@ -73,7 +68,7 @@ export default {
 			return {
 				name: 'items_details',
 				params: {
-					//filter: this.$route.params.filter ? this.$route.params.filter : undefined,
+					// filter: this.$route.params.filter ? this.$route.params.filter : undefined,
 					itemId: this.item.id,
 				},
 				exact: true,

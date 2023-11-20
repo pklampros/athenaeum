@@ -6,23 +6,21 @@
 	<div id="content" class="app-athenaeum">
 		<NcAppNavigation>
 			<ul v-if="!loading">
-				<NcAppNavigationItem
-					:name="t('athenaeum', 'Sources')"
+				<NcAppNavigationItem :name="t('athenaeum', 'Sources')"
 					:disabled="false"
-					:to="'/sources'" >
+					:to="'/sources'">
 					<template #icon>
-						<Bookshelf :size="20"/>
+						<Bookshelf :size="20" />
 					</template>
 				</NcAppNavigationItem>
-				<NcAppNavigationItem 
-					v-for="folder in folders"
+				<NcAppNavigationItem v-for="folder in folders"
 					:key="folder.id"
 					:name="t('athenaeum', folder.name)"
 					:disabled="false"
-					:to="'/items/' + folder.path" >
+					:to="'/items/' + folder.path">
 					<template #icon>
 						<Inbox v-if="folder.isinbox" :size="20" />
-						<Bookshelf v-else :size="20"/>
+						<Bookshelf v-else :size="20" />
 					</template>
 				</NcAppNavigationItem>
 			</ul>
@@ -38,40 +36,41 @@
 				button-id="new-item-button"
 				button-class="icon-add"
 				@click="newItem" />
-			<NcAppNavigationNew
-				:text="t('athenaeum', 'Import EML')"
+			<NcAppNavigationNew :text="t('athenaeum', 'Import EML')"
 				button-id="toggle-eml-import-modal"
 				@click="showSubmitEMLModal" />
 		</NcAppNavigation>
-		
-		<ItemView v-if="isItemView()" :key="currentView"/>
-		<SourceView v-if="isSourceView()" :key="currentView"/>
+
+		<ItemView v-if="isItemView()" :key="currentView" />
+		<SourceView v-if="isSourceView()" :key="currentView" />
 
 		<EmlImportModal :visible="emlImportModalVisible"
-						@modalClosed="emlImportModalVisible = false"/>
+			@modalClosed="emlImportModalVisible = false" />
 	</div>
 </template>
 
 <script>
 
-import NcAppNavigation from '@nextcloud/vue/dist/Components/NcAppNavigation'
-import NcAppNavigationItem from '@nextcloud/vue/dist/Components/NcAppNavigationItem'
-import NcAppNavigationNew from '@nextcloud/vue/dist/Components/NcAppNavigationNew'
+import NcAppNavigation from '@nextcloud/vue/dist/Components/NcAppNavigation.js'
+import NcAppNavigationItem from '@nextcloud/vue/dist/Components/NcAppNavigationItem.js'
+import NcAppNavigationNew from '@nextcloud/vue/dist/Components/NcAppNavigationNew.js'
 
-import Bookshelf from 'vue-material-design-icons/Bookshelf.vue';
-import Inbox from 'vue-material-design-icons/Inbox.vue';
+import Bookshelf from 'vue-material-design-icons/Bookshelf.vue'
+import Inbox from 'vue-material-design-icons/Inbox.vue'
 
 import ItemView from './ItemView.vue'
 import SourceView from './SourceView.vue'
-import EmlImportModal from './EmlImportModal.vue';
+import EmlImportModal from './EmlImportModal.vue'
 
 import '@nextcloud/dialogs/dist/index.css'
 
-import { fetchFolders } from './service/FolderService'
+import { fetchFolders } from './service/FolderService.js'
+
+import { showError } from '@nextcloud/dialogs'
 
 import {
-	ViewMode
-} from "./enums";
+	ViewMode,
+} from './enums/index.js'
 
 export default {
 	name: 'App',
@@ -93,7 +92,7 @@ export default {
 	data() {
 		return {
 			fileItemTrigger: 0,
-			ViewMode: ViewMode,
+			ViewMode,
 			folders: [],
 			loading: false,
 			uploading: false,
@@ -102,17 +101,16 @@ export default {
 	},
 	computed: {
 		currentView() {
-			console.log("currentView", this.$route);
 			return {
-				"view": this.$route.name,
-				"folder": this.$route.params.folder
-			};
+				view: this.$route.name,
+				folder: this.$route.params.folder,
+			}
 		},
 	},
 	async mounted() {
 		this.loading = true
 		try {
-			this.folders = await fetchFolders();
+			this.folders = await fetchFolders()
 		} catch (e) {
 			console.error(e)
 			showError(t('athenaeum', 'Could not fetch folders (route mounting failed)'))
@@ -121,15 +119,15 @@ export default {
 	},
 	methods: {
 		isItemView() {
-			return this.currentView.view === ViewMode.ITEMS ||
-				this.currentView.view === ViewMode.ITEMS_DETAILS;
+			return this.currentView.view === ViewMode.ITEMS
+				|| this.currentView.view === ViewMode.ITEMS_DETAILS
 		},
 		isSourceView() {
-			return this.currentView.view === ViewMode.SOURCES ||
-				this.currentView.view === ViewMode.SOURCES_DETAILS;
+			return this.currentView.view === ViewMode.SOURCES
+				|| this.currentView.view === ViewMode.SOURCES_DETAILS
 		},
 		showSubmitEMLModal() {
-			this.emlImportModalVisible = true;
+			this.emlImportModalVisible = true
 		},
 	},
 }
@@ -151,7 +149,7 @@ export default {
 	.input-field {
 		margin: 12px 0px;
 	}
-	
+
 	:deep(.app-content-wrapper) {
 		overflow: auto;
 	}

@@ -3,17 +3,15 @@
 	SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
-	<NcListItem
-		:title="source.title ? source.title : t('athenaeum', 'New source')"
+	<NcListItem :title="source.title ? source.title : t('athenaeum', 'New source')"
 		:class="{active: currentSourceId === source.id}"
 		:counter-number="source.importance"
 		:to="link">
 		<template #icon>
-			<google-scholar-icon size="20"/>
+			<GoogleScholarIcon size="20" />
 		</template>
 		<template #subtitle>
-			<div
-				v-if="source.description">
+			<div v-if="source.description">
 				<span>
 					{{ source.description }}
 				</span>
@@ -39,10 +37,9 @@
 
 <script>
 
-import NcListItem from '@nextcloud/vue/dist/Components/NcListItem'
-import NcActionButton from '@nextcloud/vue/dist/Components/NcActionButton'
+import NcListItem from '@nextcloud/vue/dist/Components/NcListItem.js'
+import NcActionButton from '@nextcloud/vue/dist/Components/NcActionButton.js'
 
-import Bookshelf from 'vue-material-design-icons/Bookshelf.vue';
 import { GoogleScholarIcon } from 'vue-simple-icons'
 
 export default {
@@ -53,7 +50,6 @@ export default {
 		NcActionButton,
 
 		// icons
-		Bookshelf,
 		GoogleScholarIcon,
 	},
 	props: {
@@ -67,7 +63,7 @@ export default {
 			return {
 				name: 'sources_details',
 				params: {
-					//filter: this.$route.params.filter ? this.$route.params.filter : undefined,
+					// filter: this.$route.params.filter ? this.$route.params.filter : undefined,
 					sourceId: this.source.id,
 				},
 				exact: true,

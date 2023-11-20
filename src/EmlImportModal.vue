@@ -113,9 +113,9 @@
 
 <script>
 
-import NcModal from '@nextcloud/vue/dist/Components/NcModal'
-import NcButton from '@nextcloud/vue/dist/Components/NcButton'
-import NcListItem from '@nextcloud/vue/dist/Components/NcListItem'
+import NcModal from '@nextcloud/vue/dist/Components/NcModal.js'
+import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
+import NcListItem from '@nextcloud/vue/dist/Components/NcListItem.js'
 
 import CheckboxBlankCircle from 'vue-material-design-icons/CheckboxBlankCircle.vue'
 import NcLoadingIcon from '@nextcloud/vue/dist/Components/NcLoadingIcon.js'

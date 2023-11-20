@@ -1,15 +1,12 @@
 <template>
-	<NcModal
-		v-if="contributorSearchTerm !== null">
+	<NcModal v-if="contributorSearchTerm !== null">
 		<div class="modal__content">
 			<h2>Advanced contributor search</h2>
 			<div style="display:flex; justify-content: center;">
 				<div style="width:44px; height:44px" />
-				<NcTextField
-					label="SearchTerm"
+				<NcTextField label="SearchTerm"
 					:value.sync="contributorSearchTerm" />
-				<NcButton
-					ariaLabel="Search"
+				<NcButton aria-label="Search"
 					type="tertiary"
 					@click="contributorSearch()">
 					<template #icon>
@@ -17,15 +14,14 @@
 					</template>
 				</NcButton>
 			</div>
-				<h2>Search results</h2>
-				<div v-if="searchError" style="padding: 1em">
-					<span>
-						{{ searchError }}<br>
-					</span>
-				</div>
-				<ul v-else>
-				<NcListItem
-					v-for="contributor in foundContributors"
+			<h2>Search results</h2>
+			<div v-if="searchError" style="padding: 1em">
+				<span>
+					{{ searchError }}<br>
+				</span>
+			</div>
+			<ul v-else>
+				<NcListItem v-for="contributor in foundContributors"
 					:key="contributor.id"
 					:title="contributor.firstName + ' ' + contributor.lastName"
 					@click="selectContributor(contributor)">
@@ -39,14 +35,15 @@
 </template>
 <script>
 
-import NcModal from '@nextcloud/vue/dist/Components/NcModal'
-import NcTextField from '@nextcloud/vue/dist/Components/NcTextField'
-import NcButton from '@nextcloud/vue/dist/Components/NcButton'
-import NcListItem from '@nextcloud/vue/dist/Components/NcListItem'
+import NcModal from '@nextcloud/vue/dist/Components/NcModal.js'
+import NcTextField from '@nextcloud/vue/dist/Components/NcTextField.js'
+import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
+import NcListItem from '@nextcloud/vue/dist/Components/NcListItem.js'
 
-import Magnify from 'vue-material-design-icons/Magnify.vue';
+import Magnify from 'vue-material-design-icons/Magnify.vue'
 
-import { freeSearch } from './service/ContributorService'
+import { freeSearch } from './service/ContributorService.js'
+import { showError } from '@nextcloud/dialogs'
 
 export default {
 	name: 'SimilarAuthorsModal',
@@ -60,13 +57,6 @@ export default {
 		// icons
 		Magnify,
 	},
-	data() {
-		return {
-			"foundContributors": [],
-			"searchError": "",
-			"loading": false,
-		}
-	},
 	props: {
 		contributorSearchTerm: {
 			type: String,
@@ -77,29 +67,36 @@ export default {
 			required: true,
 		},
 	},
+	data() {
+		return {
+			foundContributors: [],
+			searchError: '',
+			loading: false,
+		}
+	},
 	methods: {
 		async contributorSearch() {
 			if (this.contributorSearchTerm === null || !(this.contributorSearchTerm.trim())) {
-				this.foundContributors = [];
-				this.searchError = "Search string is empty...";
-				return;
+				this.foundContributors = []
+				this.searchError = 'Search string is empty...'
+				return
 			}
-			this.loading = true;
+			this.loading = true
 			try {
 				this.foundContributors = await freeSearch(this.contributorSearchTerm)
-				this.loading = false;
-				this.searchError = this.foundContributors.length == 0 ? "None found..." : "";
+				this.loading = false
+				this.searchError = this.foundContributors.length === 0 ? 'None found...' : ''
 			} catch (e) {
 				console.error(e)
 				showError(t('athenaeum', 'Could not fetch items (route mounting failed)'))
 			}
 		},
 		selectContributor(contributorData) {
-			this.$emit("selectContributor", this.authorIndex, contributorData);
+			this.$emit('selectContributor', this.authorIndex, contributorData)
 
-			this.foundContributors = [];
-			this.searchError = "";
-			this.loading = false;
+			this.foundContributors = []
+			this.searchError = ''
+			this.loading = false
 		},
 	},
 }
