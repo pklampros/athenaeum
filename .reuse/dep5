@@ -3,7 +3,7 @@ Upstream-Name: Athenaeum
 Upstream-Contact: Petros Koutsolampros <commits@pklampros.io>
 Source: https://github.com/nextcloud/profiler
 
-Files: package-lock.json package.json composer.json composer.lock jsconfig.json .github/*.yml
+Files: package-lock.json package.json composer.json composer.lock jsconfig.json .github/*.yml img/*
 Copyright: Petros Koutsolampros <commits@pklampros.io>
 License: AGPL-3.0-or-later
 
