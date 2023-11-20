@@ -1,4 +1,8 @@
 <template>
+	<!--
+	SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
+	SPDX-License-Identifier: AGPL-3.0-or-later
+	-->
 	<NcModal v-if="contributorSearchTerm !== null">
 		<div class="modal__content">
 			<h2>Advanced contributor search</h2>
