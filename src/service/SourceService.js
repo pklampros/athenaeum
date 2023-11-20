@@ -47,10 +47,10 @@ export function fetchSourceDetails(id) {
 
 /**
  *
- * @param {number} id Item id
- * @param importance
- * @param title
- * @param description
+ * @param {number} id Source id
+ * @param {number} importance Source importance (for sorting related items)
+ * @param {string} title Source title
+ * @param {string} description Source description
  */
 export function updateSource(id, importance, title,
 							 description) {

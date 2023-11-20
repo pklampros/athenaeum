@@ -154,7 +154,7 @@
 				</div>
 			</li>
 		</ul>
-		<SimilarAuthorsModal :contributor-search-term="contributorSearchTerm"
+		<SimilarAuthorsModal :contributor-search-term.sync="contributorSearchTerm"
 			:author-index="modalAuthorIndex"
 			@selectContributor="selectContributor" />
 	</div>
@@ -214,7 +214,7 @@ export default {
 	},
 	watch: {
 		authorList(newAuthorList) {
-			this.$emit('authorListUpdated', newAuthorList)
+			this.$emit('author-list-updated', newAuthorList)
 		},
 	},
 	mounted() {

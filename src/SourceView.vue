@@ -10,7 +10,7 @@
 			</div>
 			<NcAppContentList class="main-items-list"
 				:show-details="true">
-				<Source v-for="source in sources"
+				<SourceListItem v-for="source in sources"
 					:key="source.id"
 					:source="source" />
 			</NcAppContentList>
@@ -24,6 +24,7 @@
 import NcAppContent from '@nextcloud/vue/dist/Components/NcAppContent.js'
 import NcAppContentList from '@nextcloud/vue/dist/Components/NcAppContentList.js'
 
+import SourceListItem from './SourceListItem.vue'
 import SourceDetails from './SourceDetails.vue'
 
 import { fetchSources } from './service/SourceService.js'
@@ -39,6 +40,7 @@ export default {
 		NcAppContentList,
 
 		// project components
+		SourceListItem,
 		SourceDetails,
 	},
 	data() {

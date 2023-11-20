@@ -10,3 +10,4 @@ js/*hot-update.*
 .atomignore
 .vscode
 js/
+.vendor/

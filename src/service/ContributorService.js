@@ -8,9 +8,9 @@ import { convertAxiosError } from '../errors/convert.js'
 
 /**
  *
- * @param firstName
- * @param lastName
- * @param displayName
+ * @param {string} firstName Author's first name
+ * @param {string} lastName Author's last name
+ * @param {string} displayName Author's complete display name
  */
 export function findSimilar(firstName, lastName, displayName) {
 	const url = generateUrl('/apps/athenaeum/contributors/similar')
@@ -36,7 +36,7 @@ export function findSimilar(firstName, lastName, displayName) {
 
 /**
  *
- * @param term
+ * @param {string} term The term to search for
  */
 export function freeSearch(term) {
 	const url = generateUrl('/apps/athenaeum/contributors/search')

@@ -65,7 +65,7 @@ export function fetchItemDetails(id) {
 /**
  *
  * @param {number} id Item id
- * @param newFolder
+ * @param {string} newFolder The folder to send the item to
  */
 export function itemChangeFolder(id, newFolder) {
 	const url = generateUrl('/apps/athenaeum/mod/items/folder')
@@ -87,7 +87,7 @@ export function itemChangeFolder(id, newFolder) {
 
 /**
  *
- * @param itemData
+ * @param {object} itemData Detailed item information to save
  */
 export function convertToLibraryItemDetailed(itemData) {
 	const url = generateUrl('/apps/athenaeum/inbox_items/toLibrary')

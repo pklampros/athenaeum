@@ -3,7 +3,7 @@
 	SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
-	<NcModal :show.sync="visible" @close="closeModal">
+	<NcModal @close="closeModal">
 		<div ref="modalContent" class="modal__content">
 			<h2 style="padding: 0px 10px;">
 				Scholar EML Importer
@@ -246,8 +246,7 @@ export default {
 			})
 		},
 		closeModal() {
-			this.$emit('modalClosed')
-
+			this.$emit('modal-closed')
 		},
 	},
 }

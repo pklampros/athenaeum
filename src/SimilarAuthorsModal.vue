@@ -5,7 +5,7 @@
 			<div style="display:flex; justify-content: center;">
 				<div style="width:44px; height:44px" />
 				<NcTextField label="SearchTerm"
-					:value.sync="contributorSearchTerm" />
+					:value="contributorSearchTerm" />
 				<NcButton aria-label="Search"
 					type="tertiary"
 					@click="contributorSearch()">
@@ -92,7 +92,7 @@ export default {
 			}
 		},
 		selectContributor(contributorData) {
-			this.$emit('selectContributor', this.authorIndex, contributorData)
+			this.$emit('select-contributor', this.authorIndex, contributorData)
 
 			this.foundContributors = []
 			this.searchError = ''
