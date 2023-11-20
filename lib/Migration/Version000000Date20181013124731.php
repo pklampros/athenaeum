@@ -122,7 +122,7 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			$table->setPrimaryKey(['id']);
 
 			$table->addForeignKeyConstraint('athm_items', ['item_id'], ['id'], [],
-											'item_id_fk');
+											'contribution_item_id_fk');
 			$table->addForeignKeyConstraint('athm_contributors', ['contributor_id'], ['id'], [],
 											'contributor_id_fk');
 			$table->addForeignKeyConstraint('athm_contribn_types', ['contribution_type_id'], ['id'], [],
@@ -224,7 +224,7 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 
 			$table->setPrimaryKey(['id']);
 			$table->addForeignKeyConstraint('athm_items', ['item_id'], ['id'], [],
-											'item_id_fk');
+											'item_attchm_item_id_fk');
 			$table->addUniqueConstraint(['item_id', 'path']);
 		}
 
@@ -294,9 +294,9 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 
 			$table->setPrimaryKey(['id']);
 			$table->addForeignKeyConstraint('athm_items', ['item_id_a'], ['id'], [],
-											'item_id_a_fk');
+											'item_rel_item_id_a_fk');
 			$table->addForeignKeyConstraint('athm_items', ['item_id_b'], ['id'], [],
-											'item_id_b_fk');
+											'item_rel_item_id_b_fk');
 			$table->addForeignKeyConstraint('athm_item_rel_types', ['rel_type_id'], ['id'], [],
 											'item_rel_type_id_fk');
 			$table->addUniqueConstraint(['item_id_a', 'item_id_b', 'rel_type_id']);
@@ -325,9 +325,9 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 
 			$table->setPrimaryKey(['id']);
 			$table->addForeignKeyConstraint('athm_items', ['item_id'], ['id'], [],
-											'item_id_fk');
+											'item_field_values_item_id_fk');
 			$table->addForeignKeyConstraint('athm_fields', ['field_id'], ['id'], [],
-											'field_id_fk');
+											'item_field_values_field_id_fk');
 			$table->addUniqueConstraint(['item_id', 'field_id', 'order']);
 		}
 
@@ -346,9 +346,9 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 
 			$table->setPrimaryKey(['id']);
 			$table->addForeignKeyConstraint('athm_items', ['item_id'], ['id'], [],
-											'item_id_fk');
+											'item_tags_item_id_fk');
 			$table->addForeignKeyConstraint('athm_tags', ['tag_id'], ['id'], [],
-											'tag_id_fk');
+											'item_tags_tag_id_fk');
 			$table->addUniqueConstraint(['item_id', 'tag_id']);
 		}
 
@@ -404,9 +404,9 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 
 			$table->setPrimaryKey(['id']);
 			$table->addForeignKeyConstraint('athm_items', ['item_id'], ['id'], [],
-											'item_id_fk');
+											'item_sources_item_id_fk');
 			$table->addForeignKeyConstraint('athm_sources', ['source_id'], ['id'], [],
-											'source_id_fk');
+											'item_sources_source_id_fk');
 		}
 
 		if (!$schema->hasTable('athm_tags')) {

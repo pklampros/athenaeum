@@ -17,8 +17,8 @@
 	<category>office</category>
 	<bugs>https://github.com/pklampros/athenaeum</bugs>
 	<dependencies>
+		<lib>mailparse</lib>
 		<nextcloud min-version="24.0.8" max-version="24.0.8"/>
-        <lib>mailparse</lib>
 	</dependencies>
 	<navigations>
 		<navigation>
