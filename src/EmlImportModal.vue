@@ -256,12 +256,14 @@ export default {
 	:deep(.modal__content) {
 		margin: 10px;
 		display: flex;
-	    flex-direction: column;
+		flex-direction: column;
 		flex: 1;
 	}
+
 	:deep(.list-item) {
 		box-sizing: border-box
 	}
+
 	:deep(.file-list) {
 		flex-grow: 1;
 		overflow: auto;

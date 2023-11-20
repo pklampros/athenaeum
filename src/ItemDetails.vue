@@ -394,7 +394,7 @@ export default {
 <style lang="scss" scoped>
 
 	.details-footer {
-        display: flex;
+		display: flex;
 		justify-content: right;
 		align-items: center;
 		padding: 16px 16px 4px 16px;
@@ -409,7 +409,7 @@ export default {
 
 	.rich-contenteditable__input {
 		text-align: initial;
-		&[error="true"] {
+		&[error='true'] {
 			border-color: var(--color-error) !important;
 		}
 	}

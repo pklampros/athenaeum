@@ -159,7 +159,7 @@ export default {
 		display: flex;
 		align-items: center;
 		min-height: var(--athenaeum-navigation-height);
-	    padding: 0 var(--athenaeum-navigation-height);
+		padding: 0 var(--athenaeum-navigation-height);
 	}
 
 	:deep(.app-content-wrapper) {

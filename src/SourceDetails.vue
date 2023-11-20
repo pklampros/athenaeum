@@ -184,7 +184,7 @@ export default {
 
 	.rich-contenteditable__input {
 		text-align: initial;
-		&[error="true"] {
+		&[error='true'] {
 			border-color: var(--color-error) !important;
 		}
 	}
