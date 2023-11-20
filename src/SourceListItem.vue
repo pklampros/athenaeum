@@ -77,9 +77,11 @@ export default {
 	:deep(.list-item-content__wrapper) {
 		margin-top: 9px;
 	}
+
 	:deep(.list-item__extra) {
 		margin-top: 11px;
 	}
+
 	.list-item__wrapper {
 		list-style: none;
 	}
