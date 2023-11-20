@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-import ViewMode from "./ViewMode";
+import ViewMode from './ViewMode.js'
 
 export {
-    ViewMode as ViewMode,
-};
+	ViewMode,
+}

@@ -6,8 +6,11 @@
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
 
-import { convertAxiosError } from '../errors/convert'
+import { convertAxiosError } from '../errors/convert.js'
 
+/**
+ *
+ */
 export function fetchSources() {
 	const url = generateUrl('/apps/athenaeum/res/sources')
 	const params = {
@@ -23,6 +26,10 @@ export function fetchSources() {
 		})
 }
 
+/**
+ *
+ * @param {number} id Item id
+ */
 export function fetchSourceDetails(id) {
 	const url = generateUrl('/apps/athenaeum/res/sources/' + id)
 	const params = {
@@ -38,15 +45,22 @@ export function fetchSourceDetails(id) {
 		})
 }
 
+/**
+ *
+ * @param {number} id Item id
+ * @param importance
+ * @param title
+ * @param description
+ */
 export function updateSource(id, importance, title,
 							 description) {
-	const url = generateUrl('/apps/athenaeum/res/sources/' + id);
+	const url = generateUrl('/apps/athenaeum/res/sources/' + id)
 
 	return axios
 		.put(url, {
-			importance: importance,
-			title: title,
-			description: description,
+			importance,
+			title,
+			description,
 		})
 		.then((resp) => resp.data)
 		.catch((error) => {
