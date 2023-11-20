@@ -20,15 +20,15 @@
 		<lib>mailparse</lib>
 		<nextcloud min-version="24.0.8" max-version="24.0.8"/>
 	</dependencies>
+	<repair-steps>
+		<install>
+			<step>OCA\Athenaeum\Migration\DefaultDataRepairStep</step>
+		</install>
+	</repair-steps>
 	<navigations>
 		<navigation>
 			<name>Athenaeum</name>
 			<route>athenaeum.page.index</route>
 		</navigation>
 	</navigations>
-	<repair-steps>
-		<install>
-			<step>OCA\Athenaeum\Migration\DefaultDataRepairStep</step>
-		</install>
-	</repair-steps>
 </info>
