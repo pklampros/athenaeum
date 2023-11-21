@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 // SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 // SPDX-License-Identifier: AGPL-3.0-or-later
@@ -6,7 +7,6 @@ declare(strict_types=1);
 namespace OCA\Athenaeum\Db;
 
 use OCP\AppFramework\Db\DoesNotExistException;
-use OCP\AppFramework\Db\Entity;
 use OCP\AppFramework\Db\QBMapper;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
@@ -37,7 +37,7 @@ class ContributorMapper extends QBMapper {
 	 * @throws DoesNotExistException
 	 */
 	public function findSimilar(string $firstName, string $lastName,
-								string $displayName): Array {
+		string $displayName): array {
 		$firstName = strtolower($firstName);
 		$lastName = strtolower($lastName);
 		$displayName = strtolower($displayName);
@@ -90,7 +90,7 @@ class ContributorMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function freeSearch(string $term): Array {
+	public function freeSearch(string $term): array {
 		$nameParts = explode(' ', $term);
 		$lastName = end($nameParts);
 		$firstName = "";

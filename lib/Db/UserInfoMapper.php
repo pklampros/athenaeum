@@ -1,24 +1,23 @@
 <?php
+
 declare(strict_types=1);
 // SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 namespace OCA\Athenaeum\Db;
 
-use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\TTransactional;
-use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 
 class UserInfoMapper {
 
-    use TTransactional;
+	use TTransactional;
 
-    private IDBConnection $db;
+	private IDBConnection $db;
 
-    public function __construct(IDBConnection $db) {
-        $this->db = $db;
-    }
+	public function __construct(IDBConnection $db) {
+		$this->db = $db;
+	}
 
 	// This function is meant to be run once per user
 

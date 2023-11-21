@@ -1,17 +1,18 @@
 <?php
+
 declare(strict_types=1);
 // SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 namespace OCA\Athenaeum\Controller;
 
-use PhpMimeMailParser\Parser;
 use OCA\Athenaeum\AppInfo\Application;
 use OCA\Athenaeum\Service\InboxItemService;
 use OCP\AppFramework\Controller;
-use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Http;
+use OCP\AppFramework\Http\DataResponse;
 use OCP\IRequest;
+use PhpMimeMailParser\Parser;
 
 class InboxItemController extends Controller {
 	private InboxItemService $inboxItemService;
@@ -20,8 +21,8 @@ class InboxItemController extends Controller {
 	use Errors;
 
 	public function __construct(IRequest $request,
-								InboxItemService $inboxItemService,
-								?string $userId) {
+		InboxItemService $inboxItemService,
+		?string $userId) {
 		parent::__construct(Application::APP_ID, $request);
 		$this->inboxItemService = $inboxItemService;
 		$this->userId = $userId;
@@ -32,10 +33,10 @@ class InboxItemController extends Controller {
 	 */
 	public function index(
 		string $folder = "",
-        int $limit = 50,
-        int $offset = 0,
-        ?bool $showAll = false,
-        string $search = ''
+		int $limit = 50,
+		int $offset = 0,
+		?bool $showAll = false,
+		string $search = ''
 	): DataResponse {
 		return new DataResponse($this->inboxItemService->findAll(
 			$this->userId, $folder, $limit, $offset, $showAll, $search
@@ -69,13 +70,13 @@ class InboxItemController extends Controller {
 		});
 	}
 
-    public function hasEllipsis($text) {
-        return str_contains($text, "...") || str_contains($text, "…");
+	public function hasEllipsis($text) {
+		return str_contains($text, "...") || str_contains($text, "…");
 	}
 
 	public function cleanSafeLinks($href) {
 		if (preg_match("/https:\/\/.*?\.safelinks.protection.outlook.com\/.*?url=(.*)&.*?/",
-					   $href, $matches)) {
+			$href, $matches)) {
 			$href = urldecode($matches[1]);
 		}
 		return $href;
@@ -92,11 +93,11 @@ class InboxItemController extends Controller {
 			$href = $this->cleanSafeLinks($href);
 
 			if (preg_match("/.*?\/scholar\?q=.*?/",
-						   $href, $matches)) {
+				$href, $matches)) {
 				$searchTerm = substr($link->textContent, 1, -1);
 			}
 			if (preg_match("/.*?\/scholar_alerts\?.*?cancel_alert_options.*?&alert_id=(.*?)&/",
-						   $href, $matches)) {
+				$href, $matches)) {
 				$alertId = $matches[1];
 			}
 		}
@@ -106,7 +107,7 @@ class InboxItemController extends Controller {
 				$boldTxts = $doc->getElementsByTagName('b');
 				foreach ($boldTxts as $boldTxt) {
 					if (preg_match("/(.*) - new results/",
-								   $boldTxt->textContent, $matches)) {
+						$boldTxt->textContent, $matches)) {
 						$searchTerm = $matches[1];
 						if ($this->hasEllipsis($searchTerm)) {
 							$termIncomplete = true;
@@ -114,16 +115,16 @@ class InboxItemController extends Controller {
 						break;
 					}
 				}
-			} else if (preg_match("/Scholar Alert - \[ (.*) \]/",
-								  $emailSubject, $matches)) {
+			} elseif (preg_match("/Scholar Alert - \[ (.*) \]/",
+				$emailSubject, $matches)) {
 				# up to 03/10/2017
 				$searchTerm = $matches[1];
-			} else if (preg_match("/\[ (.*) \] - new results/",
-								  $emailSubject, $matches)) {
+			} elseif (preg_match("/\[ (.*) \] - new results/",
+				$emailSubject, $matches)) {
 				# only on 05/10/2017
 				$searchTerm = $matches[1];
-			} else if (preg_match("/(.*) - new results/",
-								  $emailSubject, $matches)) {
+			} elseif (preg_match("/(.*) - new results/",
+				$emailSubject, $matches)) {
 				# from 07/10/2017
 				$searchTerm = $matches[1];
 			}
@@ -135,7 +136,7 @@ class InboxItemController extends Controller {
 		
 		if ($searchTerm == "") {
 			// accept defeat, couldn't find the true term
-			throw new \Exception( "Search term not found in email!" );
+			throw new \Exception("Search term not found in email!");
 		}
 		
 		$cleanSearchTerm = $searchTerm;
@@ -144,7 +145,7 @@ class InboxItemController extends Controller {
 		}
 
 		if ($alertId == "") {
-			throw new \Exception( "Alert ID not found in email!" );
+			throw new \Exception("Alert ID not found in email!");
 		}
 		return array(
 			"alertId" => $alertId,
@@ -156,54 +157,54 @@ class InboxItemController extends Controller {
 
 	public function getItems(\DOMDocument $doc) {
 		$links = $doc->getElementsByTagName('a');
-        $items = array();
+		$items = array();
 		foreach ($links as $link) {
 			$href = $link->getAttribute('href');
 			$href = $this->cleanSafeLinks($href);
 
-            $title = $link->textContent;
-            $trueURL = "";
+			$title = $link->textContent;
+			$trueURL = "";
 			if (preg_match("/.*?scholar_url\?url=(.*)&hl.*?/",
-						   $href, $matches)) {
+				$href, $matches)) {
 				$trueURL = urldecode($matches[1]);
 			}
-            if ($trueURL) {
-                $authorsJournalDate = "";
-                $excerpt = "";
-                $nextSibling = $link->parentNode->nextSibling;
-                $isDiv = $nextSibling->tagName == 'div';
-                if ($isDiv) {
-                    if (($nextSibling->hasAttribute('style')
+			if ($trueURL) {
+				$authorsJournalDate = "";
+				$excerpt = "";
+				$nextSibling = $link->parentNode->nextSibling;
+				$isDiv = $nextSibling->tagName == 'div';
+				if ($isDiv) {
+					if (($nextSibling->hasAttribute('style')
 							&& str_contains($nextSibling->getAttribute('style'), 'color'))
-                        || ($nextSibling->hasChildNodes()
+						|| ($nextSibling->hasChildNodes()
 							&& $nextSibling->childNodes[0]->hasAttribute('color'))) {
-                        $authorsJournalDate = $nextSibling->textContent;
-                        $nextSibling = $nextSibling->nextSibling;
-                        $isDiv = $nextSibling->tagName == 'div';
+						$authorsJournalDate = $nextSibling->textContent;
+						$nextSibling = $nextSibling->nextSibling;
+						$isDiv = $nextSibling->tagName == 'div';
 					}
-                    if ($isDiv) {
-                        $excerpt = $nextSibling->textContent;
+					if ($isDiv) {
+						$excerpt = $nextSibling->textContent;
 					}
 				}
 
-                $authors = "";
-                $journal = "";
-                $published = "";
+				$authors = "";
+				$journal = "";
+				$published = "";
 
 				// remove funky non-breaking unicode spaces
 				$authorsJournalDate = preg_replace('~\x{00a0}~siu', ' ', $authorsJournalDate);
 
-                $grps = preg_split("/\s-\s/", $authorsJournalDate);
-                if (sizeof($grps) > 0) {
-                    $authors = trim($grps[0]);
+				$grps = preg_split("/\s-\s/", $authorsJournalDate);
+				if (sizeof($grps) > 0) {
+					$authors = trim($grps[0]);
 				}
-                if (sizeof($grps) > 1) {
-                    $journalDate = explode(",", $grps[1], 2);
-                    if (sizeof($journalDate) == 2) {
-                        $journal = trim($journalDate[0]);
-                        $published = trim($journalDate[1]);
+				if (sizeof($grps) > 1) {
+					$journalDate = explode(",", $grps[1], 2);
+					if (sizeof($journalDate) == 2) {
+						$journal = trim($journalDate[0]);
+						$published = trim($journalDate[1]);
 					}
-                    if (sizeof($journalDate) == 1) {
+					if (sizeof($journalDate) == 1) {
 						if (ctype_digit(trim($journalDate[0]))) {
 							$published = trim($journalDate[0]);
 						} else {
@@ -218,17 +219,17 @@ class InboxItemController extends Controller {
 				$excerpt = str_replace("\r", " ", $excerpt);
 				$excerpt = str_replace("  ", " ", $excerpt);
 
-                array_push($items, array(
-                    "url" => $trueURL,
-                    "title" => $title,
-                    "authors" => $authors,
-                    "journal" => $journal,
-                    "published" => $published,
-                    "excerpt" => $excerpt
+				array_push($items, array(
+					"url" => $trueURL,
+					"title" => $title,
+					"authors" => $authors,
+					"journal" => $journal,
+					"published" => $published,
+					"excerpt" => $excerpt
 				));
 			}
 		}
-        return $items;
+		return $items;
 	}
 
 	/**
@@ -250,15 +251,15 @@ class InboxItemController extends Controller {
 			);
 
 			if (preg_match("/Scholar Alert - \[ (.*) \]/",
-						$emailSubject, $matches)) {
+				$emailSubject, $matches)) {
 				# up to 03/10/2017
 				$result["isResultsEmail"] = true;
-			} else if (preg_match("/\[ (.*) \] - new results/",
-								$emailSubject, $matches)) {
+			} elseif (preg_match("/\[ (.*) \] - new results/",
+				$emailSubject, $matches)) {
 				# only on 05/10/2017
 				$result["isResultsEmail"] = true;
-			} else if (preg_match("/(.*) - new results/",
-								$emailSubject, $matches)) {
+			} elseif (preg_match("/(.*) - new results/",
+				$emailSubject, $matches)) {
 				# from 07/10/2017
 				$result["isResultsEmail"] = true;
 			}
@@ -271,7 +272,7 @@ class InboxItemController extends Controller {
 				$dateString = $parser->getHeader('date');
 				$receivedDate = \DateTime::createFromFormat('D, d M Y H:i:s O', $dateString);
 				if ($receivedDate === false) {
-					throw new \Exception( "Can not parse string: $dateString" );
+					throw new \Exception("Can not parse string: $dateString");
 				}
 				$alertData = $this->getAlertData($doc, $emailSubject);
 				
@@ -303,36 +304,36 @@ class InboxItemController extends Controller {
 		$itemData = $this->request->post['itemData'];
 		$id = $itemData['id'];
 		return new DataResponse($this->inboxItemService->toLibrary(
-									$id, $itemData, $currentTime, $currentTime,
-									$this->userId));
+			$id, $itemData, $currentTime, $currentTime,
+			$this->userId));
 	}
 
 	/**
 	 * @NoAdminRequired
 	 */
 	public function create(string $url, string $title, string $authors, string $journal,
-						   string $published): DataResponse {
+		string $published): DataResponse {
 		$read = false;
 		$importance = 0;
 		$needsReview = false;
 		
 		return new DataResponse($this->inboxItemService->create($url, $title, $authors,
-								$journal, $published, $read, $importance,
-								$needsReview, $this->userId));
+			$journal, $published, $read, $importance,
+			$needsReview, $this->userId));
 	}
 
 	/**
 	 * @NoAdminRequired
 	 */
 	public function update(int $id, string $url, string $title, string $authors, string $journal,
-						   string $published, bool $read = false, int $importance = 0,
-						   bool $needsReview = false): DataResponse {
+		string $published, bool $read = false, int $importance = 0,
+		bool $needsReview = false): DataResponse {
 		return $this->handleNotFound(function () use ($id, $url, $title, $authors, $journal,
-													  $published, $read, $importance,
-													  $needsReview) {
+			$published, $read, $importance,
+			$needsReview) {
 			return $this->inboxItemService->update($id, $url, $title, $authors,
-										  $journal, $published, $read,
-										  $importance, $needsReview, $this->userId);
+				$journal, $published, $read,
+				$importance, $needsReview, $this->userId);
 		});
 	}
 

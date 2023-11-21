@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 // SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 // SPDX-License-Identifier: AGPL-3.0-or-later
@@ -6,10 +7,9 @@ declare(strict_types=1);
 namespace OCA\Athenaeum\Migration;
 
 use Closure;
-use OCP\IDBConnection;
 use OCP\DB\ISchemaWrapper;
-use OCP\Migration\SimpleMigrationStep;
 use OCP\Migration\IOutput;
+use OCP\Migration\SimpleMigrationStep;
 
 class Version000000Date20181013124731 extends SimpleMigrationStep {
 
@@ -79,11 +79,11 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			$table->setPrimaryKey(['id']);
 
 			$table->addForeignKeyConstraint('athm_items', ['item_id'], ['id'], [],
-											'contribution_item_id_fk');
+				'contribution_item_id_fk');
 			$table->addForeignKeyConstraint('athm_contributors', ['contributor_id'], ['id'], [],
-											'contributor_id_fk');
+				'contributor_id_fk');
 			$table->addForeignKeyConstraint('athm_contribn_types', ['contribution_type_id'], ['id'], [],
-											'contribution_type_id_fk');
+				'contribution_type_id_fk');
 			$table->addUniqueConstraint(['item_id', 'contributor_id', 'contribution_type_id']);
 
 		}
@@ -181,7 +181,7 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 
 			$table->setPrimaryKey(['id']);
 			$table->addForeignKeyConstraint('athm_items', ['item_id'], ['id'], [],
-											'item_attchm_item_id_fk');
+				'item_attchm_item_id_fk');
 			$table->addUniqueConstraint(['item_id', 'path']);
 		}
 
@@ -214,9 +214,9 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			$table->setPrimaryKey(['id']);
 			$table->addIndex(['user_id'], 'items_user_id_index');
 			$table->addForeignKeyConstraint('athm_item_types', ['item_type_id'], ['id'], [],
-											'item_type_id_fk');
+				'item_type_id_fk');
 			$table->addForeignKeyConstraint('athm_folders', ['folder_id'], ['id'], [],
-											'item_folder_id_fk');
+				'item_folder_id_fk');
 		}
 
 		if (!$schema->hasTable('athm_item_rel_types')) {
@@ -251,11 +251,11 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 
 			$table->setPrimaryKey(['id']);
 			$table->addForeignKeyConstraint('athm_items', ['item_id_a'], ['id'], [],
-											'item_rel_item_id_a_fk');
+				'item_rel_item_id_a_fk');
 			$table->addForeignKeyConstraint('athm_items', ['item_id_b'], ['id'], [],
-											'item_rel_item_id_b_fk');
+				'item_rel_item_id_b_fk');
 			$table->addForeignKeyConstraint('athm_item_rel_types', ['rel_type_id'], ['id'], [],
-											'item_rel_type_id_fk');
+				'item_rel_type_id_fk');
 			$table->addUniqueConstraint(['item_id_a', 'item_id_b', 'rel_type_id']);
 		}
 
@@ -282,9 +282,9 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 
 			$table->setPrimaryKey(['id']);
 			$table->addForeignKeyConstraint('athm_items', ['item_id'], ['id'], [],
-											'item_field_values_item_id_fk');
+				'item_field_values_item_id_fk');
 			$table->addForeignKeyConstraint('athm_fields', ['field_id'], ['id'], [],
-											'item_field_values_field_id_fk');
+				'item_field_values_field_id_fk');
 			$table->addUniqueConstraint(['item_id', 'field_id', 'order']);
 		}
 
@@ -303,9 +303,9 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 
 			$table->setPrimaryKey(['id']);
 			$table->addForeignKeyConstraint('athm_items', ['item_id'], ['id'], [],
-											'item_tags_item_id_fk');
+				'item_tags_item_id_fk');
 			$table->addForeignKeyConstraint('athm_tags', ['tag_id'], ['id'], [],
-											'item_tags_tag_id_fk');
+				'item_tags_tag_id_fk');
 			$table->addUniqueConstraint(['item_id', 'tag_id']);
 		}
 
@@ -361,9 +361,9 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 
 			$table->setPrimaryKey(['id']);
 			$table->addForeignKeyConstraint('athm_items', ['item_id'], ['id'], [],
-											'item_sources_item_id_fk');
+				'item_sources_item_id_fk');
 			$table->addForeignKeyConstraint('athm_sources', ['source_id'], ['id'], [],
-											'item_sources_source_id_fk');
+				'item_sources_source_id_fk');
 		}
 
 		if (!$schema->hasTable('athm_tags')) {

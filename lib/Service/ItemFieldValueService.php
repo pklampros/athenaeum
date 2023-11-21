@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 // SPDX-FileCopyrightText: Petros <email@email.email>
 // SPDX-License-Identifier: AGPL-3.0-or-later
@@ -7,11 +8,11 @@ namespace OCA\Athenaeum\Service;
 
 use Exception;
 
-use OCP\AppFramework\Db\DoesNotExistException;
-use OCP\AppFramework\Db\MultipleObjectsReturnedException;
-
 use OCA\Athenaeum\Db\ItemFieldValue;
 use OCA\Athenaeum\Db\ItemFieldValueMapper;
+
+use OCP\AppFramework\Db\DoesNotExistException;
+use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 
 class ItemFieldValueService {
 	private ItemFieldValueMapper $mapper;
@@ -64,7 +65,7 @@ class ItemFieldValueService {
 	}
 
 	public function create(int $itemId, int $fieldId, int $order,
-						   string $value): ItemFieldValue {
+		string $value): ItemFieldValue {
 		try {
 			$entity = new ItemFieldValue();
 			$entity->setItemId($itemId);
@@ -78,7 +79,7 @@ class ItemFieldValueService {
 	}
 
 	public function update(int $itemId, int $fieldId, int $order,
-						   string $value): ItemFieldValue {
+		string $value): ItemFieldValue {
 		try {
 			$entity = $this->mapper->find($id);
 			$entity->setItemId($itemId);

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 // SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 // SPDX-License-Identifier: AGPL-3.0-or-later
@@ -7,11 +8,11 @@ namespace OCA\Athenaeum\Service;
 
 use Exception;
 
-use OCP\AppFramework\Db\DoesNotExistException;
-use OCP\AppFramework\Db\MultipleObjectsReturnedException;
-
 use OCA\Athenaeum\Db\Contributor;
 use OCA\Athenaeum\Db\ContributorMapper;
+
+use OCP\AppFramework\Db\DoesNotExistException;
+use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 
 class ContributorService {
 	private ContributorMapper $mapper;
@@ -48,7 +49,7 @@ class ContributorService {
 	}
 
 	public function findSimilar(string $firstName, string $lastName,
-								string $displayName): Array {
+		string $displayName): array {
 		try {
 			return $this->mapper->findSimilar($firstName, $lastName, $displayName);
 		} catch (Exception $e) {
@@ -56,7 +57,7 @@ class ContributorService {
 		}
 	}
 
-	public function freeSearch(string $term): Array {
+	public function freeSearch(string $term): array {
 		try {
 			return $this->mapper->freeSearch($term);
 		} catch (Exception $e) {
@@ -73,7 +74,7 @@ class ContributorService {
 	}
 
 	public function create(string $firstName, string $lastName,
-						   bool $lastNameIsFullName): Contributor {
+		bool $lastNameIsFullName): Contributor {
 		try {
 			$entity = new Contributor();
 			$entity->setFirstName($firstName);
@@ -86,7 +87,7 @@ class ContributorService {
 	}
 
 	public function update(int $id, string $firstName, string $lastName,
-	                       bool $lastNameIsFullName): Contributor {
+		bool $lastNameIsFullName): Contributor {
 		try {
 			$entity = $this->mapper->find($id);
 			$entity->setFirstName($firstName);

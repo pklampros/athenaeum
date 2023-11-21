@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 // SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 // SPDX-License-Identifier: AGPL-3.0-or-later
@@ -7,11 +8,11 @@ namespace OCA\Athenaeum\Service;
 
 use Exception;
 
-use OCP\AppFramework\Db\DoesNotExistException;
-use OCP\AppFramework\Db\MultipleObjectsReturnedException;
-
 use OCA\Athenaeum\Db\Contribution;
 use OCA\Athenaeum\Db\ContributionMapper;
+
+use OCP\AppFramework\Db\DoesNotExistException;
+use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 
 class ContributionService {
 	private ContributionMapper $mapper;
@@ -56,8 +57,8 @@ class ContributionService {
 	}
 
 	public function create(int $itemId, int $contributorId,
-						   string $contributorNameDisplay, int $contributionTypeId,
-						   int $contributionOrder): Contribution {
+		string $contributorNameDisplay, int $contributionTypeId,
+		int $contributionOrder): Contribution {
 		try {
 			$entity = new Contribution();
 			$entity->setItemId($itemId);
@@ -72,8 +73,8 @@ class ContributionService {
 	}
 
 	public function update(int $id, int $itemId, int $contributorId,
-						   string $contributorNameDisplay, int $contributionTypeId,
-						   int $contributionOrder): Contribution {
+		string $contributorNameDisplay, int $contributionTypeId,
+		int $contributionOrder): Contribution {
 		try {
 			$entity = $this->mapper->find($id);
 			$entity->setItemId($itemId);

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 // SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 // SPDX-License-Identifier: AGPL-3.0-or-later
@@ -6,7 +7,6 @@ declare(strict_types=1);
 namespace OCA\Athenaeum\Db;
 
 use OCP\AppFramework\Db\DoesNotExistException;
-use OCP\AppFramework\Db\Entity;
 use OCP\AppFramework\Db\QBMapper;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
@@ -64,8 +64,8 @@ class SourceMapper extends QBMapper {
 	}
 
 	public function getOrInsertByUid(string $uid, string $sourceType,
-									 int $importance, string $title, 
-									 string $description, string $userId): Source {
+		int $importance, string $title,
+		string $description, string $userId): Source {
 		try {
 			$source = $this->findByUid($uid, $userId);
 		} catch (DoesNotExistException $e) {

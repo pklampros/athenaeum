@@ -1,19 +1,20 @@
 <?php
+
 declare(strict_types=1);
 // SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 namespace OCA\Athenaeum\Db;
 
-use OCP\Files\IRootFolder;
 use OCP\Files\Folder;
+use OCP\Files\IRootFolder;
 
 class FilesystemHandler {
-    private IRootFolder $storage;
+	private IRootFolder $storage;
 	private string $mainFolderName;
 
 	public function __construct(IRootFolder $storage) {
-        $this->storage = $storage;
+		$this->storage = $storage;
 		$this->mainFolderName = "Athenaeum";
 	}
 
@@ -37,7 +38,7 @@ class FilesystemHandler {
 	}
 
 	private function getOrCreateSubFolder($rootFolder, $newFolderName) : Folder {
-        try {
+		try {
 			try {
 				$newFolder = $rootFolder->get($newFolderName);
 			} catch(\OCP\Files\NotFoundException $e) {

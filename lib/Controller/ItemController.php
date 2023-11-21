@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 // SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 // SPDX-License-Identifier: AGPL-3.0-or-later
@@ -8,8 +9,8 @@ namespace OCA\Athenaeum\Controller;
 use OCA\Athenaeum\AppInfo\Application;
 use OCA\Athenaeum\Service\ItemService;
 use OCP\AppFramework\Controller;
-use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Http;
+use OCP\AppFramework\Http\DataResponse;
 use OCP\IRequest;
 
 class ItemController extends Controller {
@@ -19,8 +20,8 @@ class ItemController extends Controller {
 	use Errors;
 
 	public function __construct(IRequest $request,
-								ItemService $itemService,
-								?string $userId) {
+		ItemService $itemService,
+		?string $userId) {
 		parent::__construct(Application::APP_ID, $request);
 		$this->itemService = $itemService;
 		$this->userId = $userId;
@@ -31,10 +32,10 @@ class ItemController extends Controller {
 	 */
 	public function index(
 		string $folder = "",
-        int $limit = 50,
-        int $offset = 0,
-        ?bool $showAll = false,
-        string $search = ''
+		int $limit = 50,
+		int $offset = 0,
+		?bool $showAll = false,
+		string $search = ''
 	): DataResponse {
 		return new DataResponse($this->itemService->findAll(
 			$this->userId, $folder, $limit, $offset, $showAll, $search
@@ -87,9 +88,9 @@ class ItemController extends Controller {
 
 		
 		return $this->handleNotFound(function () use ($itemId, $fileName, $fileMime,
-													  $fileSize, $fileData) {
+			$fileSize, $fileData) {
 			return $this->itemService->attachFile((int) $itemId, $fileName, $fileMime,
-												  $fileSize, $fileData, $this->userId);
+				$fileSize, $fileData, $this->userId);
 		});
 	}
 
@@ -99,7 +100,7 @@ class ItemController extends Controller {
 	public function create(string $title, int $itemTypeId, int $folderId): DataResponse {
 		$currentTime = new \DateTime;
 		return new DataResponse($this->itemService->create($title, $itemTypeId, $folderId,
-								$currentTime, $currentTime, $this->userId));
+			$currentTime, $currentTime, $this->userId));
 	}
 
 	/**
@@ -108,19 +109,19 @@ class ItemController extends Controller {
 	public function createDetailed(): DataResponse {
 		$currentTime = new \DateTime;
 		return new DataResponse($this->itemService->createDetailed(
-									$this->request->post['itemData'],
-									$currentTime, $currentTime, $this->userId));
+			$this->request->post['itemData'],
+			$currentTime, $currentTime, $this->userId));
 	}
 
 	/**
 	 * @NoAdminRequired
 	 */
 	public function update(int $id, string $title, int $itemTypeId, int $folderId,
-						   \DateTime $dateAdded, \DateTime $dateModified): DataResponse {
+		\DateTime $dateAdded, \DateTime $dateModified): DataResponse {
 		return $this->handleNotFound(function () use ($id, $title, $itemTypeId, $folderId,
-													  $dateAdded, $dateModified) {
+			$dateAdded, $dateModified) {
 			return $this->itemService->update($id, $title, $itemTypeId, $folderId, $dateAdded,
-										  $dateModified, $this->userId);
+				$dateModified, $this->userId);
 		});
 	}
 

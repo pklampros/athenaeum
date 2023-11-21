@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 // SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 // SPDX-License-Identifier: AGPL-3.0-or-later
@@ -6,7 +7,6 @@ declare(strict_types=1);
 namespace OCA\Athenaeum\Db;
 
 use OCP\AppFramework\Db\DoesNotExistException;
-use OCP\AppFramework\Db\Entity;
 use OCP\AppFramework\Db\QBMapper;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
@@ -29,7 +29,7 @@ class ContributionMapper extends QBMapper {
 		$qb->select('*')
 			->from('athm_contributions')
 			->where($qb->expr()->eq('id',
-					$qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
+				$qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
 		return $this->findEntity($qb);
 	}
 
@@ -44,12 +44,12 @@ class ContributionMapper extends QBMapper {
 			->from('athm_contributions')
 			->where($qb->expr()
 					   ->eq('item_id',
-							$qb->createNamedParameter($itemId,
-													  IQueryBuilder::PARAM_INT)))
+					   	$qb->createNamedParameter($itemId,
+					   		IQueryBuilder::PARAM_INT)))
 			->andWhere($qb->expr()
 						  ->eq('contributor_id',
-							   $qb->createNamedParameter($contributorId,
-														 IQueryBuilder::PARAM_INT)));
+						  	$qb->createNamedParameter($contributorId,
+						  		IQueryBuilder::PARAM_INT)));
 		return $this->findEntity($qb);
 	}
 

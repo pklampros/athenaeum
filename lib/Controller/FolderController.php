@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 // SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 // SPDX-License-Identifier: AGPL-3.0-or-later
@@ -18,8 +19,8 @@ class FolderController extends Controller {
 	use Errors;
 
 	public function __construct(IRequest $request,
-								FolderService $service,
-								string $userId) {
+		FolderService $service,
+		string $userId) {
 		parent::__construct(Application::APP_ID, $request);
 		$this->service = $service;
 		$this->userId = $userId;
@@ -47,18 +48,18 @@ class FolderController extends Controller {
 	public function create(string $uid, string $FolderType): DataResponse {
 		$importance = 0;
 		return new DataResponse($this->service->create($uid, $FolderType,
-								$importance));
+			$importance));
 	}
 
 	/**
 	 * @NoAdminRequired
 	 */
 	public function update(int $id, string $uid, string $FolderType,
-						   int $importance): DataResponse {
+		int $importance): DataResponse {
 		return $this->handleNotFound(function () use ($id, $uid, $FolderType,
-									 $importance) {
+			$importance) {
 			return $this->service->update($id, $uid, $FolderType,
-										  $importance);
+				$importance);
 		});
 	}
 

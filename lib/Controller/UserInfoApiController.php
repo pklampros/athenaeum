@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 // SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 // SPDX-License-Identifier: AGPL-3.0-or-later
@@ -18,8 +19,8 @@ class UserInfoApiController extends ApiController {
 	use Errors;
 
 	public function __construct(IRequest $request,
-								UserInfoService $service,
-								?string $userId) {
+		UserInfoService $service,
+		?string $userId) {
 		parent::__construct(Application::APP_ID, $request);
 		$this->service = $service;
 		$this->userId = $userId;

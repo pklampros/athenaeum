@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 // SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 // SPDX-License-Identifier: AGPL-3.0-or-later
@@ -9,7 +10,6 @@ use OCA\Athenaeum\AppInfo\Application;
 use OCA\Athenaeum\Service\SourceService;
 use OCP\AppFramework\ApiController;
 use OCP\AppFramework\Http\DataResponse;
-use OCP\AppFramework\Http;
 use OCP\IRequest;
 
 class SourceApiController extends ApiController {
@@ -19,8 +19,8 @@ class SourceApiController extends ApiController {
 	use Errors;
 
 	public function __construct(IRequest $request,
-								SourceService $service,
-								?string $userId) {
+		SourceService $service,
+		?string $userId) {
 		parent::__construct(Application::APP_ID, $request);
 		$this->service = $service;
 		$this->userId = $userId;
@@ -41,9 +41,9 @@ class SourceApiController extends ApiController {
 	 * @NoAdminRequired
 	 */
 	public function findByUid(string $uid): DataResponse {
-        // GET /uid/<id>
+		// GET /uid/<id>
 		return $this->handleNotFound(function () use ($uid) {
-            return $this->service->findByUid($uid);
+			return $this->service->findByUid($uid);
 		});
 	}
 
@@ -64,9 +64,9 @@ class SourceApiController extends ApiController {
 	 * @NoAdminRequired
 	 */
 	public function create(string $scholarId, string $term, int $importance,
-						   bool $importanceDecided): DataResponse {
+		bool $importanceDecided): DataResponse {
 		return new DataResponse($this->service->create($scholarId, $term,
-								$importance, $importanceDecided));
+			$importance, $importanceDecided));
 	}
 
 	/**
@@ -75,11 +75,11 @@ class SourceApiController extends ApiController {
 	 * @NoAdminRequired
 	 */
 	public function update(string $scholarId, string $term, int $importance,
-						   bool $importanceDecided): DataResponse {
+		bool $importanceDecided): DataResponse {
 		return $this->handleNotFound(function () use ($id, $scholarId, $term,
-									 $importance, $importanceDecided) {
+			$importance, $importanceDecided) {
 			return $this->service->update($id, $scholarId, $term,
-							$importance, $importanceDecided);
+				$importance, $importanceDecided);
 		});
 	}
 

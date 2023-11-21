@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 // SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 // SPDX-License-Identifier: AGPL-3.0-or-later
@@ -11,10 +12,10 @@ use OCP\AppFramework\Db\Entity;
 
 class ItemDetails extends Entity implements JsonSerializable {
 	protected ?Item $item = null;
-	protected Array $contributions = [];
-	protected Array $fieldData = [];
-	protected Array $attachments = [];
-	protected Array $sourceInfo = [];
+	protected array $contributions = [];
+	protected array $fieldData = [];
+	protected array $attachments = [];
+	protected array $sourceInfo = [];
 
 	public function jsonSerialize(): array {
 		$jsonItem = [];

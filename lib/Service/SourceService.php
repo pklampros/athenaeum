@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 // SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 // SPDX-License-Identifier: AGPL-3.0-or-later
@@ -7,11 +8,11 @@ namespace OCA\Athenaeum\Service;
 
 use Exception;
 
-use OCP\AppFramework\Db\DoesNotExistException;
-use OCP\AppFramework\Db\MultipleObjectsReturnedException;
-
 use OCA\Athenaeum\Db\Source;
 use OCA\Athenaeum\Db\SourceMapper;
+
+use OCP\AppFramework\Db\DoesNotExistException;
+use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 
 class SourceService {
 	private SourceMapper $mapper;
@@ -48,8 +49,8 @@ class SourceService {
 	}
 
 	public function create(string $uid, string $sourceType,
-						   int $importance, string $title, 
-						   string $description, string $userId): Source {
+		int $importance, string $title,
+		string $description, string $userId): Source {
 		try {
 			$entity = new Source();
 			$entity->setUid($uid);
@@ -64,8 +65,8 @@ class SourceService {
 		}
 	}
 
-	public function update(int $id, int $importance, string $title, 
-						   string $description, string $userId): Source {
+	public function update(int $id, int $importance, string $title,
+		string $description, string $userId): Source {
 		try {
 			$entity = $this->mapper->find($id, $userId);
 			$entity->setImportance($importance);

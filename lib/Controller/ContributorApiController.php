@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 // SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 // SPDX-License-Identifier: AGPL-3.0-or-later
@@ -9,7 +10,6 @@ use OCA\Athenaeum\AppInfo\Application;
 use OCA\Athenaeum\Service\ContributorService;
 use OCP\AppFramework\ApiController;
 use OCP\AppFramework\Http\DataResponse;
-use OCP\AppFramework\Http;
 use OCP\IRequest;
 
 class ContributorApiController extends ApiController {
@@ -19,8 +19,8 @@ class ContributorApiController extends ApiController {
 	use Errors;
 
 	public function __construct(IRequest $request,
-								ContributorService $service,
-								?string $userId) {
+		ContributorService $service,
+		?string $userId) {
 		parent::__construct(Application::APP_ID, $request);
 		$this->service = $service;
 		$this->userId = $userId;
@@ -76,13 +76,13 @@ class ContributorApiController extends ApiController {
 	 * @NoAdminRequired
 	 */
 	public function create(string $firstName, bool $lastNameIsFullName,
-						   ?string $lastName): DataResponse {
+		?string $lastName): DataResponse {
 		if ($lastName == null) {
 			$lastName = '';
 			$lastNameIsFullName = true;
 		}
 		return new DataResponse($this->service->create($firstName, $lastName,
-								$lastNameIsFullName));
+			$lastNameIsFullName));
 	}
 
 	/**
@@ -91,15 +91,15 @@ class ContributorApiController extends ApiController {
 	 * @NoAdminRequired
 	 */
 	public function update(int $id, string $firstName, bool $lastNameIsFullName,
-	    				   ?string $lastName): DataResponse {
+		?string $lastName): DataResponse {
 		if ($lastName == null) {
 			$lastName = '';
 			$lastNameIsFullName = true;
 		}
 		return $this->handleNotFound(function () use ($id, $firstName, $lastName,
-									 $lastNameIsFullName) {
+			$lastNameIsFullName) {
 			return $this->service->update($id, $firstName, $lastName,
-										  $lastNameIsFullName);
+				$lastNameIsFullName);
 		});
 	}
 

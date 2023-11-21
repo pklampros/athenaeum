@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 // SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 // SPDX-License-Identifier: AGPL-3.0-or-later
@@ -18,8 +19,8 @@ class ItemApiController extends ApiController {
 	use Errors;
 
 	public function __construct(IRequest $request,
-								ItemService $service,
-								?string $userId) {
+		ItemService $service,
+		?string $userId) {
 		parent::__construct(Application::APP_ID, $request);
 		$this->itemService = $service;
 		$this->userId = $userId;
@@ -40,10 +41,10 @@ class ItemApiController extends ApiController {
 	 * @NoAdminRequired
 	 */
 	public function findByUrl(string $url): DataResponse {
-        // GET /url/<id>
+		// GET /url/<id>
 		$decodedURL = urldecode(urldecode($url));
 		return $this->handleNotFound(function () use ($decodedURL) {
-            return $this->itemService->findByFieldValue("url", $decodedURL, $this->userId);
+			return $this->itemService->findByFieldValue("url", $decodedURL, $this->userId);
 		});
 	}
 
@@ -66,7 +67,7 @@ class ItemApiController extends ApiController {
 	public function create(string $title, int $itemTypeId, int $folderId): DataResponse {
 		$currentTime = new \DateTime;
 		return new DataResponse($this->itemService->create($title, $itemTypeId, $folderId,
-								$currentTime, $currentTime, $this->userId));
+			$currentTime, $currentTime, $this->userId));
 	}
 
 	/**
@@ -78,7 +79,7 @@ class ItemApiController extends ApiController {
 		$currentTime = new \DateTime;
 		$decodedURL = urldecode(urldecode($url));
 		return new DataResponse($this->itemService->createWithUrl($title, $itemTypeId, $folderId,
-								$currentTime, $currentTime, $decodedURL, $this->userId));
+			$currentTime, $currentTime, $decodedURL, $this->userId));
 	}
 
 	/**
@@ -86,12 +87,12 @@ class ItemApiController extends ApiController {
 	 * @NoCSRFRequired
 	 * @NoAdminRequired
 	 */
-	public function update(int $id, string $title, int $itemTypeId, int $folderId,\DateTime $dateAdded,
-						   \DateTime $dateModified): DataResponse {
+	public function update(int $id, string $title, int $itemTypeId, int $folderId, \DateTime $dateAdded,
+		\DateTime $dateModified): DataResponse {
 		return $this->handleNotFound(function () use ($id, $title, $itemTypeId, $folderId,
-									$dateAdded, $dateModified) {
+			$dateAdded, $dateModified) {
 			return $this->itemService->update($id, $title, $itemTypeId, $folderId, $dateAdded,
-							$dateModified, $this->userId);
+				$dateModified, $this->userId);
 		});
 	}
 
@@ -101,10 +102,10 @@ class ItemApiController extends ApiController {
 	 * @NoAdminRequired
 	 */
 	public function setItemFieldValue(int $itemId, string $fieldName,
-									  string $fieldValue): DataResponse {
+		string $fieldValue): DataResponse {
 		return $this->handleNotFound(function () use ($itemId, $fieldName, $fieldValue) {
 			return $this->itemService->setItemFieldValue($itemId, $fieldName,
-														 $fieldValue, $this->userId);
+				$fieldValue, $this->userId);
 		});
 	}
 

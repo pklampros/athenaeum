@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 // SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 // SPDX-License-Identifier: AGPL-3.0-or-later
@@ -18,8 +19,8 @@ class SourceController extends Controller {
 	use Errors;
 
 	public function __construct(IRequest $request,
-								SourceService $service,
-								?string $userId) {
+		SourceService $service,
+		?string $userId) {
 		parent::__construct(Application::APP_ID, $request);
 		$this->service = $service;
 		$this->userId = $userId;
@@ -44,23 +45,23 @@ class SourceController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 */
-	public function create(string $uid, string $sourceType, string $title, 
-						   string $description): DataResponse {
+	public function create(string $uid, string $sourceType, string $title,
+		string $description): DataResponse {
 		$importance = 0;
 		return new DataResponse($this->service->create($uid, $sourceType,
-								$importance, $title, $description, $this->userId));
+			$importance, $title, $description, $this->userId));
 	}
 
 	/**
 	 * @NoAdminRequired
 	 */
 	public function update(int $id,
-						   int $importance, string $title, 
-						   string $description): DataResponse {
+		int $importance, string $title,
+		string $description): DataResponse {
 		return $this->handleNotFound(function () use ($id,
-									 $importance, $title, $description) {
+			$importance, $title, $description) {
 			return $this->service->update($id, $importance,
-										  $title, $description, $this->userId);
+				$title, $description, $this->userId);
 		});
 	}
 
