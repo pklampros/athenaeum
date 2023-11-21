@@ -98,6 +98,7 @@ return [
 		['name' => 'page#sourcesDetails', 'url' => '/sources/{sourceId}', 'verb' => 'GET'],
 
 		['name' => 'app_info_api#maxFileUploads', 'url' => '/api/0.1/app_info/max_file_uploads', 'verb' => 'GET'],
+		['name' => 'user_info_api#userInit', 'url' => '/api/0.1/app_info/user_init', 'verb' => 'GET'],
 		// ['name' => 'page#showInboxItem',
 		// 	'url' => '/inbox/id={itemId}',
 		// 	'verb' => 'GET'],

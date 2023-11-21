@@ -5,7 +5,10 @@ declare(strict_types=1);
 
 namespace OCA\Athenaeum\AppInfo;
 
+use OCA\Athenaeum\Service\UserInfoService;
 use OCP\AppFramework\App;
+use OCP\IConfig;
+use OCP\IServerContainer;
 
 include_once __DIR__ . '/../../vendor/autoload.php';
 
@@ -14,6 +17,18 @@ class Application extends App {
 
 	public function __construct() {
 		parent::__construct(self::APP_ID);
+
+        $container = $this->getContainer();
+
+        /**
+         * Controllers
+         */
+        $container->registerService('UserInfoService', function(IServerContainer $c): UserInfoService {
+            return new UserInfoService(
+                $c->get(IConfig::class),
+                $c->get('appName')
+            );
+        });
 	}
 
     public function register(IRegistrationContext $context): void {
