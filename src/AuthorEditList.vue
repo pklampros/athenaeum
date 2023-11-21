@@ -214,7 +214,8 @@ export default {
 	},
 	watch: {
 		authorList(newAuthorList) {
-			this.$emit('author-list-updated', newAuthorList)
+			// eslint-disable-next-line vue/custom-event-name-casing
+			this.$emit('authorListUpdated', newAuthorList)
 		},
 	},
 	mounted() {

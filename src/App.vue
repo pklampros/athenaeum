@@ -44,8 +44,8 @@
 		<ItemView v-if="isItemView()" :key="currentView" />
 		<SourceView v-if="isSourceView()" :key="currentView" />
 
-		<EmlImportModal :visible="emlImportModalVisible"
-			@modalClosed="emlImportModalVisible = false" />
+		<EmlImportModal :visible.sync="emlImportModalVisible"
+			@modalClosed="hideSubmitEMLModal" />
 	</div>
 </template>
 
@@ -128,6 +128,9 @@ export default {
 		},
 		showSubmitEMLModal() {
 			this.emlImportModalVisible = true
+		},
+		hideSubmitEMLModal() {
+			this.emlImportModalVisible = false
 		},
 	},
 }

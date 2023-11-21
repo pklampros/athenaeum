@@ -96,7 +96,8 @@ export default {
 			}
 		},
 		selectContributor(contributorData) {
-			this.$emit('select-contributor', this.authorIndex, contributorData)
+			// eslint-disable-next-line vue/custom-event-name-casing
+			this.$emit('selectContributor', this.authorIndex, contributorData)
 
 			this.foundContributors = []
 			this.searchError = ''

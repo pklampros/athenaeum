@@ -3,7 +3,7 @@
 	SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
-	<NcModal @close="closeModal">
+	<NcModal :show="visible" @close="closeModal">
 		<div ref="modalContent" class="modal__content">
 			<h2 style="padding: 0px 10px;">
 				Scholar EML Importer
@@ -246,7 +246,8 @@ export default {
 			})
 		},
 		closeModal() {
-			this.$emit('modal-closed')
+			// eslint-disable-next-line vue/custom-event-name-casing
+			this.$emit('modalClosed')
 		},
 	},
 }
