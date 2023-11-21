@@ -11,3 +11,4 @@ js/*hot-update.*
 .vscode
 js/
 .vendor/
+.php-cs-fixer.cache
