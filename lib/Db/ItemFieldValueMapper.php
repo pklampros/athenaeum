@@ -47,8 +47,8 @@ class ItemFieldValueMapper extends QBMapper {
 					   ->eq('item_id',
 					   	$qb->createNamedParameter($itemId, IQueryBuilder::PARAM_INT)))
 			->andWhere($qb->expr()
-						  ->eq('field_id',
-						  	$qb->createNamedParameter($fieldId, IQueryBuilder::PARAM_INT)))
+					   	  ->eq('field_id',
+					   	  	$qb->createNamedParameter($fieldId, IQueryBuilder::PARAM_INT)))
 			->andWhere($qb->expr()
 						  ->eq('order',
 						  	$qb->createNamedParameter($order, IQueryBuilder::PARAM_INT)));
@@ -67,8 +67,8 @@ class ItemFieldValueMapper extends QBMapper {
 					   ->eq('item_id',
 					   	$qb->createNamedParameter($itemId, IQueryBuilder::PARAM_INT)))
 			->andWhere($qb->expr()
-						  ->eq('field_id',
-						  	$qb->createNamedParameter($fieldId, IQueryBuilder::PARAM_INT)));
+					   	  ->eq('field_id',
+					   	  	$qb->createNamedParameter($fieldId, IQueryBuilder::PARAM_INT)));
 		return $this->findEntities($qb);
 	}
 
@@ -86,8 +86,8 @@ class ItemFieldValueMapper extends QBMapper {
 					   ->eq('ifv.item_id',
 					   	$qb->createNamedParameter($itemId, IQueryBuilder::PARAM_INT)))
 			->andWhere($qb->expr()
-						  ->eq('f.field_name',
-						  	$qb->createNamedParameter($fieldId, IQueryBuilder::PARAM_INT)))
+					   	  ->eq('f.field_name',
+					   	  	$qb->createNamedParameter($fieldId, IQueryBuilder::PARAM_INT)))
 			->andWhere($qb->expr()
 						  ->eq('ifv.order',
 						  	$qb->createNamedParameter($order, IQueryBuilder::PARAM_INT)));
