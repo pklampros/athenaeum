@@ -1,0 +1,16 @@
+<phpunit bootstrap="bootstrap.php" colors="true">
+	<!--
+	SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
+	SPDX-License-Identifier: AGPL-3.0-or-later
+	-->
+	<coverage>
+		<include>
+			<directory suffix=".php">./../lib</directory>
+		</include>
+	</coverage>
+	<testsuites>
+		<testsuite name="unit">
+			<directory>./Unit</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>
