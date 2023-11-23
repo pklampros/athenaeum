@@ -52,42 +52,6 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			$table->addUniqueConstraint(['name']);
 		}
 
-		if (!$schema->hasTable('athm_contributions')) {
-			$table = $schema->createTable('athm_contributions');
-			$table->addColumn('id', 'integer', [
-				'autoincrement' => true,
-				'notnull' => true,
-			]);
-			$table->addColumn('item_id', 'integer', [
-				'notnull' => true
-			]);
-			$table->addColumn('contributor_id', 'integer', [
-				'notnull' => true
-			]);
-			$table->addColumn('contributor_name_display', 'string', [
-				'notnull' => true,
-				'length' => 200
-			]);
-			$table->addColumn('contribution_type_id', 'integer', [
-				'notnull' => true
-			]);
-			$table->addColumn('contribution_order', 'integer', [
-				'notnull' => true,
-				'default' => 0
-			]);
-
-			$table->setPrimaryKey(['id']);
-
-			$table->addForeignKeyConstraint('athm_items', ['item_id'], ['id'], [],
-				'contribution_item_id_fk');
-			$table->addForeignKeyConstraint('athm_contributors', ['contributor_id'], ['id'], [],
-				'contributor_id_fk');
-			$table->addForeignKeyConstraint('athm_contribn_types', ['contribution_type_id'], ['id'], [],
-				'contribution_type_id_fk');
-			$table->addUniqueConstraint(['item_id', 'contributor_id', 'contribution_type_id']);
-
-		}
-
 		if (!$schema->hasTable('athm_contributors')) {
 			$table = $schema->createTable('athm_contributors');
 			$table->addColumn('id', 'integer', [
@@ -219,6 +183,42 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 				'item_folder_id_fk');
 		}
 
+		if (!$schema->hasTable('athm_contributions')) {
+			$table = $schema->createTable('athm_contributions');
+			$table->addColumn('id', 'integer', [
+				'autoincrement' => true,
+				'notnull' => true,
+			]);
+			$table->addColumn('item_id', 'integer', [
+				'notnull' => true
+			]);
+			$table->addColumn('contributor_id', 'integer', [
+				'notnull' => true
+			]);
+			$table->addColumn('contributor_name_display', 'string', [
+				'notnull' => true,
+				'length' => 200
+			]);
+			$table->addColumn('contribution_type_id', 'integer', [
+				'notnull' => true
+			]);
+			$table->addColumn('contribution_order', 'integer', [
+				'notnull' => true,
+				'default' => 0
+			]);
+
+			$table->setPrimaryKey(['id']);
+
+			$table->addForeignKeyConstraint('athm_items', ['item_id'], ['id'], [],
+				'contribution_item_id_fk');
+			$table->addForeignKeyConstraint('athm_contributors', ['contributor_id'], ['id'], [],
+				'contributor_id_fk');
+			$table->addForeignKeyConstraint('athm_contribn_types', ['contribution_type_id'], ['id'], [],
+				'contribution_type_id_fk');
+			$table->addUniqueConstraint(['item_id', 'contributor_id', 'contribution_type_id']);
+
+		}
+		
 		if (!$schema->hasTable('athm_item_rel_types')) {
 			$table = $schema->createTable('athm_item_rel_types');
 			$table->addColumn('id', 'integer', [
