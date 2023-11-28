@@ -116,12 +116,12 @@ class ItemController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 */
-	public function update(int $id, string $title, int $itemTypeId, int $folderId,
-		\DateTime $dateAdded, \DateTime $dateModified): DataResponse {
-		return $this->handleNotFound(function () use ($id, $title, $itemTypeId, $folderId,
-			$dateAdded, $dateModified) {
-			return $this->itemService->update($id, $title, $itemTypeId, $folderId, $dateAdded,
-				$dateModified, $this->userId);
+	public function update(int $id, string $title, int $itemTypeId,
+		int $folderId): DataResponse {
+		return $this->handleNotFound(function () use ($id, $title, $itemTypeId,
+			$folderId) {
+			return $this->itemService->update($id, $title, $itemTypeId, $folderId,
+				$this->userId);
 		});
 	}
 

@@ -166,16 +166,15 @@ class ItemService {
 	}
 	
 
-	public function update(int $id, string $title, int $itemTypeId, int $folderId,
-		\DateTime $dateAdded, \DateTime $dateModified,
-		string $userId): Item {
+	public function update(int $id, string $title, int $itemTypeId,
+		int $folderId, string $userId,
+		\DateTime $dateModified = new \DateTime()): Item {
 		try {
 			$entity = $this->mapper->find($id, $userId);
 			$entity->setTitle($title);
 			$entity->setItemTypeId($itemTypeId);
 			$entity->setFolderId($folderId);
-			$currentDate = new \DateTime;
-			$entity->setDateModified($currentDate);
+			$entity->setDateModified($dateModified);
 			$entity->setUserId($userId);
 			return $this->mapper->update($entity);
 		} catch (Exception $e) {

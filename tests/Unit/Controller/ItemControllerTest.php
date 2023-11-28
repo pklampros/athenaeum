@@ -11,6 +11,8 @@ use OCA\Athenaeum\Controller\ItemController;
 use OCA\Athenaeum\Service\ItemNotFound;
 use OCA\Athenaeum\Service\ItemService;
 
+use OCA\Athenaeum\Db\Item;
+
 use OCP\AppFramework\Http;
 use OCP\IRequest;
 use PHPUnit\Framework\TestCase;
@@ -31,16 +33,17 @@ class ItemControllerTest extends TestCase {
 	}
 
 	public function testUpdate(): void {
-		$item = 'just check if this value is returned correctly';
+		$item = new Item();
 		$this->service->expects($this->once())
 			->method('update')
 			->with($this->equalTo(3),
 				$this->equalTo('title'),
-				$this->equalTo('content'),
+				$this->equalTo(0),
+				$this->equalTo(1),
 				$this->equalTo($this->userId))
 			->will($this->returnValue($item));
 
-		$result = $this->controller->update(3, 'title', 'content');
+		$result = $this->controller->update(3, 'title', 0, 1);
 
 		$this->assertEquals($item, $result->getData());
 	}
@@ -52,7 +55,7 @@ class ItemControllerTest extends TestCase {
 			->method('update')
 			->will($this->throwException(new ItemNotFound()));
 
-		$result = $this->controller->update(3, 'title', 'content');
+		$result = $this->controller->update(3, 'title', 0, 1);
 
 		$this->assertEquals(Http::STATUS_NOT_FOUND, $result->getStatus());
 	}

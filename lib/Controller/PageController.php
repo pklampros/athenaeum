@@ -16,14 +16,11 @@ use OCP\Util;
 
 class PageController extends Controller {
 	private IInitialState $initialStateService;
-	private InboxItemService $inboxItemService;
 
 	public function __construct(IRequest $request,
-		IInitialState $initialStateService,
-		InboxItemService $inboxItemService) {
+		IInitialState $initialStateService) {
 		parent::__construct(Application::APP_ID, $request);
 		$this->initialStateService = $initialStateService;
-		$this->inboxItemService = $inboxItemService;
 	}
 
 	/**
