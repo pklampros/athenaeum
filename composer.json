@@ -29,7 +29,7 @@
 		"psalm:clear": "psalm.phar --clear-cache && psalm --clear-global-cache",
 		"psalm:fix": "psalm.phar --alter --issues=InvalidReturnType,InvalidNullableReturnType,MissingParamType,InvalidFalsableReturnType",
 		"test:unit": [
-			"phpunit -c tests/phpunit.xml"
+			"phpunit -c tests/phpunit.xml --testsuite Unit"
 		]
 	},
 	"config": {
