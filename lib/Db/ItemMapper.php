@@ -11,8 +11,8 @@ use OCP\AppFramework\Db\QBMapper;
 use OCP\AppFramework\Db\TTransactional;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\Files\IRootFolder;
-use OCP\IDBConnection;
 use OCP\IConfig;
+use OCP\IDBConnection;
 
 /**
  * @template-extends QBMapper<Item>
