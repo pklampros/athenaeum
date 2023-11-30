@@ -12,6 +12,7 @@ use OCP\AppFramework\Db\TTransactional;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\Files\IRootFolder;
 use OCP\IDBConnection;
+use OCP\IConfig;
 
 /**
  * @template-extends QBMapper<Item>
@@ -19,10 +20,14 @@ use OCP\IDBConnection;
 class ItemMapper extends QBMapper {
 	use TTransactional;
 	private IRootFolder $storage;
+	private IConfig $config;
+	private string $appName;
 
-	public function __construct(IDBConnection $db, IRootFolder $storage) {
+	public function __construct(IDBConnection $db, IRootFolder $storage, IConfig $config, string $appName) {
 		parent::__construct($db, 'athm_items', Item::class);
 		$this->storage = $storage;
+		$this->config = $config;
+		$this->appName = $appName;
 	}
 
 	/**
@@ -369,7 +374,7 @@ class ItemMapper extends QBMapper {
 		$qb->insert('athm_contributors')
 			->setValue('first_name', $qb->createNamedParameter($firstName))
 			->setValue('last_name', $qb->createNamedParameter($lastName))
-			->setValue('last_name_is_full_name', $qb->createNamedParameter($lastNameIsFullName));
+			->setValue('last_name_is_full_name', $qb->createNamedParameter($lastNameIsFullName ? 1 : 0));
 		$qb->executeStatement();
 		return $qb->getLastInsertId();
 	}
@@ -638,27 +643,11 @@ class ItemMapper extends QBMapper {
 		}
 		$itemDetails = $this->getWithDetails($itemId, $userId);
 		
-		// get the dbid field's id
-		$dbid_field = 'dbid';
-		$qb = $this->db->getQueryBuilder();
-		$qb->select('id')
-			  ->from('athm_cfg_fields')
-			  ->where($qb->expr()->eq('name', $qb->createNamedParameter($dbid_field)));
-		$cursor = $qb->execute();
-		$row = $cursor->fetch();
-		$cursor->closeCursor();
-		$dbid_field_id = $row['id'];
+		$dbid = $this->config->getUserValue($userId, $this->appName, 'dbid');
 
-		// get the database's id
-		$qb = $this->db->getQueryBuilder();
-		$qb->select('value')
-			  ->from('athm_cfg_field_values')
-			  ->where($qb->expr()->eq('user_id', $qb->createNamedParameter($userId)))
-			  ->andWhere($qb->expr()->eq('field_id', $qb->createNamedParameter($dbid_field_id)));
-		$cursor = $qb->execute();
-		$row = $cursor->fetch();
-		$cursor->closeCursor();
-		$dbid = $row['value'];
+		if ($dbid == "") {
+			throw new \Exception("dbid not found!");
+		}
 
 		$itemData = array();
 		$itemData['details'] = $itemDetails;

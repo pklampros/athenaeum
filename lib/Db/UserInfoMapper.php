@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace OCA\Athenaeum\Db;
 
 use OCP\AppFramework\Db\TTransactional;
+use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 
 class UserInfoMapper {
@@ -27,7 +28,9 @@ class UserInfoMapper {
 			// add default item types
 			$query = $this->db->getQueryBuilder();
 			$query->insert('athm_item_types')
-				->setValue('name', $query->createParameter('new_item_type'));
+				->setValue('name',
+					$query->createParameter('new_item_type',
+						IQueryBuilder::PARAM_STR));
 
 			$query->setParameter('new_item_type', 'paper');
 			$query->executeStatement();
@@ -47,33 +50,43 @@ class UserInfoMapper {
 			// add default item folders
 			$query = $this->db->getQueryBuilder();
 			$query->insert('athm_folders')
-				->setValue('path', $query->createParameter('new_path'))
-				->setValue('name', $query->createParameter('new_name'))
-				->setValue('editable', $query->createParameter('new_editable'))
-				->setValue('icon', $query->createParameter('new_icon'))
-				->setValue('user_id', $query->createParameter('new_user_id'));
-
+				->setValue('path',
+					$query->createParameter('new_path',
+						IQueryBuilder::PARAM_STR))
+				->setValue('name',
+					$query->createParameter('new_name',
+						IQueryBuilder::PARAM_STR))
+				->setValue('editable',
+					$query->createParameter('new_editable',
+						IQueryBuilder::PARAM_BOOL))
+				->setValue('icon',
+					$query->createParameter('new_icon',
+						IQueryBuilder::PARAM_STR))
+				->setValue('user_id',
+					$query->createParameter('new_user_id',
+						IQueryBuilder::PARAM_STR));
+			
 			$query->setParameter('new_path', 'inbox');
 			$query->setParameter('new_name', 'Inbox');
-			$query->setParameter('new_editable', false);
+			$query->setParameter('new_editable', 0);
 			$query->setParameter('new_icon', 'Inbox');
 			$query->setParameter('new_user_id', $userId);
 			$query->executeStatement();
 			$query->setParameter('new_path', 'inbox:decide_later');
 			$query->setParameter('new_name', 'Decide Later');
-			$query->setParameter('new_editable', true);
+			$query->setParameter('new_editable', 1);
 			$query->setParameter('new_icon', 'Inbox');
 			$query->setParameter('new_user_id', $userId);
 			$query->executeStatement();
 			$query->setParameter('new_path', 'library');
 			$query->setParameter('new_name', 'Library');
-			$query->setParameter('new_editable', false);
+			$query->setParameter('new_editable', 0);
 			$query->setParameter('new_icon', 'Bookshelf');
 			$query->setParameter('new_user_id', $userId);
 			$query->executeStatement();
 			$query->setParameter('new_path', 'wastebasket');
 			$query->setParameter('new_name', 'Wastebasket');
-			$query->setParameter('new_editable', false);
+			$query->setParameter('new_editable', 0);
 			$query->setParameter('new_icon', 'Bookshelf');
 			$query->setParameter('new_user_id', $userId);
 			$query->executeStatement();
@@ -81,8 +94,12 @@ class UserInfoMapper {
 			// add default fields
 			$query = $this->db->getQueryBuilder();
 			$query->insert('athm_fields')
-				->setValue('name', $query->createParameter('new_field_name'))
-				->setValue('type_hint', $query->createParameter('new_field_type_hint'));
+				->setValue('name',
+					$query->createParameter('new_field_name',
+						IQueryBuilder::PARAM_STR))
+				->setValue('type_hint',
+					$query->createParameter('new_field_type_hint',
+						IQueryBuilder::PARAM_STR));
 
 			$query->setParameter('new_field_name', 'url');
 			$query->setParameter('new_field_type_hint', 'string');
@@ -100,7 +117,9 @@ class UserInfoMapper {
 			// add default contributors
 			$query = $this->db->getQueryBuilder();
 			$query->insert('athm_contribn_types')
-				->setValue('name', $query->createParameter('new_contribn_type'));
+				->setValue('name',
+					$query->createParameter('new_contribn_type',
+						IQueryBuilder::PARAM_STR));
 
 			$query->setParameter('new_contribn_type', 'author');
 			$query->executeStatement();

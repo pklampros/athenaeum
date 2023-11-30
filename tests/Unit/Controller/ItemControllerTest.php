@@ -8,10 +8,10 @@ namespace OCA\Athenaeum\Tests\Unit\Controller;
 
 use OCA\Athenaeum\Controller\ItemController;
 
-use OCA\Athenaeum\Service\ItemNotFound;
-use OCA\Athenaeum\Service\ItemService;
-
 use OCA\Athenaeum\Db\Item;
+use OCA\Athenaeum\Service\ItemNotFound;
+
+use OCA\Athenaeum\Service\ItemService;
 
 use OCP\AppFramework\Http;
 use OCP\IRequest;

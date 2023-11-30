@@ -37,12 +37,10 @@ class UserInfoApiController extends ApiController {
 		if ($userDBID == '') {
 			// The purpose of this code is to create fields and
 			// values in the database that are default per user
-			try {
-				$this->service->createDefaultData($this->userId);
-				$userDBID = $uis->setUserValue("dbid", $this->userId, uniqid());
-			} catch (\Throwable $e) {
-				// Transaction has failed don't set a dbid
-			}
+			$this->service->createDefaultData($this->userId);
+			$uis->setUserValue("dbid", $this->userId, uniqid());
+			$userDBID = $uis->getUserValue("dbid", $this->userId);
+			// Transaction has failed don't set a dbid
 		}
 		return new DataResponse($userDBID);
 	}
