@@ -9,7 +9,7 @@
 		}
 	],
 	"require-dev": {
-		"php": "^8.0",
+		"php": "^8.1",
 		"phpunit/phpunit": "^9.5",
 		"sabre/dav": "^4.1",
 		"sabre/xml": "^2.2",
@@ -37,7 +37,7 @@
 			"composer/package-versions-deprecated": true
 		},
 		"platform": {
-			"php": "8.0"
+			"php": "8.1"
 		}
 	},
 	"require": {
