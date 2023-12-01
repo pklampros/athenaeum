@@ -3,32 +3,35 @@
 	SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
-	<NcListItem
-		:title="source.title ? source.title : t('athenaeum', 'New source')"
-		:class="{active: currentSourceId === source.id}"
-		:counter-number="source.importance"
+	<NcListItem :title="item.title ? item.title : t('athenaeum', 'New item')"
+		:class="{active: currentItemId === item.id}"
+		:counter-number="item.sourceImportance"
 		:to="link">
 		<template #icon>
-			<google-scholar-icon size="20"/>
+			<GoogleScholarIcon size="20" />
 		</template>
 		<template #subtitle>
-			<div
-				v-if="source.description">
+			<div v-if="item.journal">
 				<span>
-					{{ source.description }}
+					{{ item.journal }}
+				</span>
+			</div>
+			<div v-if="item.authors">
+				<span>
+					{{ item.authors }}
 				</span>
 			</div>
 		</template>
 		<template #actions>
-			<NcActionButton v-if="source.id === -1"
+			<NcActionButton v-if="item.id === -1"
 				icon="icon-close"
-				@click="cancelNewSource(source)">
-				{{ t('athenaeum', 'Cancel source creation') }}
+				@click="cancelNewItem(item)">
+				{{ t('athenaeum', 'Cancel item creation') }}
 			</NcActionButton>
 			<NcActionButton v-else
 				icon="icon-delete"
-				@click="deleteSource(source)">
-				{{ t('athenaeum', 'Delete source') }}
+				@click="deleteItem(item)">
+				{{ t('athenaeum', 'Delete item') }}
 			</NcActionButton>
 		</template>
 		<template #extra>
@@ -39,25 +42,23 @@
 
 <script>
 
-import NcListItem from '@nextcloud/vue/dist/Components/NcListItem'
-import NcActionButton from '@nextcloud/vue/dist/Components/NcActionButton'
+import NcListItem from '@nextcloud/vue/dist/Components/NcListItem.js'
+import NcActionButton from '@nextcloud/vue/dist/Components/NcActionButton.js'
 
-import Bookshelf from 'vue-material-design-icons/Bookshelf.vue';
 import { GoogleScholarIcon } from 'vue-simple-icons'
 
 export default {
-	name: 'Source',
+	name: 'ItemListItem',
 	components: {
 		// components
 		NcListItem,
 		NcActionButton,
 
 		// icons
-		Bookshelf,
 		GoogleScholarIcon,
 	},
 	props: {
-		source: {
+		item: {
 			type: Object,
 			required: true,
 		},
@@ -65,10 +66,10 @@ export default {
 	computed: {
 		link() {
 			return {
-				name: 'sources_details',
+				name: 'items_details',
 				params: {
-					//filter: this.$route.params.filter ? this.$route.params.filter : undefined,
-					sourceId: this.source.id,
+					// filter: this.$route.params.filter ? this.$route.params.filter : undefined,
+					itemId: this.item.id,
 				},
 				exact: true,
 			}
@@ -81,9 +82,11 @@ export default {
 	:deep(.list-item-content__wrapper) {
 		margin-top: 9px;
 	}
+
 	:deep(.list-item__extra) {
 		margin-top: 11px;
 	}
+
 	.list-item__wrapper {
 		list-style: none;
 	}

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 // SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 // SPDX-License-Identifier: AGPL-3.0-or-later
@@ -18,8 +19,8 @@ class ContributorController extends Controller {
 	use Errors;
 
 	public function __construct(IRequest $request,
-								ContributorService $service,
-								?string $userId) {
+		ContributorService $service,
+		?string $userId) {
 		parent::__construct(Application::APP_ID, $request);
 		$this->service = $service;
 		$this->userId = $userId;
@@ -46,9 +47,9 @@ class ContributorController extends Controller {
 	 */
 	public function findSimilar(): DataResponse {
 		return new DataResponse($this->service->findSimilar(
-									$this->request->post['names']['firstName'],
-									$this->request->post['names']['lastName'],
-									$this->request->post['names']['displayName']));
+			$this->request->post['names']['firstName'],
+			$this->request->post['names']['lastName'],
+			$this->request->post['names']['displayName']));
 	}
 
 	/**
@@ -56,7 +57,7 @@ class ContributorController extends Controller {
 	 */
 	public function freeSearch(): DataResponse {
 		return new DataResponse($this->service->freeSearch(
-									$this->request->post['term']));
+			$this->request->post['term']));
 	}
 
 	/**
@@ -71,7 +72,7 @@ class ContributorController extends Controller {
 	 * @NoAdminRequired
 	 */
 	public function update(int $id, string $title,
-						   string $content): DataResponse {
+		string $content): DataResponse {
 		return $this->handleNotFound(function () use ($id, $title, $content) {
 			return $this->service->update($id, $title, $content, $this->userId);
 		});

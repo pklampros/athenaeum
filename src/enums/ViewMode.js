@@ -4,11 +4,10 @@
  */
 
 const ViewMode = Object.freeze({
-  ITEMS: "items",
-  ITEMS_DETAILS: "items_details",
-  SOURCES: "sources",
-  SOURCES_DETAILS: "sources_details",
-});
+	ITEMS: 'items',
+	ITEMS_DETAILS: 'items_details',
+	SOURCES: 'sources',
+	SOURCES_DETAILS: 'sources_details',
+})
 
-export default ViewMode;
-
+export default ViewMode

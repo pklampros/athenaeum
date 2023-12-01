@@ -10,3 +10,5 @@ js/*hot-update.*
 .atomignore
 .vscode
 js/
+.vendor/
+.php-cs-fixer.cache

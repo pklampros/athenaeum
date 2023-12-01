@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 // SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 // SPDX-License-Identifier: AGPL-3.0-or-later
@@ -7,11 +8,11 @@ namespace OCA\Athenaeum\Service;
 
 use Exception;
 
-use OCP\AppFramework\Db\DoesNotExistException;
-use OCP\AppFramework\Db\MultipleObjectsReturnedException;
-
 use OCA\Athenaeum\Db\Folder;
 use OCA\Athenaeum\Db\FolderMapper;
+
+use OCP\AppFramework\Db\DoesNotExistException;
+use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 
 class FolderService {
 	private FolderMapper $mapper;
@@ -48,8 +49,8 @@ class FolderService {
 	}
 
 	public function create(string $path, string $name,
-						   bool $editable, string $icon,
-						   string $userId): Folder {
+		bool $editable, string $icon,
+		string $userId): Folder {
 		try {
 			$entity = new Folder();
 			$entity->setPath($path);
@@ -64,7 +65,7 @@ class FolderService {
 	}
 
 	public function update(int $id, string $path, string $name,
-	                       bool $editable, string $icon): Folder {
+		bool $editable, string $icon): Folder {
 		try {
 			$entity = $this->mapper->find($id);
 			$entity->setPath($path);

@@ -6,11 +6,10 @@
 	<NcAppContentDetails v-if="source">
 		<div style="max-width: 900px; margin: 0 auto;">
 			<div style="position: sticky; padding: 30px 18px;">
-				<h2
-					:title="source.title"
+				<h2 :title="source.title"
 					style="display: flex; align-items: center; justify-content: space-between;">
 					{{ source.title }}
-					<a :href="source.url" target="_blank"><OpenInNew></a>
+					<a :href="source.url" target="_blank"><OpenInNew /></a>
 				</h2>
 				<h3> {{ source.description }} </h3>
 				<h3> UID: {{ source.uid }} </h3>
@@ -21,51 +20,47 @@
 				<div class="field-label">
 					<h3>Title</h3>
 				</div>
-				<NcTextField
-					placeholder="Title"
-					labelOutside="true"
-					@update:value="setDataModified()"
-					:value.sync="source.title" />
+				<NcTextField placeholder="Title"
+					label-outside="true"
+					:value.sync="source.title"
+					@update:value="setDataModified()" />
 				<div class="field-label">
 					<h3>Description</h3>
 				</div>
-				<NcRichContenteditable
-					placeholder="Description"
-					@update:value="setDataModified()"
-					:value.sync="source.description" />
+				<NcRichContenteditable placeholder="Description"
+					:value.sync="source.description"
+					@update:value="setDataModified()" />
 				<div class="field-label">
-					<h3 title="This is useful for sorting items in the inbox">Importance</h3>
+					<h3 title="This is useful for sorting items in the inbox">
+						Importance
+					</h3>
 				</div>
-				<NcInputField
-					placeholder="Importance"
-					labelOutside="true"
+				<NcInputField placeholder="Importance"
+					label-outside="true"
 					type="number"
-					@update:value="setDataModified()"
-					:value.sync="source.importance" />
+					:value.sync="source.importance"
+					@update:value="setDataModified()" />
 				&nbsp;
 			</div>
 			<div style="display: flex; justify-content: right; align-items: center; padding: 16px;">
-				<NcButton
-					ariaLabel="Remove source"
-					@click="markSourceDeleted"
-					type="primary">
+				<NcButton aria-label="Remove source"
+					type="primary"
+					@click="markSourceDeleted">
 					<template #icon>
 						<Delete :size="20" />
 					</template>
 				</NcButton>
 				&nbsp;
-				<NcButton
-					:disabled="!dataModified"
-					@click="saveChanges"
-					type="primary">
+				<NcButton :disabled="!dataModified"
+					type="primary"
+					@click="saveChanges">
 					Save
 				</NcButton>
 			</div>
 		</div>
 	</NcAppContentDetails>
 	<NcAppContentDetails v-else>
-		<NcEmptyContent
-			:title="t('athenaeum', 'No source selected')">
+		<NcEmptyContent :title="t('athenaeum', 'No source selected')">
 			<template #icon>
 				<School :size="65" />
 			</template>
@@ -74,22 +69,19 @@
 </template>
 
 <script>
-import NcAppContentDetails from '@nextcloud/vue/dist/Components/NcAppContentDetails'
-import NcTextField from '@nextcloud/vue/dist/Components/NcTextField'
-import NcInputField from '@nextcloud/vue/dist/Components/NcInputField'
-import NcRichContenteditable from '@nextcloud/vue/dist/Components/NcRichContenteditable'
-import NcEmptyContent from '@nextcloud/vue/dist/Components/NcEmptyContent'
-import NcButton from '@nextcloud/vue/dist/Components/NcButton'
+import NcAppContentDetails from '@nextcloud/vue/dist/Components/NcAppContentDetails.js'
+import NcTextField from '@nextcloud/vue/dist/Components/NcTextField.js'
+import NcInputField from '@nextcloud/vue/dist/Components/NcInputField.js'
+import NcRichContenteditable from '@nextcloud/vue/dist/Components/NcRichContenteditable.js'
+import NcEmptyContent from '@nextcloud/vue/dist/Components/NcEmptyContent.js'
+import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
 
-import Delete from 'vue-material-design-icons/Delete.vue';
-import School from 'vue-material-design-icons/School.vue';
-import OpenInNew from 'vue-material-design-icons/OpenInNew.vue';
-import Pencil from 'vue-material-design-icons/Pencil.vue'
-
-import AuthorEditList from './AuthorEditList.vue'
+import Delete from 'vue-material-design-icons/Delete.vue'
+import School from 'vue-material-design-icons/School.vue'
+import OpenInNew from 'vue-material-design-icons/OpenInNew.vue'
 
 import { showError } from '@nextcloud/dialogs'
-import { fetchSourceDetails, updateSource } from './service/SourceService'
+import { fetchSourceDetails, updateSource } from './service/SourceService.js'
 
 export default {
 	name: 'SourceDetails',
@@ -106,10 +98,6 @@ export default {
 		Delete,
 		School,
 		OpenInNew,
-		Pencil,
-
-		// project components
-		AuthorEditList
 	},
 	props: {
 		sourceId: {
@@ -122,74 +110,71 @@ export default {
 			source: null,
 			fixes: [],
 			visible: {
-				'cbButton': false,
+				cbButton: false,
 			},
-			dataModified: false
+			dataModified: false,
 		}
 	},
+	watch: {
+		async sourceId(sourceId) {
+			// this is required to trigger the update of the various details when
+			// sourceId is updated (does not work the first time i.e. through the route)
+			this.updateDetails(sourceId)
+		},
+		async source(source) {
+			if (!source || !this.$options || !this.$options.authorListInterface) return
+
+			if (source.contributorData.type === 'text') {
+				this.$options.authorListInterface.setAuthorListFromText(source.contributorData.text)
+			} else {
+				this.$options.authorListInterface.setAuthorList(source.contributorData.contributors)
+			}
+		},
+	},
 	async mounted() {
-		this.loading = true;
+		this.loading = true
 		if (this.sourceId) {
 			// this is required to trigger the update the various details when
 			// the sourceId is first given (for example though the route)
-			this.updateDetails(this.sourceId);
+			this.updateDetails(this.sourceId)
 		}
 		this.loading = false
 	},
-	watch: {
-		sourceId: async function (sourceId) {
-			// this is required to trigger the update of the various details when
-			// sourceId is updated (does not work the first time i.e. through the route)
-			this.updateDetails(sourceId);
-		},
-		source: async function (source) {
-			if (!source || !this.$options || !this.$options.authorListInterface) return;
-
-			if (source.contributorData.type == "text") {
-				this.$options.authorListInterface.setAuthorListFromText(source.contributorData.text);
-			} else {
-				this.$options.authorListInterface.setAuthorList(source.contributorData.contributors);
-			}
-		},
-	},
 	methods: {
 		setDataModified() {
-			this.dataModified = true;
+			this.dataModified = true
 		},
 		async getSource(sourceId) {
 			try {
-				let sourceDetails = await fetchSourceDetails(sourceId);
-				console.log("SourceDetails", sourceDetails);
-				return sourceDetails;
+				const sourceDetails = await fetchSourceDetails(sourceId)
+				return sourceDetails
 			} catch (e) {
 				console.error(e)
 				showError(t('athenaeum', 'Could not fetch source details (route mounting failed)'))
 			}
-			return null;
+			return null
 		},
 		async saveChanges() {
 			try {
-				let response = await updateSource(
+				const response = await updateSource(
 					this.source.id, this.source.importance,
-					this.source.title, this.source.description
-				);
-				console.log("debug", "updateSource response", response);
-				return response;
+					this.source.title, this.source.description,
+				)
+				return response
 			} catch (e) {
 				console.error(e)
 				showError(t('athenaeum', 'Could not fetch source details (route mounting failed)'))
 			}
-			return null;
+			return null
 		},
 		async updateDetails(sourceId) {
-			if (!sourceId) return;
-			this.source = await this.getSource(sourceId);
+			if (!sourceId) return
+			this.source = await this.getSource(sourceId)
 		},
 	},
 }
 
 </script>
-
 
 <style lang="scss" scoped>
 
@@ -199,7 +184,7 @@ export default {
 
 	.rich-contenteditable__input {
 		text-align: initial;
-		&[error="true"] {
+		&[error='true'] {
 			border-color: var(--color-error) !important;
 		}
 	}

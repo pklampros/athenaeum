@@ -4,33 +4,33 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
 	<NcAppContent>
-		<div slot="list" class='header__button'>
+		<div slot="list" class="header__button">
 			<div id="toptitle">
 				<h2>Source</h2>
 			</div>
-			<NcAppContentList
-				class="main-items-list"
+			<NcAppContentList class="main-items-list"
 				:show-details="true">
-				<Source v-for="source in sources"
+				<SourceListItem v-for="source in sources"
 					:key="source.id"
-					:source="source">
-				</Source>
+					:source="source" />
 			</NcAppContentList>
 		</div>
-		<SourceDetails slot="default" :sourceId="currentSourceId"/>
+		<SourceDetails slot="default" :source-id="currentSourceId" />
 	</NcAppContent>
 </template>
 
-
 <script>
 
-import NcAppContent from '@nextcloud/vue/dist/Components/NcAppContent'
-import NcAppContentList from '@nextcloud/vue/dist/Components/NcAppContentList'
+import NcAppContent from '@nextcloud/vue/dist/Components/NcAppContent.js'
+import NcAppContentList from '@nextcloud/vue/dist/Components/NcAppContentList.js'
 
-import Source from './Source.vue'
+import SourceListItem from './SourceListItem.vue'
 import SourceDetails from './SourceDetails.vue'
 
-import { fetchSources } from './service/SourceService'
+import { fetchSources } from './service/SourceService.js'
+import { showError } from '@nextcloud/dialogs'
+import { generateUrl } from '@nextcloud/router'
+import axios from '@nextcloud/axios'
 
 export default {
 	name: 'SourceView',
@@ -40,7 +40,7 @@ export default {
 		NcAppContentList,
 
 		// project components
-		Source,
+		SourceListItem,
 		SourceDetails,
 	},
 	data() {
@@ -53,10 +53,10 @@ export default {
 	},
 	computed: {
 		currentFolder() {
-			return this.$route.params.folder;
+			return this.$route.params.folder
 		},
 		currentSourceId() {
-			return parseInt(this.$route.params.sourceId, null);
+			return parseInt(this.$route.params.sourceId, null)
 		},
 		currentSource() {
 			if (this.currentSourceId === null) {
@@ -72,7 +72,6 @@ export default {
 	async mounted() {
 		try {
 			this.sources = await fetchSources(this.currentFolder)
-			console.log("Sources", this.sources)
 		} catch (e) {
 			console.error(e)
 			showError(t('athenaeum', 'Could not fetch sources (route mounting failed)'))
@@ -90,7 +89,7 @@ export default {
 					title: '',
 					authors: '',
 					journal: '',
-					published: ''
+					published: '',
 				})
 				this.$nextTick(() => {
 					this.$refs.title.focus()
@@ -104,7 +103,7 @@ export default {
 				return authors + ' - ' + journal
 			}
 			return authors + journal
-		
+
 		},
 		cancelNewSource() {
 			this.sources.splice(this.sources.findIndex((source) => source.id === -1), 1)
@@ -140,7 +139,7 @@ export default {
 				if (this.currentSourceId === source.id) {
 					this.currentSourceId = null
 				}
-				showSuccess(t('athenaeum', 'Scholar Source deleted'))
+				// showSuccess(t('athenaeum', 'Scholar Source deleted'))
 			} catch (e) {
 				console.error(e)
 				showError(t('athenaeum', 'Could not delete the source'))
@@ -160,9 +159,9 @@ export default {
 		display: flex;
 		align-items: center;
 		min-height: var(--athenaeum-navigation-height);
-	    padding: 0 var(--athenaeum-navigation-height);
+		padding: 0 var(--athenaeum-navigation-height);
 	}
-	
+
 	:deep(.app-content-wrapper) {
 		overflow: auto;
 	}

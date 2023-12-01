@@ -9,35 +9,43 @@
 		}
 	],
 	"require-dev": {
-		"php": "^8.0",
-		"phpunit/phpunit": "^9",
+		"php": "^8.1",
+		"phpunit/phpunit": "^9.5",
 		"sabre/dav": "^4.1",
 		"sabre/xml": "^2.2",
 		"symfony/event-dispatcher": "^5.3.11",
-		"nextcloud/ocp": "dev-master@dev",
+		"nextcloud/ocp": "v27.1.3",
 		"psalm/phar": "^4.10",
 		"nextcloud/coding-standard": "^1.0",
 		"php-mime-mail-parser/php-mime-mail-parser": "^8.0"
 	},
 	"scripts": {
 		"lint": "find . -name \\*.php -not -path './vendor/*' -print0 | xargs -0 -n1 php -l",
-		"cs:check": "php-cs-fixer fix --dry-run --diff",
-		"cs:fix": "php-cs-fixer fix",
+		"cs:check": "php-cs-fixer fix --dry-run --diff  --config .php_cs-fixer.dist.php",
+		"cs:fix": "php-cs-fixer fix --config .php_cs-fixer.dist.php",
 		"psalm": "psalm.phar --threads=1",
 		"psalm:update-baseline": "psalm.phar --threads=1 --update-baseline",
 		"psalm:update-baseline:force": "psalm.phar --threads=1 --update-baseline --set-baseline=tests/psalm-baseline.xml",
 		"psalm:clear": "psalm.phar --clear-cache && psalm --clear-global-cache",
-		"psalm:fix": "psalm.phar --alter --issues=InvalidReturnType,InvalidNullableReturnType,MissingParamType,InvalidFalsableReturnType"
+		"psalm:fix": "psalm.phar --alter --issues=InvalidReturnType,InvalidNullableReturnType,MissingParamType,InvalidFalsableReturnType",
+		"test:unit": [
+			"phpunit -c tests/phpunit.xml --testsuite Unit"
+		]
 	},
 	"config": {
 		"allow-plugins": {
 			"composer/package-versions-deprecated": true
 		},
 		"platform": {
-			"php": "8.0"
+			"php": "8.1"
 		}
 	},
 	"require": {
 		"ext-mailparse": "*"
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"OCP\\": "vendor/nextcloud/ocp/OCP"
+		}
 	}
 }

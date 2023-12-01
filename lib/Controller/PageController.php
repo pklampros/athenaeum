@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 // SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 // SPDX-License-Identifier: AGPL-3.0-or-later
@@ -6,7 +7,6 @@ declare(strict_types=1);
 namespace OCA\Athenaeum\Controller;
 
 use OCA\Athenaeum\AppInfo\Application;
-use OCA\Athenaeum\Service\InboxItemService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Services\IInitialState;
@@ -15,14 +15,11 @@ use OCP\Util;
 
 class PageController extends Controller {
 	private IInitialState $initialStateService;
-	private InboxItemService $inboxItemService;
 
 	public function __construct(IRequest $request,
-								IInitialState $initialStateService,
-								InboxItemService $inboxItemService) {
+		IInitialState $initialStateService) {
 		parent::__construct(Application::APP_ID, $request);
 		$this->initialStateService = $initialStateService;
-		$this->inboxItemService = $inboxItemService;
 	}
 
 	/**
@@ -33,8 +30,8 @@ class PageController extends Controller {
 		Util::addScript(Application::APP_ID, 'athenaeum-main');
 
 		// $this->initialStateService->provideInitialState(
-			// 'accounts',
-			// $accountsJson
+		// 'accounts',
+		// $accountsJson
 		// );
 
 		return new TemplateResponse(Application::APP_ID, 'main');
@@ -50,7 +47,7 @@ class PageController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 * @NoCSRFRequired
-	 * 
+	 *
 	 * @return TemplateResponse
 	 */
 	public function items(): TemplateResponse {
@@ -60,7 +57,7 @@ class PageController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 * @NoCSRFRequired
-	 * 
+	 *
 	 * @return TemplateResponse
 	 */
 	public function itemsDetails(): TemplateResponse {
@@ -70,7 +67,7 @@ class PageController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 * @NoCSRFRequired
-	 * 
+	 *
 	 * @return TemplateResponse
 	 */
 	public function sources(): TemplateResponse {
@@ -80,7 +77,7 @@ class PageController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 * @NoCSRFRequired
-	 * 
+	 *
 	 * @return TemplateResponse
 	 */
 	public function sourcesDetails(): TemplateResponse {

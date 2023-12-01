@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-import InboxItemNotFoundError from './InboxItemNotFoundError'
+import InboxItemNotFoundError from './InboxItemNotFoundError.js'
 
 const map = {
 	'Exception\\InboxItemNotFoundError': InboxItemNotFoundError,

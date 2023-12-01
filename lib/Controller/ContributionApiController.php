@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 // SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 // SPDX-License-Identifier: AGPL-3.0-or-later
@@ -9,7 +10,6 @@ use OCA\Athenaeum\AppInfo\Application;
 use OCA\Athenaeum\Service\ContributionService;
 use OCP\AppFramework\ApiController;
 use OCP\AppFramework\Http\DataResponse;
-use OCP\AppFramework\Http;
 use OCP\IRequest;
 
 class ContributionApiController extends ApiController {
@@ -19,8 +19,8 @@ class ContributionApiController extends ApiController {
 	use Errors;
 
 	public function __construct(IRequest $request,
-								ContributionService $service,
-								?string $userId) {
+		ContributionService $service,
+		?string $userId) {
 		parent::__construct(Application::APP_ID, $request);
 		$this->service = $service;
 		$this->userId = $userId;
@@ -64,11 +64,11 @@ class ContributionApiController extends ApiController {
 	 * @NoAdminRequired
 	 */
 	public function create(int $itemId, int $contributorId,
-						   string $contributorNameDisplay, int $contributionTypeId,
-						   int $contributionOrder): DataResponse {
+		string $contributorNameDisplay, int $contributionTypeId,
+		int $contributionOrder): DataResponse {
 		return new DataResponse($this->service->create($itemId, $contributorId,
-								$contributorNameDisplay, $contributionTypeId,
-								$contributionOrder));
+			$contributorNameDisplay, $contributionTypeId,
+			$contributionOrder));
 	}
 
 	/**
@@ -77,13 +77,13 @@ class ContributionApiController extends ApiController {
 	 * @NoAdminRequired
 	 */
 	public function update(int $id, int $itemId, int $contributorId,
-						   string $contributorNameDisplay, int $contributionTypeId,
-						   int $contributionOrder): DataResponse {
+		string $contributorNameDisplay, int $contributionTypeId,
+		int $contributionOrder): DataResponse {
 		return $this->handleNotFound(function () use ($id, $itemId, $contributorId,
-									 $contributorNameDisplay, $contributionTypeId) {
+			$contributorNameDisplay, $contributionTypeId) {
 			return $this->service->update($id, $itemId, $contributorId,
-										  $contributorNameDisplay, $contributionTypeId,
-										  $contributionOrder);
+				$contributorNameDisplay, $contributionTypeId,
+				$contributionOrder);
 		});
 	}
 

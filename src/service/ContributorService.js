@@ -4,14 +4,20 @@
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
 
-import { convertAxiosError } from '../errors/convert'
+import { convertAxiosError } from '../errors/convert.js'
 
+/**
+ *
+ * @param {string} firstName Author's first name
+ * @param {string} lastName Author's last name
+ * @param {string} displayName Author's complete display name
+ */
 export function findSimilar(firstName, lastName, displayName) {
-	const url = generateUrl('/apps/athenaeum/contributors/similar');
+	const url = generateUrl('/apps/athenaeum/contributors/similar')
 	const names = {
-		"firstName": firstName,
-		"lastName": lastName,
-		"displayName": displayName,
+		firstName,
+		lastName,
+		displayName,
 	}
 
 	return axios
@@ -19,8 +25,8 @@ export function findSimilar(firstName, lastName, displayName) {
 			names,
 		}, {
 			headers: {
-				'Content-Type': 'application/json'
-			}
+				'Content-Type': 'application/json',
+			},
 		})
 		.then((resp) => resp.data)
 		.catch((error) => {
@@ -28,16 +34,20 @@ export function findSimilar(firstName, lastName, displayName) {
 		})
 }
 
+/**
+ *
+ * @param {string} term The term to search for
+ */
 export function freeSearch(term) {
-	const url = generateUrl('/apps/athenaeum/contributors/search');
+	const url = generateUrl('/apps/athenaeum/contributors/search')
 
 	return axios
 		.post(url, {
 			term,
 		}, {
 			headers: {
-				'Content-Type': 'application/json'
-			}
+				'Content-Type': 'application/json',
+			},
 		})
 		.then((resp) => resp.data)
 		.catch((error) => {

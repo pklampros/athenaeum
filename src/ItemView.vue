@@ -4,33 +4,33 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
 	<NcAppContent>
-		<div slot="list" class='header__button'>
+		<div slot="list" class="header__button">
 			<div id="toptitle">
 				<h2>Item</h2>
 			</div>
-			<NcAppContentList
-				class="main-items-list"
+			<NcAppContentList class="main-items-list"
 				:show-details="true">
-				<Item v-for="item in items"
+				<ItemListItem v-for="item in items"
 					:key="item.id"
-					:item="item">
-				</Item>
+					:item="item" />
 			</NcAppContentList>
 		</div>
-		<ItemDetails slot="default" :itemId="currentItemId"/>
+		<ItemDetails slot="default" :item-id="currentItemId" />
 	</NcAppContent>
 </template>
 
-
 <script>
 
-import NcAppContent from '@nextcloud/vue/dist/Components/NcAppContent'
-import NcAppContentList from '@nextcloud/vue/dist/Components/NcAppContentList'
+import NcAppContent from '@nextcloud/vue/dist/Components/NcAppContent.js'
+import NcAppContentList from '@nextcloud/vue/dist/Components/NcAppContentList.js'
 
-import Item from './Item.vue'
+import ItemListItem from './ItemListItem.vue'
 import ItemDetails from './ItemDetails.vue'
 
-import { fetchItems } from './service/ItemService'
+import { fetchItems } from './service/ItemService.js'
+import { showError } from '@nextcloud/dialogs'
+import { generateUrl } from '@nextcloud/router'
+import axios from '@nextcloud/axios'
 
 export default {
 	name: 'ItemView',
@@ -40,7 +40,7 @@ export default {
 		NcAppContentList,
 
 		// project components
-		Item,
+		ItemListItem,
 		ItemDetails,
 	},
 	data() {
@@ -53,10 +53,10 @@ export default {
 	},
 	computed: {
 		currentFolder() {
-			return this.$route.params.folder;
+			return this.$route.params.folder
 		},
 		currentItemId() {
-			return parseInt(this.$route.params.itemId, null);
+			return parseInt(this.$route.params.itemId, null)
 		},
 		currentItem() {
 			if (!this.currentItemId) {
@@ -75,14 +75,13 @@ export default {
 			if (!this.currentItemId && this.items.length > 0) {
 				// go directly to the first item
 				this.$router.push({
-					name: "items_details",
+					name: 'items_details',
 					params: {
 						folder: this.currentFolder,
-						itemId: this.items[0].id
-					}
-				});
+						itemId: this.items[0].id,
+					},
+				})
 			}
-			console.log("Items", this.items)
 		} catch (e) {
 			console.error(e)
 			showError(t('athenaeum', 'Could not fetch items (route mounting failed)'))
@@ -100,7 +99,7 @@ export default {
 					title: '',
 					authors: '',
 					journal: '',
-					published: ''
+					published: '',
 				})
 				this.$nextTick(() => {
 					this.$refs.title.focus()
@@ -114,7 +113,7 @@ export default {
 				return authors + ' - ' + journal
 			}
 			return authors + journal
-		
+
 		},
 		cancelNewItem() {
 			this.items.splice(this.items.findIndex((item) => item.id === -1), 1)
@@ -150,7 +149,7 @@ export default {
 				if (this.currentItemId === item.id) {
 					this.currentItemId = null
 				}
-				showSuccess(t('athenaeum', 'Scholar Item deleted'))
+				// showSuccess(t('athenaeum', 'Scholar Item deleted'))
 			} catch (e) {
 				console.error(e)
 				showError(t('athenaeum', 'Could not delete the item'))
@@ -170,9 +169,9 @@ export default {
 		display: flex;
 		align-items: center;
 		min-height: var(--athenaeum-navigation-height);
-	    padding: 0 var(--athenaeum-navigation-height);
+		padding: 0 var(--athenaeum-navigation-height);
 	}
-	
+
 	:deep(.app-content-wrapper) {
 		overflow: auto;
 	}
