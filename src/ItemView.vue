@@ -71,7 +71,8 @@ export default {
 	},
 	async mounted() {
 		try {
-			this.items = await fetchItems(this.currentFolder)
+			const itemData = await fetchItems(this.currentFolder)
+			this.items = itemData.items
 			if (!this.currentItemId && this.items.length > 0) {
 				// go directly to the first item
 				this.$router.push({

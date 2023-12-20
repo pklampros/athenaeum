@@ -243,6 +243,17 @@ class ItemMapper extends QBMapper {
 		string $search = ''
 	): array {
 		/* @var $qb IQueryBuilder */
+
+		$qb = $this->db->getQueryBuilder();
+		$qb->selectAlias($qb->createFunction('COUNT(*)'), 'count')
+		   ->from('athm_items')
+		   ->where($qb->expr()->eq('user_id', $qb->createNamedParameter($userId)))
+		   ->andWhere($qb->expr()->eq('folder_id', $qb->createNamedParameter($folderId)));
+		   $cursor = $qb->execute();
+		$row = $cursor->fetch();
+		$cursor->closeCursor();
+		$totalCount = $row['count'];
+
 		$qb = $this->db->getQueryBuilder();
 		$qb->selectAlias($qb->createFunction('SUM(s.importance)'), 'source_importance')
 		   ->addSelect('it.*')
@@ -255,7 +266,10 @@ class ItemMapper extends QBMapper {
 		   ->orderBy('source_importance', 'DESC')
 		   ->setFirstResult($offset)
 		   ->setMaxResults($limit);
-		return $this->findEntities($qb);
+		return array(
+			'items' => $this->findEntities($qb),
+			'totalCount' => $totalCount
+		);
 	}
 
 	/**
