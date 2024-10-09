@@ -11,11 +11,11 @@ import { convertAxiosError } from '../errors/convert.js'
 /**
  *
  * @param {string} folder Filter items by this folder
- * @param {string} query Search query
- * @param {object} cursor Current item
+ * @param {object} offset Number of items to skip
  * @param {number} limit Limit to a particular number of items
+ * @param {string} query Search query
  */
-export function fetchItems(folder, query, cursor, limit) {
+export function fetchItems(folder, offset, limit, query) {
 	const url = generateUrl('/apps/athenaeum/res/items')
 	const params = {
 	}
@@ -23,14 +23,14 @@ export function fetchItems(folder, query, cursor, limit) {
 	if (folder) {
 		params.folder = folder
 	}
-	if (query) {
-		params.filter = query
-	}
 	if (limit) {
 		params.limit = limit
 	}
-	if (cursor) {
-		params.cursor = cursor
+	if (offset) {
+		params.offset = offset
+	}
+	if (query) {
+		params.filter = query
 	}
 
 	return axios
@@ -135,7 +135,7 @@ export function attachFile(file, itemId) {
 	formData.append('file', file)
 	formData.append('item_id', itemId)
 	return axios
-	    .post(url, formData,
+		.post(url, formData,
 			{
 				headers: {
 					'Content-Type': 'multipart/form-data',

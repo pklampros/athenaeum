@@ -12,3 +12,4 @@ js/*hot-update.*
 js/
 .vendor/
 .php-cs-fixer.cache
+*.code-workspace

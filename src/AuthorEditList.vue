@@ -21,7 +21,8 @@
 					<div>
 						<div class="first-row">
 							<div v-if="!author.existingContributor">
-								<div v-if="!author.onlyLastName" class="flex-row">
+								<div v-if="!author.onlyLastName"
+									class="flex-row">
 									<NcTextField label="First"
 										:error="emptyOrHasEllipsis(author.firstName)"
 										:value.sync="author.firstName"
@@ -100,8 +101,10 @@
 							type="radio"
 							button-variant-grouped="horizontal"
 							@update:checked="findSimilarContributors(index)">
-							<Magnify v-if="!author.existingContributor" :size="20" />
-							<DatabaseCheck v-else :size="20" />
+							<Magnify v-if="!author.existingContributor"
+								:size="20" />
+							<DatabaseCheck v-else
+								:size="20" />
 							<!-- when  there is a suggested already from the database: <DatabaseSearch :size="20" /> -->
 							<NcPopover :shown="author.potentialContributors.popoverVisible"
 								container="#author-edit-list"
@@ -110,7 +113,8 @@
 								<template #default>
 									<div>
 										<h2>Similar contributors</h2>
-										<div v-if="author.potentialContributors.error" style="padding: 1em">
+										<div v-if="author.potentialContributors.error"
+											style="padding: 1em">
 											<span>
 												{{ author.potentialContributors.error }}<br>
 											</span>
@@ -160,11 +164,13 @@
 	</div>
 </template>
 <script>
-import NcTextField from '@nextcloud/vue/dist/Components/NcTextField.js'
-import NcCheckboxRadioSwitch from '@nextcloud/vue/dist/Components/NcCheckboxRadioSwitch.js'
-import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
-import NcListItem from '@nextcloud/vue/dist/Components/NcListItem.js'
-import NcPopover from '@nextcloud/vue/dist/Components/NcPopover.js'
+import {
+	NcTextField,
+	NcCheckboxRadioSwitch,
+	NcButton,
+	NcListItem,
+	NcPopover,
+} from '@nextcloud/vue'
 
 import Magnify from 'vue-material-design-icons/Magnify.vue'
 import TextBox from 'vue-material-design-icons/TextBox.vue'
@@ -240,8 +246,8 @@ export default {
 			if (author.firstName) nameComponents = nameComponents + 1
 
 			author.displayName = author.firstName.trim()
-								 + (nameComponents === 2 ? ' ' : '')
-								 + author.name.trim()
+				+ (nameComponents === 2 ? ' ' : '')
+				+ author.name.trim()
 			this.$set(this.authorList, authorIndex, author)
 		},
 		displayNameSet(authorIndex) {
@@ -271,14 +277,14 @@ export default {
 		moveDown(authorIndex) {
 			if (authorIndex < 0 || authorIndex > this.authorList.length - 1) return
 			this.$set(this.authorList, authorIndex,
-					  this.authorList.splice(authorIndex + 1, 1,
-											 this.authorList[authorIndex])[0])
+				this.authorList.splice(authorIndex + 1, 1,
+					this.authorList[authorIndex])[0])
 		},
 		moveUp(authorIndex) {
 			if (authorIndex < 1 || authorIndex > this.authorList.length) return
 			this.$set(this.authorList, authorIndex,
-					  this.authorList.splice(authorIndex - 1, 1,
-											 this.authorList[authorIndex])[0])
+				this.authorList.splice(authorIndex - 1, 1,
+					this.authorList[authorIndex])[0])
 		},
 		removeAuthor(authorIndex) {
 			if (authorIndex < 0 || authorIndex > this.authorList.length) return
@@ -350,63 +356,66 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-	.modal__content {
-		margin: 50px;
-		text-align: center;
-	}
+.modal__content {
+	margin: 50px;
+	text-align: center;
+}
 
-	.input-field {
-		margin: 8px 0px;
-	}
+.input-field {
+	margin: 8px 0px;
+}
 
-	.flex-row {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
+.flex-row {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
 
-	.flex-row label {
-		margin: 8px 0px;
-	}
+.flex-row label {
+	margin: 8px 0px;
+}
 
-	.first-row .input-field, .first-row label  {
-		margin-bottom: 2px;
-	}
+.first-row .input-field,
+.first-row label {
+	margin-bottom: 2px;
+}
 
-	.last-row .input-field, .last-row label {
-		margin-top: 2px;
-	}
+.last-row .input-field,
+.last-row label {
+	margin-top: 2px;
+}
 
-	:deep(.checkbox-radio-switch__label) {
-		min-height: 0px;
-	}
+:deep(.checkbox-radio-switch__label) {
+	min-height: 0px;
+}
 
-	:deep(.field-label) {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 10px 1px 0px 0px;
-	}
+:deep(.field-label) {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px 1px 0px 0px;
+}
 
-	:deep(.field-label h3) {
-		font-weight: bold;
-		margin: 8px 0px 8px 12px;
-		text-align: start;
-	}
+:deep(.field-label h3) {
+	font-weight: bold;
+	margin: 8px 0px 8px 12px;
+	text-align: start;
+}
 </style>
 
 <style lang="scss">
-	.v-popper--theme-dropdown.v-popper__popper.similar-contributors_pop .v-popper__wrapper {
-		border-radius: var(--border-radius-large);
-		.v-popper__inner {
-			padding: 10px;
-			border-radius: var(--border-radius-large);
+.v-popper--theme-dropdown.v-popper__popper.similar-contributors_pop .v-popper__wrapper {
+	border-radius: var(--border-radius-large);
 
-			.flex-row {
-				display: flex;
-				justify-content: center;
-				align-items: center;
-			}
+	.v-popper__inner {
+		padding: 10px;
+		border-radius: var(--border-radius-large);
+
+		.flex-row {
+			display: flex;
+			justify-content: center;
+			align-items: center;
 		}
 	}
+}
 </style>

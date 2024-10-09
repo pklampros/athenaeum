@@ -4,7 +4,7 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
 	<NcListItem :title="source.title ? source.title : t('athenaeum', 'New source')"
-		:class="{active: currentSourceId === source.id}"
+		:class="{ active: currentSourceId === source.id }"
 		:counter-number="source.importance"
 		:to="link">
 		<template #icon>
@@ -37,8 +37,7 @@
 
 <script>
 
-import NcListItem from '@nextcloud/vue/dist/Components/NcListItem.js'
-import NcActionButton from '@nextcloud/vue/dist/Components/NcActionButton.js'
+import { NcListItem, NcActionButton } from '@nextcloud/vue'
 
 import { GoogleScholarIcon } from 'vue-simple-icons'
 
@@ -74,15 +73,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-	:deep(.list-item-content__wrapper) {
-		margin-top: 9px;
-	}
+:deep(.list-item-content__wrapper) {
+	margin-top: 9px;
+}
 
-	:deep(.list-item__extra) {
-		margin-top: 11px;
-	}
+:deep(.list-item__extra) {
+	margin-top: 11px;
+}
 
-	.list-item__wrapper {
-		list-style: none;
-	}
+.list-item__wrapper {
+	list-style: none;
+}
 </style>

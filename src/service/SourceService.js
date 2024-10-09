@@ -53,7 +53,7 @@ export function fetchSourceDetails(id) {
  * @param {string} description Source description
  */
 export function updateSource(id, importance, title,
-							 description) {
+	description) {
 	const url = generateUrl('/apps/athenaeum/res/sources/' + id)
 
 	return axios

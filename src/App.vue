@@ -3,9 +3,11 @@
 	SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
-	<div id="content" class="app-athenaeum">
+	<div id="content"
+		class="app-athenaeum">
 		<NcAppNavigation>
-			<ul v-if="!loading">
+			<template v-if="!loading"
+				#list>
 				<NcAppNavigationItem :name="t('athenaeum', 'Sources')"
 					:disabled="false"
 					:to="'/sources'">
@@ -19,30 +21,36 @@
 					:disabled="false"
 					:to="'/items/' + folder.path">
 					<template #icon>
-						<Inbox v-if="folder.isinbox" :size="20" />
-						<Bookshelf v-else :size="20" />
+						<Inbox v-if="folder.isinbox"
+							:size="20" />
+						<Bookshelf v-else
+							:size="20" />
 					</template>
 				</NcAppNavigationItem>
-			</ul>
-			<NcAppNavigationNew v-if="!loading"
-				:text="t('athenaeum', 'New inbox item')"
-				:disabled="false"
-				button-id="new-inbox-item-button"
-				button-class="icon-add"
-				@click="newInboxItem" />
-			<NcAppNavigationNew v-if="!loading"
-				:text="t('athenaeum', 'New item')"
-				:disabled="false"
-				button-id="new-item-button"
-				button-class="icon-add"
-				@click="newItem" />
-			<NcAppNavigationNew :text="t('athenaeum', 'Import EML')"
-				button-id="toggle-eml-import-modal"
-				@click="showSubmitEMLModal" />
+			</template>
+			<template #footer>
+				<NcAppNavigationNew v-if="!loading"
+					:text="t('athenaeum', 'New inbox item')"
+					:disabled="false"
+					button-id="new-inbox-item-button"
+					button-class="icon-add"
+					@click="newInboxItem" />
+				<NcAppNavigationNew v-if="!loading"
+					:text="t('athenaeum', 'New item')"
+					:disabled="false"
+					button-id="new-item-button"
+					button-class="icon-add"
+					@click="newItem" />
+				<NcAppNavigationNew :text="t('athenaeum', 'Import EML')"
+					button-id="toggle-eml-import-modal"
+					@click="showSubmitEMLModal" />
+			</template>
 		</NcAppNavigation>
 
-		<ItemView v-if="isItemView()" :key="currentView" />
-		<SourceView v-if="isSourceView()" :key="currentView" />
+		<ItemView v-if="isItemView()"
+			:key="currentView" />
+		<SourceView v-if="isSourceView()"
+			:key="currentView" />
 
 		<EmlImportModal :visible.sync="emlImportModalVisible"
 			@modalClosed="hideSubmitEMLModal" />
@@ -50,10 +58,11 @@
 </template>
 
 <script>
-
-import NcAppNavigation from '@nextcloud/vue/dist/Components/NcAppNavigation.js'
-import NcAppNavigationItem from '@nextcloud/vue/dist/Components/NcAppNavigationItem.js'
-import NcAppNavigationNew from '@nextcloud/vue/dist/Components/NcAppNavigationNew.js'
+import {
+	NcAppNavigation,
+	NcAppNavigationItem,
+	NcAppNavigationNew,
+} from '@nextcloud/vue/'
 
 import Bookshelf from 'vue-material-design-icons/Bookshelf.vue'
 import Inbox from 'vue-material-design-icons/Inbox.vue'
@@ -62,15 +71,13 @@ import ItemView from './ItemView.vue'
 import SourceView from './SourceView.vue'
 import EmlImportModal from './EmlImportModal.vue'
 
-import '@nextcloud/dialogs/dist/index.css'
+// import '@nextcloud/dialogs/dist/style.css'
 
 import { fetchFolders } from './service/FolderService.js'
 
 import { showError } from '@nextcloud/dialogs'
 
-import {
-	ViewMode,
-} from './enums/index.js'
+import { ViewMode } from './enums/index.js'
 
 export default {
 	name: 'App',
@@ -113,18 +120,27 @@ export default {
 			this.folders = await fetchFolders()
 		} catch (e) {
 			console.error(e)
-			showError(t('athenaeum', 'Could not fetch folders (route mounting failed)'))
+			showError(
+				t(
+					'athenaeum',
+					'Could not fetch folders (route mounting failed)',
+				),
+			)
 		}
 		this.loading = false
 	},
 	methods: {
 		isItemView() {
-			return this.currentView.view === ViewMode.ITEMS
+			return (
+				this.currentView.view === ViewMode.ITEMS
 				|| this.currentView.view === ViewMode.ITEMS_DETAILS
+			)
 		},
 		isSourceView() {
-			return this.currentView.view === ViewMode.SOURCES
+			return (
+				this.currentView.view === ViewMode.SOURCES
 				|| this.currentView.view === ViewMode.SOURCES_DETAILS
+			)
 		},
 		showSubmitEMLModal() {
 			this.emlImportModalVisible = true
@@ -136,32 +152,30 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+input[type="text"] {
+	width: 100%;
+}
 
-	input[type='text'] {
-		width: 100%;
-	}
+#toptitle {
+	--athenaeum-navigation-height: 64px;
+	display: flex;
+	align-items: center;
+	min-height: var(--athenaeum-navigation-height);
+	padding: 0 var(--athenaeum-navigation-height);
+}
 
-	#toptitle {
-		--athenaeum-navigation-height: 64px;
-		display: flex;
-		align-items: center;
-		min-height: var(--athenaeum-navigation-height);
-		padding: 0 var(--athenaeum-navigation-height);
-	}
+.input-field {
+	margin: 12px 0px;
+}
 
-	.input-field {
-		margin: 12px 0px;
-	}
+:deep(.app-content-wrapper) {
+	overflow: auto;
+}
 
-	:deep(.app-content-wrapper) {
-		overflow: auto;
-	}
-
-	.header__button {
-		display: flex;
-		flex: 1 0 0;
-		flex-direction: column;
-		height: calc(100vh - var(--header-height));
-	}
-
+.header__button {
+	display: flex;
+	flex: 1 0 0;
+	flex-direction: column;
+	height: calc(100vh - var(--header-height));
+}
 </style>

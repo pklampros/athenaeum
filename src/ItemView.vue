@@ -4,7 +4,8 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
 	<NcAppContent>
-		<div slot="list" class="header__button">
+		<div slot="list"
+			class="header__button">
 			<div id="toptitle">
 				<h2>Item</h2>
 			</div>
@@ -15,14 +16,14 @@
 					:item="item" />
 			</NcAppContentList>
 		</div>
-		<ItemDetails slot="default" :item-id="currentItemId" />
+		<ItemDetails slot="default"
+			:item-id="currentItemId" />
 	</NcAppContent>
 </template>
 
 <script>
 
-import NcAppContent from '@nextcloud/vue/dist/Components/NcAppContent.js'
-import NcAppContentList from '@nextcloud/vue/dist/Components/NcAppContentList.js'
+import { NcAppContent, NcAppContentList } from '@nextcloud/vue'
 
 import ItemListItem from './ItemListItem.vue'
 import ItemDetails from './ItemDetails.vue'
@@ -160,28 +161,26 @@ export default {
 }
 </script>
 <style scoped>
+input[type='text'] {
+	width: 100%;
+}
 
-	input[type='text'] {
-		width: 100%;
-	}
+#toptitle {
+	--athenaeum-navigation-height: 64px;
+	display: flex;
+	align-items: center;
+	min-height: var(--athenaeum-navigation-height);
+	padding: 0 var(--athenaeum-navigation-height);
+}
 
-	#toptitle {
-		--athenaeum-navigation-height: 64px;
-		display: flex;
-		align-items: center;
-		min-height: var(--athenaeum-navigation-height);
-		padding: 0 var(--athenaeum-navigation-height);
-	}
+:deep(.app-content-wrapper) {
+	overflow: auto;
+}
 
-	:deep(.app-content-wrapper) {
-		overflow: auto;
-	}
-
-	.header__button {
-		display: flex;
-		flex: 1 0 0;
-		flex-direction: column;
-		height: calc(100vh - var(--header-height));
-	}
-
+.header__button {
+	display: flex;
+	flex: 1 0 0;
+	flex-direction: column;
+	height: calc(100vh - var(--header-height));
+}
 </style>

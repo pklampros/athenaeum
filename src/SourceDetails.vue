@@ -9,7 +9,10 @@
 				<h2 :title="source.title"
 					style="display: flex; align-items: center; justify-content: space-between;">
 					{{ source.title }}
-					<a :href="source.url" target="_blank"><OpenInNew /></a>
+					<a :href="source.url"
+						target="_blank">
+						<OpenInNew />
+					</a>
 				</h2>
 				<h3> {{ source.description }} </h3>
 				<h3> UID: {{ source.uid }} </h3>
@@ -69,12 +72,7 @@
 </template>
 
 <script>
-import NcAppContentDetails from '@nextcloud/vue/dist/Components/NcAppContentDetails.js'
-import NcTextField from '@nextcloud/vue/dist/Components/NcTextField.js'
-import NcInputField from '@nextcloud/vue/dist/Components/NcInputField.js'
-import NcRichContenteditable from '@nextcloud/vue/dist/Components/NcRichContenteditable.js'
-import NcEmptyContent from '@nextcloud/vue/dist/Components/NcEmptyContent.js'
-import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
+import { NcAppContentDetails, NcTextField, NcInputField, NcRichContenteditable, NcEmptyContent, NcButton } from '@nextcloud/vue'
 
 import Delete from 'vue-material-design-icons/Delete.vue'
 import School from 'vue-material-design-icons/School.vue'
@@ -177,32 +175,32 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.input-field {
+	margin: 8px 0px;
+}
 
-	.input-field {
-		margin: 8px 0px;
-	}
+.rich-contenteditable__input {
+	text-align: initial;
 
-	.rich-contenteditable__input {
-		text-align: initial;
-		&[error='true'] {
-			border-color: var(--color-error) !important;
-		}
+	&[error='true'] {
+		border-color: var(--color-error) !important;
 	}
+}
 
-	.rich-contenteditable__input--empty:before {
-		position: inherit;
-	}
+.rich-contenteditable__input--empty:before {
+	position: inherit;
+}
 
-	:deep(.field-label) {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 10px 1px 0px 0px;
-	}
+:deep(.field-label) {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px 1px 0px 0px;
+}
 
-	:deep(.field-label h3) {
-		font-weight: bold;
-		margin: 8px 0px 8px 12px;
-		text-align: start;
-	}
+:deep(.field-label h3) {
+	font-weight: bold;
+	margin: 8px 0px 8px 12px;
+	text-align: start;
+}
 </style>

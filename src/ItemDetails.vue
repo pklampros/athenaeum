@@ -9,7 +9,10 @@
 				<h2 :title="item.title"
 					style="display: flex; align-items: center; justify-content: space-between;">
 					{{ item.title }}
-					<a :href="item.url" target="_blank"><OpenInNew /></a>
+					<a :href="item.url"
+						target="_blank">
+						<OpenInNew />
+					</a>
 				</h2>
 				<h3> {{ item.journal }} </h3>
 				<h3 v-if="item.contributorData.type === 'text'">
@@ -150,12 +153,7 @@
 </template>
 
 <script>
-import NcAppContentDetails from '@nextcloud/vue/dist/Components/NcAppContentDetails.js'
-import NcRichContenteditable from '@nextcloud/vue/dist/Components/NcRichContenteditable.js'
-import NcEmptyContent from '@nextcloud/vue/dist/Components/NcEmptyContent.js'
-import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
-import NcUserBubble from '@nextcloud/vue/dist/Components/NcUserBubble.js'
-import NcListItem from '@nextcloud/vue/dist/Components/NcListItem.js'
+import { NcAppContentDetails, NcRichContenteditable, NcEmptyContent, NcButton, NcUserBubble, NcListItem } from '@nextcloud/vue'
 
 import Delete from 'vue-material-design-icons/Delete.vue'
 import School from 'vue-material-design-icons/School.vue'
@@ -392,42 +390,42 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.details-footer {
+	display: flex;
+	justify-content: right;
+	align-items: center;
+	padding: 16px 16px 4px 16px;
+	position: sticky;
+	bottom: 0;
+	background-image: linear-gradient(to top, var(--gradient-main-background));
+}
 
-	.details-footer {
-		display: flex;
-		justify-content: right;
-		align-items: center;
-		padding: 16px 16px 4px 16px;
-		position: sticky;
-		bottom: 0;
-		background-image: linear-gradient(to top, var(--gradient-main-background));
-	}
+.input-field {
+	margin: 8px 0px;
+}
 
-	.input-field {
-		margin: 8px 0px;
-	}
+.rich-contenteditable__input {
+	text-align: initial;
 
-	.rich-contenteditable__input {
-		text-align: initial;
-		&[error='true'] {
-			border-color: var(--color-error) !important;
-		}
+	&[error='true'] {
+		border-color: var(--color-error) !important;
 	}
+}
 
-	.rich-contenteditable__input--empty:before {
-		position: inherit;
-	}
+.rich-contenteditable__input--empty:before {
+	position: inherit;
+}
 
-	:deep(.field-label) {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 10px 1px 0px 0px;
-	}
+:deep(.field-label) {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px 1px 0px 0px;
+}
 
-	:deep(.field-label h3) {
-		font-weight: bold;
-		margin: 8px 0px 8px 12px;
-		text-align: start;
-	}
+:deep(.field-label h3) {
+	font-weight: bold;
+	margin: 8px 0px 8px 12px;
+	text-align: start;
+}
 </style>

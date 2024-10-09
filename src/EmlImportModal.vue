@@ -3,18 +3,22 @@
 	SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
-	<NcModal :show="visible" @close="closeModal">
-		<div ref="modalContent" class="modal__content">
+	<NcModal :show="visible"
+		@close="closeModal">
+		<div ref="modalContent"
+			class="modal__content">
 			<h2 style="padding: 0px 10px;">
 				Scholar EML Importer
 			</h2>
 			<div class="file-list">
-				<div v-if="files.length === 0" style="text-align: center">
+				<div v-if="files.length === 0"
+					style="text-align: center">
 					<h3>No files selected</h3>
 					<h3>Press Browse to select some from the filesystem</h3>
 				</div>
 				<ul v-else>
-					<div v-for="(file, index) in files" :key="file">
+					<div v-for="(file, index) in files"
+						:key="file">
 						<NcListItem :title="file.name"
 							@click="toggleItemsVisible(index)">
 							<template #indicator>
@@ -34,7 +38,8 @@
 									fill-color="yellow" />
 							</template>
 						</NcListItem>
-						<ul v-show="file.itemsVisible && file.items.length != 0" style="padding-left: 2em">
+						<ul v-show="file.itemsVisible && file.items.length != 0"
+							style="padding-left: 2em">
 							<NcListItem v-for="item in file.items"
 								:key="item"
 								:title="item.title"
@@ -113,12 +118,9 @@
 
 <script>
 
-import NcModal from '@nextcloud/vue/dist/Components/NcModal.js'
-import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
-import NcListItem from '@nextcloud/vue/dist/Components/NcListItem.js'
+import { NcModal, NcButton, NcListItem, NcLoadingIcon } from '@nextcloud/vue'
 
 import CheckboxBlankCircle from 'vue-material-design-icons/CheckboxBlankCircle.vue'
-import NcLoadingIcon from '@nextcloud/vue/dist/Components/NcLoadingIcon.js'
 import CheckCircle from 'vue-material-design-icons/CheckCircle.vue'
 import OpenInNew from 'vue-material-design-icons/OpenInNew.vue'
 
@@ -215,16 +217,16 @@ export default {
 			}
 			formData.set('fileMetadata', JSON.stringify(fileMetadata))
 			formData.set('fileCount', indices.length)
-			const thisClass = this
 			await axios.post(
-				generateUrl('/apps/athenaeum/inbox_items/extractFromEML'),
-				formData, {
+				generateUrl('/apps/athenaeum/inbox_items/extractFromEML'), formData,
+				{
 					headers: {
 						'Content-Type': 'multipart/form-data',
 					},
-				}).then(function(response) {
+				},
+			).then((response) => {
 				for (const i of indices) {
-					const fo = thisClass.files[i]
+					const fo = this.files[i]
 					fo.items = response.data[fo.sentFilename]
 					fo.state = 'exists'
 					for (const item of fo.items) {
@@ -233,16 +235,16 @@ export default {
 							break
 						}
 					}
-					thisClass.$set(thisClass.files, i, fo)
+					this.$set(this.files, i, fo)
 				}
-			}).catch(function(e) {
+			}).catch(() => {
 				for (const i of indices) {
-					const fo = thisClass.files[i]
+					const fo = this.files[i]
 					fo.state = 'error'
-					thisClass.$set(thisClass.files, i, fo)
+					this.$set(this.files, i, fo)
 				}
-			}).finally(function() {
-				thisClass.uploading = false
+			}).finally(() => {
+				this.uploading = false
 			})
 		},
 		closeModal() {
@@ -254,23 +256,23 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-	:deep(.modal__content) {
-		margin: 10px;
-		display: flex;
-		flex-direction: column;
-		flex: 1;
-	}
+:deep(.modal__content) {
+	margin: 10px;
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
 
-	:deep(.list-item) {
-		box-sizing: border-box
-	}
+:deep(.list-item) {
+	box-sizing: border-box
+}
 
-	:deep(.file-list) {
-		flex-grow: 1;
-		overflow: auto;
-		padding: 10px;
-		margin:10px 0px;
-		border-radius: 16px;
-		border: 2px solid var(--color-border);
-	}
+:deep(.file-list) {
+	flex-grow: 1;
+	overflow: auto;
+	padding: 10px;
+	margin: 10px 0px;
+	border-radius: 16px;
+	border: 2px solid var(--color-border);
+}
 </style>
