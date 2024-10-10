@@ -71,8 +71,6 @@ import ItemListView from './ItemListView.vue'
 import SourceListView from './SourceListView.vue'
 import EmlImportModal from './EmlImportModal.vue'
 
-// import '@nextcloud/dialogs/dist/style.css'
-
 import { fetchFolders } from './service/FolderService.js'
 
 import { showError } from '@nextcloud/dialogs'
