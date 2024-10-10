@@ -47,9 +47,9 @@
 			</template>
 		</NcAppNavigation>
 
-		<ItemView v-if="isItemView()"
+		<ItemListView v-if="isItemListView()"
 			:key="currentView" />
-		<SourceView v-if="isSourceView()"
+		<SourceListView v-if="isSourceListView()"
 			:key="currentView" />
 
 		<EmlImportModal :visible.sync="emlImportModalVisible"
@@ -67,8 +67,8 @@ import {
 import Bookshelf from 'vue-material-design-icons/Bookshelf.vue'
 import Inbox from 'vue-material-design-icons/Inbox.vue'
 
-import ItemView from './ItemView.vue'
-import SourceView from './SourceView.vue'
+import ItemListView from './ItemListView.vue'
+import SourceListView from './SourceListView.vue'
 import EmlImportModal from './EmlImportModal.vue'
 
 // import '@nextcloud/dialogs/dist/style.css'
@@ -92,8 +92,8 @@ export default {
 		Inbox,
 
 		// project components
-		ItemView,
-		SourceView,
+		ItemListView,
+		SourceListView,
 		EmlImportModal,
 	},
 	data() {
@@ -130,13 +130,13 @@ export default {
 		this.loading = false
 	},
 	methods: {
-		isItemView() {
+		isItemListView() {
 			return (
 				this.currentView.view === ViewMode.ITEMS
 				|| this.currentView.view === ViewMode.ITEMS_DETAILS
 			)
 		},
-		isSourceView() {
+		isSourceListView() {
 			return (
 				this.currentView.view === ViewMode.SOURCES
 				|| this.currentView.view === ViewMode.SOURCES_DETAILS

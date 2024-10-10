@@ -34,7 +34,7 @@ import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
 
 export default {
-	name: 'SourceView',
+	name: 'SourceListView',
 	components: {
 		// components
 		NcAppContent,

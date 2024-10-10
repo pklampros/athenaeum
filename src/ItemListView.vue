@@ -28,13 +28,13 @@ import { NcAppContent, NcAppContentList } from '@nextcloud/vue'
 import ItemListItem from './ItemListItem.vue'
 import ItemDetails from './ItemDetails.vue'
 
-import { fetchItems } from './service/ItemService.js'
+import { fetchItems, fetchItemSummary } from './service/ItemService.js'
 import { showError } from '@nextcloud/dialogs'
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
 
 export default {
-	name: 'ItemView',
+	name: 'ItemListView',
 	components: {
 		// components
 		NcAppContent,
@@ -74,6 +74,29 @@ export default {
 		try {
 			const itemData = await fetchItems(this.currentFolder)
 			this.items = itemData.items
+			for (const i in this.items) {
+				fetchItemSummary(this.items[i].id).then((resp) => {
+					const contributions = resp.data.contributions
+					const sourceInfoExtra = resp.data.sourceInfo.length > 0
+						&& 'extra' in resp.data.sourceInfo[0]
+						? resp.data.sourceInfo[0].extra
+						: {}
+					if (contributions.length !== 0) {
+						// item.authors = contributions.map(c => c.contributor_name_display).join(',')
+						this.$set(this.items[i], 'authors', contributions.map(c => c.contributor_name_display).join(','))
+					} else if ('authors' in sourceInfoExtra) {
+						this.$set(this.items[i], 'authors', sourceInfoExtra.authors)
+					}
+					if ('journal' in sourceInfoExtra) {
+						this.$set(this.items[i], 'journal', sourceInfoExtra.journal)
+					}
+					if ('published' in sourceInfoExtra) {
+						this.$set(this.items[i], 'published', sourceInfoExtra.published)
+					}
+				}).catch((error) => {
+					throw convertAxiosError(error)
+				})
+			}
 			if (!this.currentItemId && this.items.length > 0) {
 				// go directly to the first item
 				this.$router.push({
