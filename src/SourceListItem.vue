@@ -3,7 +3,7 @@
 	SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
-	<NcListItem :title="source.title ? source.title : t('athenaeum', 'New source')"
+	<NcListItem :name="source.title ? source.title : t('athenaeum', 'New source')"
 		:class="{ active: currentSourceId === source.id }"
 		:counter-number="source.importance"
 		:to="link">
