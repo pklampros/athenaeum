@@ -127,6 +127,8 @@ import OpenInNew from 'vue-material-design-icons/OpenInNew.vue'
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
 
+import { getMaxFileUploads } from './service/ServerService'
+
 export default {
 	name: 'EmlImportModal',
 	components: {
@@ -180,17 +182,8 @@ export default {
 			// directly as it's a different component
 			this.$refs.modalContent.parentNode.style.display = 'flex'
 		},
-		async getMaxFileUploads() {
-			let maxFileUploads = 1
-			await axios.get(
-				generateUrl('/apps/athenaeum/api/0.1/app_info/max_file_uploads'),
-			).then(function(response) {
-				maxFileUploads = ((response.data === '0') ? 1 : response.data)
-			})
-			return parseInt(maxFileUploads)
-		},
 		async submitFiles() {
-			const maxFileUploads = await this.getMaxFileUploads()
+			const maxFileUploads = await getMaxFileUploads()
 			const fileKeys = [...this.files.keys()]
 			for (let i = 0; i < fileKeys.length; i += maxFileUploads) {
 				const chunk = fileKeys.slice(i, i + maxFileUploads)
