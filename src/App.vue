@@ -62,7 +62,7 @@ import {
 	NcAppNavigation,
 	NcAppNavigationItem,
 	NcAppNavigationNew,
-} from '@nextcloud/vue/'
+} from '@nextcloud/vue'
 
 import Bookshelf from 'vue-material-design-icons/Bookshelf.vue'
 import Inbox from 'vue-material-design-icons/Inbox.vue'
