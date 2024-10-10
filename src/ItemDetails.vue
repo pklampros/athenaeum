@@ -71,7 +71,7 @@
 					</li>
 				</ul>
 			</div>
-			<div style="padding:0px 10px; border-radius: 16px; border: 2px solid var(--color-border);">
+			<div class="details-group">
 				<div class="field-label">
 					<h3>Title</h3>
 				</div>
@@ -91,8 +91,8 @@
 					:value.sync="item.journal" />
 				&nbsp;
 			</div>
-			<div v-if="item.attachments"
-				style="margin-top: 10px; padding:0px 10px 10px 10px; border-radius: 16px; border: 2px solid var(--color-border);">
+			<div class="details-group"
+				style="margin-top: 10px;">
 				<div class="field-label">
 					<h3>Attachments ({{ item.attachments.length }})</h3>
 					<NcButton aria-label="Add"
@@ -410,6 +410,12 @@ export default {
 	position: sticky;
 	bottom: 0;
 	background-image: linear-gradient(to top, var(--gradient-main-background));
+}
+
+.details-group {
+	padding: 0px 10px 10px 10px;
+	border-radius: 16px;
+	border: 2px solid var(--color-border);
 }
 
 .input-field {
