@@ -105,6 +105,37 @@ class ItemController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 */
+	public function attachFiles(): DataResponse {
+		$fileCount = $this->request->post['fileCount'];
+		$itemId = $this->request->post['item_id'];
+
+		if ($fileCount == 0) {
+			return new DataResponse("No file sent", Http::STATUS_NOT_FOUND);
+		}
+		if (!$itemId) {
+			return new DataResponse("No item id given", Http::STATUS_NOT_FOUND);
+		}
+		$response = array();
+		for ($i = 0; $i < $fileCount; $i++) {
+			$newFile = $this->request->getUploadedFile("" . $i);
+			
+			$fileName = $newFile['name'];
+			$fileMime = $newFile['type'];
+			$fileSize = $newFile['size'];
+			$fileData = file_get_contents($newFile['tmp_name']);
+			
+			array_push($response, $this->itemService->attachFile((int) $itemId, $fileName,
+				$fileMime, $fileSize, $fileData, $this->userId));
+		}
+		return $this->handleNotFound(function () use ($itemId, $fileName, $fileMime, 
+			$fileSize, $fileData) {
+			return $response;
+		});
+	}
+
+	/**
+	 * @NoAdminRequired
+	 */
 	public function create(string $title, int $itemTypeId, int $folderId): DataResponse {
 		$currentTime = new \DateTime;
 		return new DataResponse($this->itemService->create($title, $itemTypeId, $folderId,

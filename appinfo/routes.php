@@ -58,7 +58,10 @@ return [
 			'url' => '/items/dump/{id}',
 			'verb' => 'GET'],
 		['name' => 'item#attachFile',
-			'url' => '/items/attachFile',
+			'url' => '/item/attachFile',
+			'verb' => 'POST'],
+		['name' => 'item#attachFiles',
+			'url' => '/item/attachFiles',
 			'verb' => 'POST'],
 
 		['name' => 'contributor_api#findByFullFirstName',

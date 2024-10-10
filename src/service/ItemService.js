@@ -8,6 +8,8 @@ import axios from '@nextcloud/axios'
 
 import { convertAxiosError } from '../errors/convert.js'
 
+import { getMaxFileUploads } from './ServerService.js'
+
 /**
  *
  * @param {string} folder Filter items by this folder
@@ -147,7 +149,7 @@ export function dumpToJSON(id) {
  * @param {number} itemId The item to attach the file to
  */
 export function attachFile(file, itemId) {
-	const url = generateUrl('/apps/athenaeum/items/attachFile')
+	const url = generateUrl('/apps/athenaeum/item/attachFiles')
 
 	const formData = new FormData()
 	formData.append('file', file)
@@ -163,4 +165,58 @@ export function attachFile(file, itemId) {
 		.catch((error) => {
 			throw convertAxiosError(error)
 		})
+}
+
+/**
+ *
+ * @param {string} files The files to attach
+ * @param {number} itemId The item to attach the file to
+ */
+export async function attachFiles(files, itemId) {
+	const maxFileUploads = await getMaxFileUploads()
+	const fileKeys = [...files.keys()]
+	for (let i = 0; i < fileKeys.length; i += maxFileUploads) {
+		const indices = fileKeys.slice(i, i + maxFileUploads)
+
+		const formData = new FormData()
+		formData.append('item_id', itemId)
+		const fileMetadata = {}
+		let formDataIdx = 0
+		for (const i of indices) {
+			const fo = files[i]
+			fo.state = 'saving'
+			fo.id = i
+			files[i] = fo
+			formData.append(formDataIdx, fo, fo.name)
+			formDataIdx++
+			fileMetadata[fo.name] = {
+				name: fo.name,
+			}
+			fo.sentFilename = fo.name
+		}
+		formData.set('fileMetadata', JSON.stringify(fileMetadata))
+		formData.set('fileCount', indices.length)
+		await axios.post(
+			generateUrl('/apps/athenaeum/item/attachFiles'), formData,
+			{
+				headers: {
+					'Content-Type': 'multipart/form-data',
+				},
+			},
+		).then((response) => {
+			console.log(response)
+			for (const i of indices) {
+				const fo = files[i]
+				fo.state = 'exists'
+				files[i] = fo
+			}
+		}).catch(() => {
+			for (const i of indices) {
+				const fo = files[i]
+				fo.state = 'error'
+				files[i] = fo
+			}
+		})
+	}
+	return files
 }

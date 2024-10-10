@@ -94,26 +94,24 @@
 			<div v-if="item.attachments"
 				style="margin-top: 10px; padding:0px 10px 10px 10px; border-radius: 16px; border: 2px solid var(--color-border);">
 				<div class="field-label">
-					<h3>Attachments</h3>
+					<h3>Attachments ({{ item.attachments.length }})</h3>
+					<NcButton aria-label="Add"
+						type="tertiary"
+						@click="showAttachmentModal">
+						<template #icon>
+							<PlusCircle :size="20" />
+						</template>
+					</NcButton>
 				</div>
-				<ul>
+				<ul v-if="item.attachments.length">
 					<NcListItem v-for="attachment in item.attachments"
 						:key="attachment.id"
-						:title="attachment.path"
+						:name="attachment.path"
 						:compact="true" />
 				</ul>
 				<!-- <pre>{{ JSON.stringify(item.attachments, null, 2) }}</pre> -->
 			</div>
 			<div class="details-footer">
-				<label>File
-					<input id="file"
-						ref="file"
-						type="file"
-						@change="handleFileUpload($event)">
-				</label>
-				<button @click="submitFile()">
-					Submit
-				</button>
 				<NcButton aria-label="Remove item"
 					:disabled="!item.title || !item.url"
 					type="primary"
@@ -142,6 +140,9 @@
 				</NcButton>
 			</div>
 		</div>
+		<AttachmentUploadModal :visible.sync="attachmentModalVisible"
+			:item-id.sync="item.id"
+			@modalClosed="hideAttachmentModal" />
 	</NcAppContentDetails>
 	<NcAppContentDetails v-else>
 		<NcEmptyContent :title="t('athenaeum', 'No item selected')">
@@ -159,11 +160,19 @@ import Delete from 'vue-material-design-icons/Delete.vue'
 import School from 'vue-material-design-icons/School.vue'
 import OpenInNew from 'vue-material-design-icons/OpenInNew.vue'
 import Pencil from 'vue-material-design-icons/Pencil.vue'
+import PlusCircle from 'vue-material-design-icons/PlusCircle.vue'
 
 import AuthorEditList from './AuthorEditList.vue'
 
 import { showError } from '@nextcloud/dialogs'
-import { fetchItemDetails, convertToLibraryItemDetailed, itemChangeFolder, attachFile, dumpToJSON } from './service/ItemService.js'
+import {
+	fetchItemDetails,
+	convertToLibraryItemDetailed,
+	itemChangeFolder,
+	dumpToJSON,
+} from './service/ItemService.js'
+
+import AttachmentUploadModal from './AttachmentUploadModal.vue'
 
 export default {
 	name: 'ItemDetails',
@@ -181,9 +190,11 @@ export default {
 		School,
 		OpenInNew,
 		Pencil,
+		PlusCircle,
 
 		// project components
 		AuthorEditList,
+		AttachmentUploadModal,
 	},
 	props: {
 		itemId: {
@@ -201,6 +212,7 @@ export default {
 			editing: {
 				contributors: false,
 			},
+			attachmentModalVisible: false,
 		}
 	},
 	watch: {
@@ -375,14 +387,14 @@ export default {
 			if (!itemId) return
 			this.item = await this.getItem(itemId)
 		},
-		handleFileUpload(event) {
-			this.file = event.target.files[0]
-		},
-		async submitFile() {
-			await attachFile(this.file, this.item.id)
-		},
 		async dumpToJSON() {
 			await dumpToJSON(this.item.id)
+		},
+		showAttachmentModal() {
+			this.attachmentModalVisible = true
+		},
+		hideAttachmentModal() {
+			this.attachmentModalVisible = false
 		},
 	},
 }
