@@ -87,8 +87,8 @@ return [
 		
 		['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
 
-		['name' => 'page#items', 'url' => '/items/{folder}/{page}', 'verb' => 'GET'],
-		['name' => 'page#itemsDetails', 'url' => '/item/{itemId}/items/{folder}/{page}', 'verb' => 'GET'],
+		['name' => 'page#items', 'url' => '/items/{folder}', 'verb' => 'GET'],
+		['name' => 'page#itemsDetails', 'url' => '/items/{folder}/{itemId}', 'verb' => 'GET'],
 
 		['name' => 'page#sources', 'url' => '/sources', 'verb' => 'GET'],
 		['name' => 'page#sourcesDetails', 'url' => '/sources/{sourceId}', 'verb' => 'GET'],
