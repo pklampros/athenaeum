@@ -38,17 +38,6 @@ return [
 			'url' => '/api/0.1/sources/uid/{uid}',
 			'verb' => 'GET'],
 
-		// ['name' => 'inbox_item#getWithDetails',
-		// 	'url' => '/inbox_items/details/{id}',
-		// 	'verb' => 'GET'],
-		// ['name' => 'inbox_item#decideLater',
-		// 	'url' => '/inbox_items/decide_later/{id}',
-		// 	'verb' => 'GET'],
-
-		// ['name' => 'inbox_item_api#findByUrl',
-		// 	'url' => '/api/0.1/inbox_items/url/{url}',
-		// 	'verb' => 'GET', 'escape' => false],
-
 		['name' => 'item#changeFolder',
 			'url' => '/mod/items/folder',
 			'verb' => 'POST'],
@@ -59,6 +48,9 @@ return [
 			'url' => '/inbox_items/extractFromEML',
 			'verb' => 'POST'],
 
+		['name' => 'item#getSummary',
+			'url' => '/item/summary/{itemId}',
+			'verb' => 'GET'],
 		['name' => 'item#getWithDetails',
 			'url' => '/items/details/{id}',
 			'verb' => 'GET'],

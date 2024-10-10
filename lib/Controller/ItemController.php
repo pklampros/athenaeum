@@ -60,6 +60,14 @@ class ItemController extends Controller {
 		});
 	}
 
+	/**
+	 * @NoAdminRequired
+	 */
+	public function getSummary(int $itemId): DataResponse {
+		return $this->handleNotFound(function () use ($itemId) {
+			return $this->itemService->getSummary($itemId, $this->userId);
+		});
+	}
 
 	/**
 	 * @NoAdminRequired

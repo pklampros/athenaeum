@@ -159,6 +159,26 @@ class ItemMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
+	public function getSummary(int $id, string $userId): ItemDetails {
+		$contributionMapper = new ContributionMapper($this->db);
+		$contributorMapper = new ContributorMapper($this->db);
+		$fieldMapper = new FieldMapper($this->db);
+
+		$itemDetails = new ItemDetails();
+		$itemDetails->setItem($this->find($id, $userId));
+		// Contributions only exist if the item has been added to the library
+		$itemDetails->setContributions($this->getContributions($id));
+		// While the item is in the inbox, it only contains unstructured data
+		// as that has been provided in the source
+		$itemDetails->setSourceInfo($this->getSourceInfo($id));
+
+		return $itemDetails;
+	}
+
+	/**
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws DoesNotExistException
+	 */
 	public function getInboxItemDetails(int $id, string $userId): InboxItemDetails {
 		$contributionMapper = new ContributionMapper($this->db);
 		$contributorMapper = new ContributorMapper($this->db);

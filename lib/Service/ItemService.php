@@ -67,6 +67,13 @@ class ItemService {
 		}
 	}
 
+	public function getSummary(int $id, string $userId): ItemDetails {
+		try {
+			return $this->mapper->getSummary($id, $userId);
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
+	}
 
 	public function dumpItemDetailsToJSON(int $itemId, string $userId) {
 		try {

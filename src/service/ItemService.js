@@ -47,6 +47,24 @@ export function fetchItems(folder, offset, limit, query) {
  *
  * @param {number} id Item id
  */
+export function fetchItemSummary(id) {
+	const url = generateUrl('/apps/athenaeum/item/summary/' + id)
+	const params = {
+	}
+
+	return axios
+		.get(url, {
+			params,
+		})
+		.catch((error) => {
+			throw convertAxiosError(error)
+		})
+}
+
+/**
+ *
+ * @param {number} id Item id
+ */
 export function fetchItemDetails(id) {
 	const url = generateUrl('/apps/athenaeum/res/items/' + id)
 	const params = {

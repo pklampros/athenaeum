@@ -3,24 +3,25 @@
 	SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
-	<NcListItem :title="item.title ? item.title : t('athenaeum', 'New item')"
+	<NcListItem :name="item.title ? item.title : t('athenaeum', 'New item')"
 		:class="{ active: currentItemId === item.id }"
 		:counter-number="item.sourceImportance"
 		:to="link">
 		<template #icon>
 			<GoogleScholarIcon size="20" />
 		</template>
-		<template #subtitle>
-			<div v-if="item.journal">
-				<span>
-					{{ item.journal }}
-				</span>
-			</div>
-			<div v-if="item.authors">
-				<span>
-					{{ item.authors }}
-				</span>
-			</div>
+		<template #subname>
+			<span v-if="item.published">
+				{{ item.published }}
+			</span>
+			<span v-if="item.published && item.authors"> - </span>
+			<span v-if="item.authors">
+				{{ item.authors }}
+			</span>
+			<span v-if="(item.authors && item.journal) || (item.published && item.journal)"> - </span>
+			<span v-if="item.journal">
+				{{ item.journal }}
+			</span>
 		</template>
 		<template #actions>
 			<NcActionButton v-if="item.id === -1"
