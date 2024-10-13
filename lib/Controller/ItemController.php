@@ -31,7 +31,7 @@ class ItemController extends Controller {
 	 * @NoAdminRequired
 	 */
 	public function index(
-		string $folder = "",
+		string $folder = "library",
 		int $limit = 50,
 		int $offset = 0,
 		?bool $showAll = false,
