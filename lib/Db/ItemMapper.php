@@ -263,7 +263,6 @@ class ItemMapper extends QBMapper {
 		string $search = ''
 	): array {
 		/* @var $qb IQueryBuilder */
-
 		$qb = $this->db->getQueryBuilder();
 		$qb->selectAlias($qb->createFunction('COUNT(*)'), 'count')
 		   ->from('athm_items')
