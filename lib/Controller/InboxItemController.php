@@ -66,7 +66,9 @@ class InboxItemController extends Controller {
 	 */
 	public function decideLater(int $id): DataResponse {
 		return $this->handleNotFound(function () use ($id) {
-			return $this->inboxItemService->decideLater($id, $this->userId);
+			$response = $this->inboxItemService->decideLater($id, $this->userId);
+			$this->inboxItemService->dumpItemDetailsToJSON($id, $this->userId);
+			return $response;
 		});
 	}
 
@@ -285,6 +287,9 @@ class InboxItemController extends Controller {
 				$result["items"] = $this->getItems($doc);
 
 				$response = $this->inboxItemService->createFromEML($result, $this->userId);
+				foreach ($response as $item) {
+					$this->inboxItemService->dumpItemDetailsToJSON($item['id'], $this->userId);
+				}
 				$responses[$newFile['name']] = $response;
 			}
 		}
@@ -303,9 +308,11 @@ class InboxItemController extends Controller {
 		$currentTime = new \DateTime;
 		$itemData = $this->request->post['itemData'];
 		$id = $itemData['id'];
-		return new DataResponse($this->inboxItemService->toLibrary(
+		$response = $this->inboxItemService->toLibrary(
 			$id, $itemData, $currentTime, $currentTime,
-			$this->userId));
+			$this->userId);
+		$this->inboxItemService->dumpItemDetailsToJSON($id, $this->userId);
+		return new DataResponse($response);
 	}
 
 	/**
@@ -317,9 +324,11 @@ class InboxItemController extends Controller {
 		$importance = 0;
 		$needsReview = false;
 		
-		return new DataResponse($this->inboxItemService->create($url, $title, $authors,
+		$response = $this->inboxItemService->create($url, $title, $authors,
 			$journal, $published, $read, $importance,
-			$needsReview, $this->userId));
+			$needsReview, $this->userId);
+		$this->inboxItemService->dumpItemDetailsToJSON($response['id'], $this->userId);
+		return new DataResponse($response);
 	}
 
 	/**
@@ -331,9 +340,11 @@ class InboxItemController extends Controller {
 		return $this->handleNotFound(function () use ($id, $url, $title, $authors, $journal,
 			$published, $read, $importance,
 			$needsReview) {
-			return $this->inboxItemService->update($id, $url, $title, $authors,
+			$response = $this->inboxItemService->update($id, $url, $title, $authors,
 				$journal, $published, $read,
 				$importance, $needsReview, $this->userId);
+			$this->inboxItemService->dumpItemDetailsToJSON($id, $this->userId);
+			return $response;
 		});
 	}
 

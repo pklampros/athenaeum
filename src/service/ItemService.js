@@ -127,24 +127,6 @@ export function convertToLibraryItemDetailed(itemData) {
 
 /**
  *
- * @param {number} id Item id
- */
-export function dumpToJSON(id) {
-	const url = generateUrl('/apps/athenaeum/items/dump/' + id)
-	const params = {}
-
-	return axios
-		.get(url, {
-			params,
-		})
-		.then((resp) => resp.data)
-		.catch((error) => {
-			throw convertAxiosError(error)
-		})
-}
-
-/**
- *
  * @param {string} file The filt to attach
  * @param {number} itemId The item to attach the file to
  */

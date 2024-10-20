@@ -15,11 +15,12 @@ use OCA\Athenaeum\Db\ItemDetails;
 use OCA\Athenaeum\Db\ItemMapper;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
+use OCP\IConfig;
 
 class ItemService {
 	private ItemMapper $mapper;
 
-	public function __construct(ItemMapper $mapper) {
+	public function __construct(private IConfig $config, ItemMapper $mapper) {
 		$this->mapper = $mapper;
 	}
 
@@ -76,10 +77,19 @@ class ItemService {
 	}
 
 	public function dumpItemDetailsToJSON(int $itemId, string $userId) {
-		try {
-			return $this->mapper->dumpItemDetailsToJSON($itemId, $userId);
-		} catch (Exception $e) {
-			$this->handleException($e);
+
+		$value = $this->config->getUserValue(
+			$userId,
+			'athenaeum',
+			'json_export_frequency'
+		);
+		
+		if ($value == 'onmodify') {
+			try {
+				return $this->mapper->dumpItemDetailsToJSON($itemId, $userId);
+			} catch (Exception $e) {
+				$this->handleException($e);
+			}
 		}
 	}
 

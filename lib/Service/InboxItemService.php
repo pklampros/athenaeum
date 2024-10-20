@@ -15,11 +15,12 @@ use OCA\Athenaeum\Db\Item;
 use OCA\Athenaeum\Db\ItemMapper;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
+use OCP\IConfig;
 
 class InboxItemService {
 	private ItemMapper $mapper;
 
-	public function __construct(ItemMapper $mapper) {
+	public function __construct(private IConfig $config, ItemMapper $mapper) {
 		$this->mapper = $mapper;
 	}
 
@@ -41,6 +42,22 @@ class InboxItemService {
 		return $this->mapper->findAll(
 			$userId, $this->mapper->findFolderId($fullFolder), $limit, $offset, $showAll, $search
 		);
+	}
+
+	public function dumpItemDetailsToJSON(int $itemId, string $userId) {
+
+		$value = $this->config->getUserValue(
+			$userId,
+			'athenaeum',
+			'json_export_frequency'
+		);
+		if ($value == 'onmodify') {
+			try {
+				return $this->mapper->dumpItemDetailsToJSON($itemId, $userId);
+			} catch (Exception $e) {
+				$this->handleException($e);
+			}
+		}
 	}
 
 	/**

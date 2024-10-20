@@ -72,14 +72,6 @@ class ItemController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 */
-	public function dumpItemDetailsToJSON(int $id): DataResponse {
-		return $this->handleNotFound(function () use ($id) {
-			return $this->itemService->dumpItemDetailsToJSON($id, $this->userId);
-		});
-	}
-	/**
-	 * @NoAdminRequired
-	 */
 	public function attachFile(): DataResponse {
 		$newFile = $this->request->getUploadedFile('file');
 		$itemId = $this->request->post['item_id'];
@@ -138,8 +130,10 @@ class ItemController extends Controller {
 	 */
 	public function create(string $title, int $itemTypeId, int $folderId): DataResponse {
 		$currentTime = new \DateTime;
-		return new DataResponse($this->itemService->create($title, $itemTypeId, $folderId,
-			$currentTime, $currentTime, $this->userId));
+		$response = $this->itemService->create($title, $itemTypeId, $folderId,
+			$currentTime, $currentTime, $this->userId);
+		$this->itemService->dumpItemDetailsToJSON($response['id'], $this->userId);
+		return new DataResponse($response);
 	}
 
 	/**
@@ -147,9 +141,11 @@ class ItemController extends Controller {
 	 */
 	public function createDetailed(): DataResponse {
 		$currentTime = new \DateTime;
-		return new DataResponse($this->itemService->createDetailed(
+		$response = $this->itemService->createDetailed(
 			$this->request->post['itemData'],
-			$currentTime, $currentTime, $this->userId));
+			$currentTime, $currentTime, $this->userId);
+		$this->itemService->dumpItemDetailsToJSON($response['id'], $this->userId);
+		return new DataResponse($response);
 	}
 
 	/**
@@ -159,8 +155,10 @@ class ItemController extends Controller {
 		int $folderId): DataResponse {
 		return $this->handleNotFound(function () use ($id, $title, $itemTypeId,
 			$folderId) {
-			return $this->itemService->update($id, $title, $itemTypeId, $folderId,
+			$response = $this->itemService->update($id, $title, $itemTypeId, $folderId,
 				$this->userId);
+			$this->itemService->dumpItemDetailsToJSON($id, $this->userId);
+			return $response;
 		});
 	}
 
@@ -171,7 +169,9 @@ class ItemController extends Controller {
 		$id = $this->request->post['id'];
 		$folder = $this->request->post['folder'];
 		return $this->handleNotFound(function () use ($id, $folder) {
-			return $this->itemService->changeFolder($id, $folder, $this->userId);
+			$response = $this->itemService->changeFolder($id, $folder, $this->userId);
+			$this->itemService->dumpItemDetailsToJSON($id, $this->userId);
+			return $response;
 		});
 	}
 

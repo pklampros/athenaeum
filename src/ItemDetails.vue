@@ -132,12 +132,6 @@
 					@click="addToLibrary">
 					Add to Library
 				</NcButton>
-				&nbsp;
-				<NcButton :disabled="!item.title || !item.url"
-					type="primary"
-					@click="dumpToJSON">
-					DUMPJSON
-				</NcButton>
 			</div>
 		</div>
 		<AttachmentUploadModal :visible.sync="attachmentModalVisible"
@@ -169,7 +163,6 @@ import {
 	fetchItemDetails,
 	convertToLibraryItemDetailed,
 	itemChangeFolder,
-	dumpToJSON,
 } from './service/ItemService.js'
 
 import AttachmentUploadModal from './AttachmentUploadModal.vue'
@@ -386,9 +379,6 @@ export default {
 		async updateDetails(itemId) {
 			if (!itemId) return
 			this.item = await this.getItem(itemId)
-		},
-		async dumpToJSON() {
-			await dumpToJSON(this.item.id)
 		},
 		showAttachmentModal() {
 			this.attachmentModalVisible = true

@@ -685,6 +685,7 @@ class ItemMapper extends QBMapper {
 		$itemData = array();
 		$itemData['details'] = $itemDetails;
 		$itemData['dbid'] = $dbid;
+		$itemData['written'] = new \DateTime;
 
 		$itemDatafolder->newFile($fileName, json_encode($itemData));
 	}

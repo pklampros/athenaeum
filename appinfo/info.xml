@@ -26,4 +26,7 @@
 			<route>athenaeum.page.index</route>
 		</navigation>
 	</navigations>
+	<settings>
+    	<personal-section>OCA\Athenaeum\Settings\PersonalSection</personal-section>
+	</settings>
 </info>
