@@ -12,7 +12,7 @@ if ! type php > /dev/null; then
 fi
 
 if [ $1 = "y" ]; then
-    php build/tools/composer.phar update
+    composer update
 else
     echo "Skippint composer update"
 fi

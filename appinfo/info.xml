@@ -18,7 +18,7 @@
 	<bugs>https://github.com/pklampros/athenaeum</bugs>
 	<dependencies>
 		<lib>mailparse</lib>
-		<nextcloud min-version="24.0.8" max-version="27.1.2"/>
+		<nextcloud min-version="29.0.0" max-version="29.0.8"/>
 	</dependencies>
 	<navigations>
 		<navigation>
