@@ -9,14 +9,24 @@ namespace OCA\Athenaeum\Db;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\QBMapper;
 use OCP\DB\QueryBuilder\IQueryBuilder;
+use OCP\Files\IRootFolder;
+use OCP\IConfig;
 use OCP\IDBConnection;
 
 /**
  * @template-extends QBMapper<Source>
  */
 class SourceMapper extends QBMapper {
-	public function __construct(IDBConnection $db) {
+	private IRootFolder $storage;
+	private IConfig $config;
+	private string $appName;
+	
+	public function __construct(IDBConnection $db,
+		IRootFolder $storage, IConfig $config, string $appName) {
 		parent::__construct($db, 'athm_sources', Source::class);
+		$this->storage = $storage;
+		$this->config = $config;
+		$this->appName = $appName;
 	}
 
 	/**
@@ -76,8 +86,73 @@ class SourceMapper extends QBMapper {
 			$entity->setTitle($title);
 			$entity->setDescription($description);
 			$entity->setUserId($userId);
-			$source = $this->insert($entity);
+			$currentDate = new \DateTime;
+			$entity->setDateAdded($currentDate);
+			$entity->setDateModified($currentDate);
+			$source = $this->insertSource($entity);
 		}
 		return $source;
+	}
+
+	public function insertSource(Source $entity): Source {
+		$result = $this->insert($entity);
+		$this->saveToJSONOnModify($entity->getId(), $entity->getUserId());
+		return $result;
+	}
+
+	public function updateSource(Source $entity): Source {
+		$result = $this->update($entity);
+		$this->saveToJSONOnModify($entity->getId(), $entity->getUserId());
+		return $result;
+	}
+
+	private function saveToJSONOnModify(int $id, string $userId) {
+		$value = $this->config->getUserValue(
+			$userId,
+			'athenaeum',
+			'json_export_frequency'
+		);
+		
+		if ($value == 'onmodify') {
+			try {
+				return $this->saveToJSON($id, $userId);
+			} catch (Exception $e) {
+				$this->handleException($e);
+			}
+		}
+	}
+
+	/**
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws DoesNotExistException
+	 */
+	private function saveToJSON(int $id, string $userId) {
+
+		// try to find the contributor, excepts if none/many found
+		$source = $this->find($id, $userId);
+		
+		$fsh = new FilesystemHandler($this->storage);
+		$sourcesDatafolder = $fsh->getSourcesDataFolder($userId, $id);
+
+		$fileName = 'source.json';
+
+		try {
+			$sourcesDatafolder->get($fileName);
+		} catch(\OCP\Files\NotFoundException $e) {
+			// does not exist, continue
+		}
+		
+		$dbid = $this->config->getUserValue($userId, $this->appName, 'dbid');
+
+		if ($dbid == "") {
+			throw new \Exception("dbid not found!");
+		}
+
+		$sourceData = array();
+		$sourceData['details'] = $source;
+		$sourceData['dbid'] = $dbid;
+		$sourceData['written'] = new \DateTime;
+
+		$sourcesDatafolder->newFile($fileName, json_encode($sourceData));
 	}
 }

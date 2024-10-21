@@ -67,10 +67,9 @@ class ItemService {
 		}
 	}
 
-
-	public function dumpItemDetailsToJSON(int $itemId, string $userId) {
+	public function getSummary(int $id, string $userId): ItemDetails {
 		try {
-			return $this->mapper->dumpItemDetailsToJSON($itemId, $userId);
+			return $this->mapper->getSummary($id, $userId);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}
@@ -106,7 +105,7 @@ class ItemService {
 			$entity->setDateAdded($currentDate);
 			$entity->setDateModified($currentDate);
 			$entity->setUserId($userId);
-			return $this->mapper->insert($entity);
+			return $this->mapper->insertItem($entity);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}
@@ -176,7 +175,7 @@ class ItemService {
 			$entity->setFolderId($folderId);
 			$entity->setDateModified($dateModified);
 			$entity->setUserId($userId);
-			return $this->mapper->update($entity);
+			return $this->mapper->updateItem($entity);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}

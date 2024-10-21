@@ -4,7 +4,8 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
 	<NcAppContent>
-		<div slot="list" class="header__button">
+		<div slot="list"
+			class="header__button">
 			<div id="toptitle">
 				<h2>Item</h2>
 			</div>
@@ -15,25 +16,25 @@
 					:item="item" />
 			</NcAppContentList>
 		</div>
-		<ItemDetails slot="default" :item-id="currentItemId" />
+		<ItemDetails slot="default"
+			:item-id="currentItemId" />
 	</NcAppContent>
 </template>
 
 <script>
 
-import NcAppContent from '@nextcloud/vue/dist/Components/NcAppContent.js'
-import NcAppContentList from '@nextcloud/vue/dist/Components/NcAppContentList.js'
+import { NcAppContent, NcAppContentList } from '@nextcloud/vue'
 
 import ItemListItem from './ItemListItem.vue'
 import ItemDetails from './ItemDetails.vue'
 
-import { fetchItems } from './service/ItemService.js'
+import { fetchItems, fetchItemSummary } from './service/ItemService.js'
 import { showError } from '@nextcloud/dialogs'
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
 
 export default {
-	name: 'ItemView',
+	name: 'ItemListView',
 	components: {
 		// components
 		NcAppContent,
@@ -71,7 +72,31 @@ export default {
 	},
 	async mounted() {
 		try {
-			this.items = await fetchItems(this.currentFolder)
+			const itemData = await fetchItems(this.currentFolder)
+			this.items = itemData.items
+			for (const i in this.items) {
+				fetchItemSummary(this.items[i].id).then((resp) => {
+					const contributions = resp.data.contributions
+					const sourceInfoExtra = resp.data.sourceInfo.length > 0
+						&& 'extra' in resp.data.sourceInfo[0]
+						? resp.data.sourceInfo[0].extra
+						: {}
+					if (contributions.length !== 0) {
+						// item.authors = contributions.map(c => c.contributor_name_display).join(',')
+						this.$set(this.items[i], 'authors', contributions.map(c => c.contributor_name_display).join(','))
+					} else if ('authors' in sourceInfoExtra) {
+						this.$set(this.items[i], 'authors', sourceInfoExtra.authors)
+					}
+					if ('journal' in sourceInfoExtra) {
+						this.$set(this.items[i], 'journal', sourceInfoExtra.journal)
+					}
+					if ('published' in sourceInfoExtra) {
+						this.$set(this.items[i], 'published', sourceInfoExtra.published)
+					}
+				}).catch((error) => {
+					throw convertAxiosError(error)
+				})
+			}
 			if (!this.currentItemId && this.items.length > 0) {
 				// go directly to the first item
 				this.$router.push({
@@ -159,28 +184,26 @@ export default {
 }
 </script>
 <style scoped>
+input[type='text'] {
+	width: 100%;
+}
 
-	input[type='text'] {
-		width: 100%;
-	}
+#toptitle {
+	--athenaeum-navigation-height: 64px;
+	display: flex;
+	align-items: center;
+	min-height: var(--athenaeum-navigation-height);
+	padding: 0 var(--athenaeum-navigation-height);
+}
 
-	#toptitle {
-		--athenaeum-navigation-height: 64px;
-		display: flex;
-		align-items: center;
-		min-height: var(--athenaeum-navigation-height);
-		padding: 0 var(--athenaeum-navigation-height);
-	}
+:deep(.app-content-wrapper) {
+	overflow: auto;
+}
 
-	:deep(.app-content-wrapper) {
-		overflow: auto;
-	}
-
-	.header__button {
-		display: flex;
-		flex: 1 0 0;
-		flex-direction: column;
-		height: calc(100vh - var(--header-height));
-	}
-
+.header__button {
+	display: flex;
+	flex: 1 0 0;
+	flex-direction: column;
+	height: calc(100vh - var(--header-height));
+}
 </style>

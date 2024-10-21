@@ -15,11 +15,12 @@ use OCA\Athenaeum\Db\Item;
 use OCA\Athenaeum\Db\ItemMapper;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
+use OCP\IConfig;
 
 class InboxItemService {
 	private ItemMapper $mapper;
 
-	public function __construct(ItemMapper $mapper) {
+	public function __construct(private IConfig $config, ItemMapper $mapper) {
 		$this->mapper = $mapper;
 	}
 
@@ -107,7 +108,7 @@ class InboxItemService {
 			$entity->setImportance($importance);
 			$entity->setNeedsReview($needsReview);
 			$entity->setUserId($userId);
-			return $this->mapper->insert($entity);
+			return $this->mapper->insertItem($entity);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}
@@ -150,7 +151,7 @@ class InboxItemService {
 			$entity->setImportance($importance);
 			$entity->setNeedsReview($needsReview);
 			$entity->setUserId($userId);
-			return $this->mapper->update($entity);
+			return $this->mapper->updateItem($entity);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}

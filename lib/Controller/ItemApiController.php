@@ -13,16 +13,16 @@ use OCP\AppFramework\Http\DataResponse;
 use OCP\IRequest;
 
 class ItemApiController extends ApiController {
-	private ItemService $service;
+	private ItemService $itemService;
 	private ?string $userId;
 
 	use Errors;
 
 	public function __construct(IRequest $request,
-		ItemService $service,
+		ItemService $itemService,
 		?string $userId) {
 		parent::__construct(Application::APP_ID, $request);
-		$this->itemService = $service;
+		$this->itemService = $itemService;
 		$this->userId = $userId;
 	}
 
@@ -31,8 +31,16 @@ class ItemApiController extends ApiController {
 	 * @NoCSRFRequired
 	 * @NoAdminRequired
 	 */
-	public function index(): DataResponse {
-		return new DataResponse($this->itemService->findAll($this->userId));
+	public function index(
+		string $folder = "library",
+		int $limit = 50,
+		int $offset = 0,
+		?bool $showAll = false,
+		string $search = ''
+	): DataResponse {
+		return new DataResponse($this->itemService->findAll(
+			$this->userId, $folder, $limit, $offset, $showAll, $search
+		));
 	}
 
 	/**

@@ -66,7 +66,8 @@ class InboxItemController extends Controller {
 	 */
 	public function decideLater(int $id): DataResponse {
 		return $this->handleNotFound(function () use ($id) {
-			return $this->inboxItemService->decideLater($id, $this->userId);
+			$response = $this->inboxItemService->decideLater($id, $this->userId);
+			return $response;
 		});
 	}
 
@@ -303,9 +304,10 @@ class InboxItemController extends Controller {
 		$currentTime = new \DateTime;
 		$itemData = $this->request->post['itemData'];
 		$id = $itemData['id'];
-		return new DataResponse($this->inboxItemService->toLibrary(
+		$response = $this->inboxItemService->toLibrary(
 			$id, $itemData, $currentTime, $currentTime,
-			$this->userId));
+			$this->userId);
+		return new DataResponse($response);
 	}
 
 	/**
@@ -317,9 +319,10 @@ class InboxItemController extends Controller {
 		$importance = 0;
 		$needsReview = false;
 		
-		return new DataResponse($this->inboxItemService->create($url, $title, $authors,
+		$response = $this->inboxItemService->create($url, $title, $authors,
 			$journal, $published, $read, $importance,
-			$needsReview, $this->userId));
+			$needsReview, $this->userId);
+		return new DataResponse($response);
 	}
 
 	/**
@@ -331,9 +334,10 @@ class InboxItemController extends Controller {
 		return $this->handleNotFound(function () use ($id, $url, $title, $authors, $journal,
 			$published, $read, $importance,
 			$needsReview) {
-			return $this->inboxItemService->update($id, $url, $title, $authors,
+			$response = $this->inboxItemService->update($id, $url, $title, $authors,
 				$journal, $published, $read,
 				$importance, $needsReview, $this->userId);
+			return $response;
 		});
 	}
 

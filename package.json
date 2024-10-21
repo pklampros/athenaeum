@@ -1,49 +1,46 @@
 {
-  "name": "athenaeum",
-  "description": "Atheneaum is a library app for Nextcloud",
-  "version": "0.1",
-  "author": "Petros Koutsolampros <commits@pklampros.io>",
-  "contributors": [],
-  "bugs": {
-    "url": "https://github.com/pklampros/athenaeum"
-  },
-  "license": "agpl",
-  "private": true,
-  "scripts": {
-    "build": "webpack --node-env production --progress",
-    "dev": "webpack --node-env development --progress",
-    "watch": "webpack --node-env development --progress --watch",
-    "serve": "webpack --node-env development serve --progress",
-    "lint": "eslint --ext .js,.vue src",
-    "lint:fix": "eslint --ext .js,.vue src --fix",
-    "stylelint": "stylelint css/*.css css/*.scss src/**/*.scss src/**/*.vue",
-    "stylelint:fix": "stylelint css/*.css css/*.scss src/**/*.scss src/**/*.vue --fix"
-  },
-  "dependencies": {
-    "@nextcloud/axios": "^2.3.0",
-    "@nextcloud/dialogs": "^4.0.1",
-    "@nextcloud/router": "^2.0.1",
-    "@nextcloud/vue": "^7.8.4",
-    "vue": "^2.7.0",
-    "vue-material-design-icons": "^5.2.0",
-    "vue-router": "^3.6.5",
-    "vue-simple-icons": "^7.5.0",
-    "vuex-router-sync": "^5.0.0",
-    "vuex-store": "^1.0.0"
-  },
-  "browserslist": [
-    "extends @nextcloud/browserslist-config"
-  ],
-  "engines": {
-    "node": "^16.0.0",
-    "npm": "^7.0.0 || ^8.0.0"
-  },
-  "devDependencies": {
-    "@nextcloud/babel-config": "^1.0.0",
-    "@nextcloud/browserslist-config": "^2.3.0",
-    "@nextcloud/eslint-config": "^8.2.1",
-    "@nextcloud/stylelint-config": "^2.3.0",
-    "@nextcloud/webpack-vue-config": "^5.5.0",
-    "stylelint": "^15.11.0"
-  }
+	"name": "athenaeum",
+	"description": "Atheneaum is a library app for Nextcloud",
+	"version": "0.1",
+	"author": "Petros Koutsolampros <commits@pklampros.io>",
+	"contributors": [],
+	"bugs": {
+		"url": "https://github.com/pklampros/athenaeum"
+	},
+	"license": "agpl",
+	"private": true,
+	"scripts": {
+		"build": "webpack --node-env production --progress",
+		"dev": "webpack --node-env development --progress",
+		"watch": "webpack --node-env development --progress --watch",
+		"serve": "webpack --node-env development serve --progress",
+		"lint": "eslint --ext .js,.vue src",
+		"lint:fix": "eslint --ext .js,.vue src --fix",
+		"stylelint": "stylelint css/*.css css/*.scss src/**/*.scss src/**/*.vue",
+		"stylelint:fix": "stylelint css/*.css css/*.scss src/**/*.scss src/**/*.vue --fix"
+	},
+	"dependencies": {
+		"@nextcloud/axios": "^2.5.1",
+		"@nextcloud/dialogs": "^5.3.7",
+		"@nextcloud/router": "^3.0.1",
+		"@nextcloud/vue": "^8.19.0",
+		"vue": "^2.7.16",
+		"vue-material-design-icons": "^5.3.1",
+		"vue-router": "^3.6.5",
+		"vue-simple-icons": "^7.5.0"
+	},
+	"browserslist": [
+		"extends @nextcloud/browserslist-config"
+	],
+	"engines": {
+		"node": "^20.0.0",
+		"npm": "^10.0.0"
+	},
+	"devDependencies": {
+		"@nextcloud/babel-config": "^1.2.0",
+		"@nextcloud/browserslist-config": "^3.0.1",
+		"@nextcloud/eslint-config": "^8.4.1",
+		"@nextcloud/stylelint-config": "^2.3.1",
+		"@nextcloud/webpack-vue-config": "^6.1.1"
+	}
 }

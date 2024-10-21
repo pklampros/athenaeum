@@ -9,7 +9,10 @@
 				<h2 :title="item.title"
 					style="display: flex; align-items: center; justify-content: space-between;">
 					{{ item.title }}
-					<a :href="item.url" target="_blank"><OpenInNew /></a>
+					<a :href="item.url"
+						target="_blank">
+						<OpenInNew />
+					</a>
 				</h2>
 				<h3> {{ item.journal }} </h3>
 				<h3 v-if="item.contributorData.type === 'text'">
@@ -68,7 +71,7 @@
 					</li>
 				</ul>
 			</div>
-			<div style="padding:0px 10px; border-radius: 16px; border: 2px solid var(--color-border);">
+			<div class="details-group">
 				<div class="field-label">
 					<h3>Title</h3>
 				</div>
@@ -88,29 +91,27 @@
 					:value.sync="item.journal" />
 				&nbsp;
 			</div>
-			<div v-if="item.attachments"
-				style="margin-top: 10px; padding:0px 10px 10px 10px; border-radius: 16px; border: 2px solid var(--color-border);">
+			<div class="details-group"
+				style="margin-top: 10px;">
 				<div class="field-label">
-					<h3>Attachments</h3>
+					<h3>Attachments ({{ item.attachments.length }})</h3>
+					<NcButton aria-label="Add"
+						type="tertiary"
+						@click="showAttachmentModal">
+						<template #icon>
+							<PlusCircle :size="20" />
+						</template>
+					</NcButton>
 				</div>
-				<ul>
+				<ul v-if="item.attachments.length">
 					<NcListItem v-for="attachment in item.attachments"
 						:key="attachment.id"
-						:title="attachment.path"
+						:name="attachment.path"
 						:compact="true" />
 				</ul>
 				<!-- <pre>{{ JSON.stringify(item.attachments, null, 2) }}</pre> -->
 			</div>
 			<div class="details-footer">
-				<label>File
-					<input id="file"
-						ref="file"
-						type="file"
-						@change="handleFileUpload($event)">
-				</label>
-				<button @click="submitFile()">
-					Submit
-				</button>
 				<NcButton aria-label="Remove item"
 					:disabled="!item.title || !item.url"
 					type="primary"
@@ -131,14 +132,11 @@
 					@click="addToLibrary">
 					Add to Library
 				</NcButton>
-				&nbsp;
-				<NcButton :disabled="!item.title || !item.url"
-					type="primary"
-					@click="dumpToJSON">
-					DUMPJSON
-				</NcButton>
 			</div>
 		</div>
+		<AttachmentUploadModal :visible.sync="attachmentModalVisible"
+			:item-id.sync="item.id"
+			@modalClosed="hideAttachmentModal" />
 	</NcAppContentDetails>
 	<NcAppContentDetails v-else>
 		<NcEmptyContent :title="t('athenaeum', 'No item selected')">
@@ -150,22 +148,24 @@
 </template>
 
 <script>
-import NcAppContentDetails from '@nextcloud/vue/dist/Components/NcAppContentDetails.js'
-import NcRichContenteditable from '@nextcloud/vue/dist/Components/NcRichContenteditable.js'
-import NcEmptyContent from '@nextcloud/vue/dist/Components/NcEmptyContent.js'
-import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
-import NcUserBubble from '@nextcloud/vue/dist/Components/NcUserBubble.js'
-import NcListItem from '@nextcloud/vue/dist/Components/NcListItem.js'
+import { NcAppContentDetails, NcRichContenteditable, NcEmptyContent, NcButton, NcUserBubble, NcListItem } from '@nextcloud/vue'
 
 import Delete from 'vue-material-design-icons/Delete.vue'
 import School from 'vue-material-design-icons/School.vue'
 import OpenInNew from 'vue-material-design-icons/OpenInNew.vue'
 import Pencil from 'vue-material-design-icons/Pencil.vue'
+import PlusCircle from 'vue-material-design-icons/PlusCircle.vue'
 
 import AuthorEditList from './AuthorEditList.vue'
 
 import { showError } from '@nextcloud/dialogs'
-import { fetchItemDetails, convertToLibraryItemDetailed, itemChangeFolder, attachFile, dumpToJSON } from './service/ItemService.js'
+import {
+	fetchItemDetails,
+	convertToLibraryItemDetailed,
+	itemChangeFolder,
+} from './service/ItemService.js'
+
+import AttachmentUploadModal from './AttachmentUploadModal.vue'
 
 export default {
 	name: 'ItemDetails',
@@ -183,9 +183,11 @@ export default {
 		School,
 		OpenInNew,
 		Pencil,
+		PlusCircle,
 
 		// project components
 		AuthorEditList,
+		AttachmentUploadModal,
 	},
 	props: {
 		itemId: {
@@ -203,6 +205,7 @@ export default {
 			editing: {
 				contributors: false,
 			},
+			attachmentModalVisible: false,
 		}
 	},
 	watch: {
@@ -377,14 +380,11 @@ export default {
 			if (!itemId) return
 			this.item = await this.getItem(itemId)
 		},
-		handleFileUpload(event) {
-			this.file = event.target.files[0]
+		showAttachmentModal() {
+			this.attachmentModalVisible = true
 		},
-		async submitFile() {
-			await attachFile(this.file, this.item.id)
-		},
-		async dumpToJSON() {
-			await dumpToJSON(this.item.id)
+		hideAttachmentModal() {
+			this.attachmentModalVisible = false
 		},
 	},
 }
@@ -392,42 +392,48 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.details-footer {
+	display: flex;
+	justify-content: right;
+	align-items: center;
+	padding: 16px 16px 4px 16px;
+	position: sticky;
+	bottom: 0;
+	background-image: linear-gradient(to top, var(--gradient-main-background));
+}
 
-	.details-footer {
-		display: flex;
-		justify-content: right;
-		align-items: center;
-		padding: 16px 16px 4px 16px;
-		position: sticky;
-		bottom: 0;
-		background-image: linear-gradient(to top, var(--gradient-main-background));
-	}
+.details-group {
+	padding: 0px 10px 10px 10px;
+	border-radius: 16px;
+	border: 2px solid var(--color-border);
+}
 
-	.input-field {
-		margin: 8px 0px;
-	}
+.input-field {
+	margin: 8px 0px;
+}
 
-	.rich-contenteditable__input {
-		text-align: initial;
-		&[error='true'] {
-			border-color: var(--color-error) !important;
-		}
-	}
+.rich-contenteditable__input {
+	text-align: initial;
 
-	.rich-contenteditable__input--empty:before {
-		position: inherit;
+	&[error='true'] {
+		border-color: var(--color-error) !important;
 	}
+}
 
-	:deep(.field-label) {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 10px 1px 0px 0px;
-	}
+.rich-contenteditable__input--empty:before {
+	position: inherit;
+}
 
-	:deep(.field-label h3) {
-		font-weight: bold;
-		margin: 8px 0px 8px 12px;
-		text-align: start;
-	}
+:deep(.field-label) {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px 1px 0px 0px;
+}
+
+:deep(.field-label h3) {
+	font-weight: bold;
+	margin: 8px 0px 8px 12px;
+	text-align: start;
+}
 </style>

@@ -14,7 +14,7 @@
 		"sabre/dav": "^4.1",
 		"sabre/xml": "^2.2",
 		"symfony/event-dispatcher": "^5.3.11",
-		"nextcloud/ocp": "v27.1.3",
+		"nextcloud/ocp": "v29.0.8",
 		"psalm/phar": "^4.10",
 		"nextcloud/coding-standard": "^1.0",
 		"php-mime-mail-parser/php-mime-mail-parser": "^8.0"

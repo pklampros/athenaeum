@@ -79,8 +79,11 @@ class ContributorService {
 			$entity = new Contributor();
 			$entity->setFirstName($firstName);
 			$entity->setLastName($lastName);
-			$entity->setFirstNameIsFullName($lastNameIsFullName);
-			return $this->mapper->insert($entity);
+			$entity->setLastNameIsFullName($lastNameIsFullName);
+			$currentDate = new \DateTime;
+			$contributor->setDateAdded($currentDate);
+			$contributor->setDateModified($currentDate);
+			return $this->mapper->insertContributor($entity);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}
@@ -92,8 +95,10 @@ class ContributorService {
 			$entity = $this->mapper->find($id);
 			$entity->setFirstName($firstName);
 			$entity->setLastName($lastName);
-			$entity->setFirstNameIsFullName($lastNameIsFullName);
-			return $this->mapper->update($entity);
+			$entity->setLastNameIsFullName($lastNameIsFullName);
+			$currentDate = new \DateTime;
+			$contributor->setDateModified($currentDate);
+			return $this->mapper->updateContributor($entity);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}

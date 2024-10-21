@@ -12,3 +12,4 @@ podman run \
     --volume=../:/src/ \
     --workdir=/src \
     athenaeum-builder:latest \
+    /src/makeApp.sh y

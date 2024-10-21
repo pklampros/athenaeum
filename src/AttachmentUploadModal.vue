@@ -8,7 +8,7 @@
 		<div ref="modalContent"
 			class="modal__content">
 			<h2 style="padding: 0px 10px;">
-				Scholar EML Importer
+				Upload Attachmens
 			</h2>
 			<div class="file-list">
 				<div v-if="files.length === 0"
@@ -38,63 +38,19 @@
 									fill-color="yellow" />
 							</template>
 						</NcListItem>
-						<ul v-show="file.itemsVisible && file.items.length != 0"
-							style="padding-left: 2em">
-							<NcListItem v-for="item in file.items"
-								:key="item"
-								:name="item.title"
-								compact="true"
-								:href="goToItem(item)"
-								target="_blank">
-								<template #indicator>
-									<div style="display:flex;">
-										<CheckCircle v-if="item.item_new"
-											v-model="item.item_new"
-											:size="18"
-											title="New item created"
-											aria-label="New item created"
-											fill-color="green" />
-										<CheckCircle v-else
-											v-model="item.item_new"
-											:size="18"
-											title="Item already exists"
-											aria-label="Item already exists"
-											fill-color="yellow" />
-
-										<CheckCircle v-if="item.item_source_new"
-											v-model="item.item_source_new"
-											:size="18"
-											title="Item in new source"
-											arialabel="Item in new source"
-											fill-color="green" />
-										<CheckCircle v-else
-											v-model="item.item_source_new"
-											:size="18"
-											title="Item in existing source"
-											arialabel="Item in existing source"
-											fill-color="yellow" />
-										&nbsp;
-										<OpenInNew v-model="item.item_source_new"
-											:size="18"
-											title="Open item"
-											arialabel="Click to open item" />
-									</div>
-								</template>
-							</NcListItem>
-						</ul>
 					</div>
 				</ul>
 			</div>
 			<div style="display:flex; justify-content: right; align-items: center;">
 				<!-- This button clicks the input below it. Not an ideal solution but
 				adding a label inside the button (to use with "for") did not work -->
-				<NcButton arialabel="Browse for EML files to import"
+				<NcButton arialabel="Browse for files to import"
 					type="primary"
-					@click="$refs.emlUploadInput.click();">
+					@click="$refs.attachmentUploadInput.click();">
 					Browse...
 				</NcButton>
-				<input id="eml-upload-input"
-					ref="emlUploadInput"
+				<input id="attch-upload-input"
+					ref="attachmentUploadInput"
 					type="file"
 					style="display:none"
 					multiple
@@ -104,7 +60,7 @@
 				<NcButton :disabled="files.length === 0"
 					type="primary"
 					@click="submitFiles">
-					Import
+					Upload
 				</NcButton>
 				&nbsp;
 				<NcButton type="primary"
@@ -122,15 +78,11 @@ import { NcModal, NcButton, NcListItem, NcLoadingIcon } from '@nextcloud/vue'
 
 import CheckboxBlankCircle from 'vue-material-design-icons/CheckboxBlankCircle.vue'
 import CheckCircle from 'vue-material-design-icons/CheckCircle.vue'
-import OpenInNew from 'vue-material-design-icons/OpenInNew.vue'
 
-import { generateUrl } from '@nextcloud/router'
-import axios from '@nextcloud/axios'
-
-import { getMaxFileUploads } from './service/ServerService'
+import { attachFiles } from './service/ItemService'
 
 export default {
-	name: 'EmlImportModal',
+	name: 'AttachmentUploadModal',
 	components: {
 		// components
 		NcModal,
@@ -141,11 +93,14 @@ export default {
 		CheckboxBlankCircle,
 		NcLoadingIcon,
 		CheckCircle,
-		OpenInNew,
 	},
 	props: {
 		visible: {
 			type: Boolean,
+			required: true,
+		},
+		itemId: {
+			type: Number,
 			required: true,
 		},
 	},
@@ -157,9 +112,6 @@ export default {
 	computed: {
 	},
 	methods: {
-		goToItem(item) {
-			return generateUrl('/apps/athenaeum/items/' + item.folderPath + '/' + item.id)
-		},
 		toggleItemsVisible(fi) {
 			const fo = this.files[fi]
 			fo.itemsVisible = !fo.itemsVisible
@@ -183,62 +135,9 @@ export default {
 			this.$refs.modalContent.parentNode.style.display = 'flex'
 		},
 		async submitFiles() {
-			const maxFileUploads = await getMaxFileUploads()
-			const fileKeys = [...this.files.keys()]
-			for (let i = 0; i < fileKeys.length; i += maxFileUploads) {
-				const chunk = fileKeys.slice(i, i + maxFileUploads)
-				await this.submitFileIndices(chunk)
-			}
-		},
-		async submitFileIndices(indices) {
 			this.uploading = true
-			const formData = new FormData()
-			const fileMetadata = {}
-			let formDataIdx = 0
-			for (const i of indices) {
-				const fo = this.files[i]
-				fo.state = 'saving'
-				fo.id = i
-				this.$set(this.files, i, fo)
-				const newFileName = '' + i + '.eml'
-				formData.append(formDataIdx, fo, newFileName)
-				formDataIdx++
-				fileMetadata[newFileName] = {
-					name: fo.name,
-				}
-				fo.sentFilename = newFileName
-			}
-			formData.set('fileMetadata', JSON.stringify(fileMetadata))
-			formData.set('fileCount', indices.length)
-			await axios.post(
-				generateUrl('/apps/athenaeum/inbox_items/extractFromEML'), formData,
-				{
-					headers: {
-						'Content-Type': 'multipart/form-data',
-					},
-				},
-			).then((response) => {
-				for (const i of indices) {
-					const fo = this.files[i]
-					fo.items = response.data[fo.sentFilename]
-					fo.state = 'exists'
-					for (const item of fo.items) {
-						if (item.item_new || item.item_source_new) {
-							fo.state = 'saved'
-							break
-						}
-					}
-					this.$set(this.files, i, fo)
-				}
-			}).catch(() => {
-				for (const i of indices) {
-					const fo = this.files[i]
-					fo.state = 'error'
-					this.$set(this.files, i, fo)
-				}
-			}).finally(() => {
-				this.uploading = false
-			})
+			await attachFiles(this.files, this.itemId)
+			this.uploading = false
 		},
 		closeModal() {
 			// eslint-disable-next-line vue/custom-event-name-casing

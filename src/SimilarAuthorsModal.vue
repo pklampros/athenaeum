@@ -19,7 +19,8 @@
 				</NcButton>
 			</div>
 			<h2>Search results</h2>
-			<div v-if="searchError" style="padding: 1em">
+			<div v-if="searchError"
+				style="padding: 1em">
 				<span>
 					{{ searchError }}<br>
 				</span>
@@ -27,11 +28,11 @@
 			<ul v-else>
 				<NcListItem v-for="contributor in foundContributors"
 					:key="contributor.id"
-					:title="contributor.firstName + ' ' + contributor.lastName"
+					:name="contributor.firstName + ' ' + contributor.lastName"
 					@click="selectContributor(contributor)">
-					<div slot="subtitle">
+					<template #subname>
 						{{ contributor.displayName }}
-					</div>
+					</template>
 				</NcListItem>
 			</ul>
 		</div>
@@ -39,10 +40,7 @@
 </template>
 <script>
 
-import NcModal from '@nextcloud/vue/dist/Components/NcModal.js'
-import NcTextField from '@nextcloud/vue/dist/Components/NcTextField.js'
-import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
-import NcListItem from '@nextcloud/vue/dist/Components/NcListItem.js'
+import { NcModal, NcTextField, NcButton, NcListItem } from '@nextcloud/vue'
 
 import Magnify from 'vue-material-design-icons/Magnify.vue'
 
@@ -108,13 +106,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-	.modal__content {
-		margin: 50px;
-		text-align: center;
-	}
+.modal__content {
+	margin: 50px;
+	text-align: center;
+}
 
-	.input-field {
-		margin: 8px 0px;
-	}
-
+.input-field {
+	margin: 8px 0px;
+}
 </style>
