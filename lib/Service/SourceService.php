@@ -59,7 +59,10 @@ class SourceService {
 			$entity->setTitle($title);
 			$entity->setDescription($description);
 			$entity->setUserId($userId);
-			return $this->mapper->insert($entity);
+			$currentDate = new \DateTime;
+			$entity->setDateAdded($currentDate);
+			$entity->setDateModified($currentDate);
+			return $this->mapper->insertSource($entity);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}
@@ -72,7 +75,9 @@ class SourceService {
 			$entity->setImportance($importance);
 			$entity->setTitle($title);
 			$entity->setDescription($description);
-			return $this->mapper->update($entity);
+			$currentDate = new \DateTime;
+			$entity->setDateModified($currentDate);
+			return $this->mapper->updateSource($entity);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}

@@ -10,7 +10,7 @@
 		<template #icon>
 			<GoogleScholarIcon size="20" />
 		</template>
-		<template #subtitle>
+		<template #subname>
 			<div v-if="source.description">
 				<span>
 					{{ source.description }}

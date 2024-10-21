@@ -23,6 +23,10 @@ use OCP\AppFramework\Db\Entity;
  * @method setTitle(string $title): void
  * @method getDescription(): string
  * @method setDescription(string $description): void
+ * @method getDateAdded(): \DateTime
+ * @method setDateAdded(DateTime $dateAdded): void
+ * @method getDateModified(): \DateTime
+ * @method setDateModified(DateTime $dateModified): void
  * @method getUserId(): string
  * @method setUserId(string $userId): void
  */
@@ -32,7 +36,14 @@ class Source extends Entity implements JsonSerializable {
 	protected int $importance = 0;
 	protected string $title = '';
 	protected string $description = '';
+	protected $dateAdded;
+	protected $dateModified;
 	protected string $userId = '';
+
+	public function __construct() {
+		$this->addType('dateAdded', 'datetime');
+		$this->addType('dateModified', 'datetime');
+	}
 
 	public function jsonSerialize(): array {
 		return [
@@ -42,6 +53,8 @@ class Source extends Entity implements JsonSerializable {
 			'importance' => $this->importance,
 			'title' => $this->title,
 			'description' => $this->description,
+			'dateAdded' => $this->dateAdded->getTimeStamp(),
+			'dateModified' => $this->dateModified->getTimeStamp(),
 			'userId' => $this->userId
 		];
 	}

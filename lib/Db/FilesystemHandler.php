@@ -37,6 +37,26 @@ class FilesystemHandler {
 		return $this->getOrCreateSubFolder($allItemDataFolder, $itemId);
 	}
 
+	private function getAllContributorsDataFolder($userId) : Folder {
+		$mainFolder = $this->getMainFolder($userId);
+		return $this->getOrCreateSubFolder($mainFolder, 'contributordata');
+	}
+
+	public function getContributorsDataFolder($userId, $id) : Folder {
+		$allItemDataFolder = $this->getAllContributorsDataFolder($userId);
+		return $this->getOrCreateSubFolder($allItemDataFolder, $id);
+	}
+
+	private function getAllSourcesDataFolder($userId) : Folder {
+		$mainFolder = $this->getMainFolder($userId);
+		return $this->getOrCreateSubFolder($mainFolder, 'sourcedata');
+	}
+
+	public function getSourcesDataFolder($userId, $id) : Folder {
+		$allItemDataFolder = $this->getAllSourcesDataFolder($userId);
+		return $this->getOrCreateSubFolder($allItemDataFolder, $id);
+	}
+
 	private function getOrCreateSubFolder($rootFolder, $newFolderName) : Folder {
 		try {
 			try {

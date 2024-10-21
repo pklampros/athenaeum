@@ -130,10 +130,8 @@ class ItemController extends Controller {
 	 */
 	public function create(string $title, int $itemTypeId, int $folderId): DataResponse {
 		$currentTime = new \DateTime;
-		$response = $this->itemService->create($title, $itemTypeId, $folderId,
-			$currentTime, $currentTime, $this->userId);
-		$this->itemService->dumpItemDetailsToJSON($response['id'], $this->userId);
-		return new DataResponse($response);
+		return new DataResponse($this->itemService->create($title, $itemTypeId, $folderId,
+			$currentTime, $currentTime, $this->userId));
 	}
 
 	/**
@@ -141,11 +139,9 @@ class ItemController extends Controller {
 	 */
 	public function createDetailed(): DataResponse {
 		$currentTime = new \DateTime;
-		$response = $this->itemService->createDetailed(
+		return new DataResponse($this->itemService->createDetailed(
 			$this->request->post['itemData'],
-			$currentTime, $currentTime, $this->userId);
-		$this->itemService->dumpItemDetailsToJSON($response['id'], $this->userId);
-		return new DataResponse($response);
+			$currentTime, $currentTime, $this->userId));
 	}
 
 	/**
@@ -155,10 +151,8 @@ class ItemController extends Controller {
 		int $folderId): DataResponse {
 		return $this->handleNotFound(function () use ($id, $title, $itemTypeId,
 			$folderId) {
-			$response = $this->itemService->update($id, $title, $itemTypeId, $folderId,
-				$this->userId);
-			$this->itemService->dumpItemDetailsToJSON($id, $this->userId);
-			return $response;
+			return $this->itemService->update($id, $title, $itemTypeId, $folderId,
+			$this->userId);;
 		});
 	}
 
@@ -169,9 +163,7 @@ class ItemController extends Controller {
 		$id = $this->request->post['id'];
 		$folder = $this->request->post['folder'];
 		return $this->handleNotFound(function () use ($id, $folder) {
-			$response = $this->itemService->changeFolder($id, $folder, $this->userId);
-			$this->itemService->dumpItemDetailsToJSON($id, $this->userId);
-			return $response;
+			return $this->itemService->changeFolder($id, $folder, $this->userId);
 		});
 	}
 

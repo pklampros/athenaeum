@@ -70,8 +70,19 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 				'notnull' => false, # null is used for false
 				'default' => false
 			]);
+			$table->addColumn('date_added', 'datetime', [
+				'notnull' => true
+			]);
+			$table->addColumn('date_modified', 'datetime', [
+				'notnull' => true
+			]);
+			$table->addColumn('user_id', 'string', [
+				'notnull' => true,
+				'length' => 200,
+			]);
 			
 			$table->setPrimaryKey(['id']);
+			$table->addIndex(['user_id'], 'contributors_user_id_index');
 		}
 
 		if (!$schema->hasTable('athm_fields')) {
@@ -358,6 +369,12 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			$table->addColumn('description', 'string', [
 				'notnull' => false,
 			]);
+			$table->addColumn('date_added', 'datetime', [
+				'notnull' => true
+			]);
+			$table->addColumn('date_modified', 'datetime', [
+				'notnull' => true
+			]);
 			$table->addColumn('user_id', 'string', [
 				'notnull' => true,
 				'length' => 200,
@@ -365,6 +382,7 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 
 			$table->setPrimaryKey(['id']);
 			$table->addUniqueConstraint(['uid']);
+			$table->addIndex(['user_id'], 'sources_user_id_index');
 		}
 
 		if (!$schema->hasTable('athm_item_sources')) {

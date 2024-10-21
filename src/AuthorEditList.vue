@@ -122,11 +122,11 @@
 										<ul v-else>
 											<NcListItem v-for="contributor in author.potentialContributors.found"
 												:key="contributor.id"
-												:title="contributor.firstName + ' ' + contributor.lastName"
+												:name="contributor.firstName + ' ' + contributor.lastName"
 												@click="selectContributor(index, contributor)">
-												<div slot="subtitle">
+												<template #subname>
 													{{ contributor.displayName }}
-												</div>
+												</template>
 											</NcListItem>
 										</ul>
 										<NcButton style="width: 100%;"

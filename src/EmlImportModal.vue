@@ -19,7 +19,7 @@
 				<ul v-else>
 					<div v-for="(file, index) in files"
 						:key="file">
-						<NcListItem :title="file.name"
+						<NcListItem :name="file.name"
 							@click="toggleItemsVisible(index)">
 							<template #indicator>
 								<CheckboxBlankCircle v-if="file.state == 'local'"
@@ -42,7 +42,7 @@
 							style="padding-left: 2em">
 							<NcListItem v-for="item in file.items"
 								:key="item"
-								:title="item.title"
+								:name="item.title"
 								compact="true"
 								:href="goToItem(item)"
 								target="_blank">

@@ -44,22 +44,6 @@ class InboxItemService {
 		);
 	}
 
-	public function dumpItemDetailsToJSON(int $itemId, string $userId) {
-
-		$value = $this->config->getUserValue(
-			$userId,
-			'athenaeum',
-			'json_export_frequency'
-		);
-		if ($value == 'onmodify') {
-			try {
-				return $this->mapper->dumpItemDetailsToJSON($itemId, $userId);
-			} catch (Exception $e) {
-				$this->handleException($e);
-			}
-		}
-	}
-
 	/**
 	 * @return never
 	 */
@@ -124,7 +108,7 @@ class InboxItemService {
 			$entity->setImportance($importance);
 			$entity->setNeedsReview($needsReview);
 			$entity->setUserId($userId);
-			return $this->mapper->insert($entity);
+			return $this->mapper->insertItem($entity);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}
@@ -167,7 +151,7 @@ class InboxItemService {
 			$entity->setImportance($importance);
 			$entity->setNeedsReview($needsReview);
 			$entity->setUserId($userId);
-			return $this->mapper->update($entity);
+			return $this->mapper->updateItem($entity);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}

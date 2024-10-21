@@ -15,12 +15,11 @@ use OCA\Athenaeum\Db\ItemDetails;
 use OCA\Athenaeum\Db\ItemMapper;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
-use OCP\IConfig;
 
 class ItemService {
 	private ItemMapper $mapper;
 
-	public function __construct(private IConfig $config, ItemMapper $mapper) {
+	public function __construct(ItemMapper $mapper) {
 		$this->mapper = $mapper;
 	}
 
@@ -76,23 +75,6 @@ class ItemService {
 		}
 	}
 
-	public function dumpItemDetailsToJSON(int $itemId, string $userId) {
-
-		$value = $this->config->getUserValue(
-			$userId,
-			'athenaeum',
-			'json_export_frequency'
-		);
-		
-		if ($value == 'onmodify') {
-			try {
-				return $this->mapper->dumpItemDetailsToJSON($itemId, $userId);
-			} catch (Exception $e) {
-				$this->handleException($e);
-			}
-		}
-	}
-
 	public function attachFile(int $itemId, string $fileName, string $fileMime,
 		int $fileSize, $fileData, string $userId): ItemAttachment {
 		try {
@@ -123,7 +105,7 @@ class ItemService {
 			$entity->setDateAdded($currentDate);
 			$entity->setDateModified($currentDate);
 			$entity->setUserId($userId);
-			return $this->mapper->insert($entity);
+			return $this->mapper->insertItem($entity);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}
@@ -193,7 +175,7 @@ class ItemService {
 			$entity->setFolderId($folderId);
 			$entity->setDateModified($dateModified);
 			$entity->setUserId($userId);
-			return $this->mapper->update($entity);
+			return $this->mapper->updateItem($entity);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}

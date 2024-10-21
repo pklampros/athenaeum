@@ -23,7 +23,7 @@ class SaveJSONCronJob extends TimedJob {
     }
 
     protected function run($arguments) {
-        $this->itemService->dumpItemDetailsToJSON(
+        $this->itemService->saveJSON(
 			$arguments['itemId'], $arguments['userId']
 		);
     }

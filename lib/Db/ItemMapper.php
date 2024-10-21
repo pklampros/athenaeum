@@ -23,11 +23,24 @@ class ItemMapper extends QBMapper {
 	private IConfig $config;
 	private string $appName;
 
-	public function __construct(IDBConnection $db, IRootFolder $storage, IConfig $config, string $appName) {
+	public function __construct(IDBConnection $db,
+		IRootFolder $storage, IConfig $config, string $appName) {
 		parent::__construct($db, 'athm_items', Item::class);
 		$this->storage = $storage;
 		$this->config = $config;
 		$this->appName = $appName;
+	}
+
+	public function insertItem(Item $entity): Item {
+		$result = $this->insert($entity);
+		$this->saveToJSONOnModify($entity->getId(), $entity->getUserId());
+		return $result;
+	}
+
+	public function updateItem(Item $entity): Item {
+		$result = $this->update($entity);
+		$this->saveToJSONOnModify($entity->getId(), $entity->getUserId());
+		return $result;
 	}
 
 	/**
@@ -141,10 +154,6 @@ class ItemMapper extends QBMapper {
 	 * @throws DoesNotExistException
 	 */
 	public function getWithDetails(int $id, string $userId): ItemDetails {
-		$contributionMapper = new ContributionMapper($this->db);
-		$contributorMapper = new ContributorMapper($this->db);
-		$fieldMapper = new FieldMapper($this->db);
-
 		$itemDetails = new ItemDetails();
 		$itemDetails->setItem($this->find($id, $userId));
 		$itemDetails->setContributions($this->getContributions($id));
@@ -160,10 +169,6 @@ class ItemMapper extends QBMapper {
 	 * @throws DoesNotExistException
 	 */
 	public function getSummary(int $id, string $userId): ItemDetails {
-		$contributionMapper = new ContributionMapper($this->db);
-		$contributorMapper = new ContributorMapper($this->db);
-		$fieldMapper = new FieldMapper($this->db);
-
 		$itemDetails = new ItemDetails();
 		$itemDetails->setItem($this->find($id, $userId));
 		// Contributions only exist if the item has been added to the library
@@ -180,10 +185,6 @@ class ItemMapper extends QBMapper {
 	 * @throws DoesNotExistException
 	 */
 	public function getInboxItemDetails(int $id, string $userId): InboxItemDetails {
-		$contributionMapper = new ContributionMapper($this->db);
-		$contributorMapper = new ContributorMapper($this->db);
-		$fieldMapper = new FieldMapper($this->db);
-
 		$item = $this->find($id, $userId);
 		$inboxItem = new InboxItem();
 		$inboxItem->setTitle($item->title);
@@ -401,21 +402,6 @@ class ItemMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	private function insertContributor(string $firstName, string $lastName,
-		bool $lastNameIsFullName): int {
-		$qb = $this->db->getQueryBuilder();
-		$qb->insert('athm_contributors')
-			->setValue('first_name', $qb->createNamedParameter($firstName))
-			->setValue('last_name', $qb->createNamedParameter($lastName))
-			->setValue('last_name_is_full_name', $qb->createNamedParameter($lastNameIsFullName ? 1 : 0));
-		$qb->executeStatement();
-		return $qb->getLastInsertId();
-	}
-
-	/**
-	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
-	 * @throws DoesNotExistException
-	 */
 	private function insertContribution(int $itemId, int $contributorId,
 		string $contributorDisplayName, int $contributionTypeId,
 		int $contributionOrder): int {
@@ -461,6 +447,7 @@ class ItemMapper extends QBMapper {
 			$fieldId = $this->findFieldId($field);
 			$this->insertItemFieldFirstValue($newItem->id, $fieldId, $value);
 		}
+		$this->saveToJSONOnModify($newItem->id, $userId);
 		return $newItem;
 	}
 
@@ -474,6 +461,8 @@ class ItemMapper extends QBMapper {
 		$item->setDateModified(new \DateTime);
 
 		$this->update($item);
+
+		$this->saveToJSONOnModify($itemId, $userId);
 		
 		return $item;
 	}
@@ -500,6 +489,7 @@ class ItemMapper extends QBMapper {
 			$nextOrder = $this->getNextOrder($itemId, $fieldId);
 			$this->insertItemFieldOrderedValue($itemId, $fieldId, $nextOrder, $value);
 		}
+		$this->saveToJSONOnModify($itemId, $userId);
 		return $item;
 	}
 
@@ -526,21 +516,28 @@ class ItemMapper extends QBMapper {
 			}
 			$itemTypeId = $this->findItemTypeId("paper");
 			$folderId = $this->findFolderId("library");
-			$item = $this->updateWithData(
-				$id, $itemData['title'], $itemTypeId, $folderId,
-				$dateModified, $newItemData, $userId
-			);
 			if (array_key_exists('authorList', $itemData)) {
+				$contributorMapper = new ContributorMapper($this->db, $this->storage, 
+				$this->config, $this->appName);
 				foreach ($itemData['authorList'] as $index => $author) {
-					$newContributorId = $this->insertContributor(
-						$author['firstName'], $author['name'],
-						$author['onlyLastName']);
+					$contributor = new Contributor();
+					$contributor->setFirstName($author['firstName']);
+					$contributor->setLastName($author['name']);
+					$contributor->setLastNameIsFullName($author['onlyLastName']);
+					$contributor->setUserId($userId);
+					$currentDate = new \DateTime;
+					$contributor->setDateAdded($currentDate);
+					$contributor->setDateModified($currentDate);
+					$newContributor = $contributorMapper->insertContributor($contributor);
 					
-					$this->insertContribution($id, $newContributorId,
+					$this->insertContribution($id, $newContributor->id,
 						$author['displayName'], 1, $index + 1);
 				}
 			}
-			return $item;
+			return $this->updateWithData(
+				$id, $itemData['title'], $itemTypeId, $folderId,
+				$dateModified, $newItemData, $userId
+			);;
 		}, $this->db);
 	}
 
@@ -562,6 +559,7 @@ class ItemMapper extends QBMapper {
 			   ->setValue('order', 0)
 			   ->setValue('value', $qb->createNamedParameter($url));
 			$qb->executeStatement();
+			$this->saveToJSONOnModify($newItem->id, $newItem->userId);
 			return $newItem;
 		}, $this->db);
 	}
@@ -573,7 +571,8 @@ class ItemMapper extends QBMapper {
 	public function createFromEML(array $emlData, \DateTime $dateAdded,
 		\DateTime $dateModified, string $userId): array {
 		return $this->atomic(function () use (&$emlData, &$dateAdded, &$dateModified, &$userId) {
-			$sourceMapper = new SourceMapper($this->db);
+			$sourceMapper = new SourceMapper($this->db, $this->storage, 
+				$this->config, $this->appName);
 
 			$itemResultData = array();
 			$trimmedTerm = $emlData["searchTerm"];
@@ -655,11 +654,27 @@ class ItemMapper extends QBMapper {
 		}, $this->db);
 	}
 
+	private function saveToJSONOnModify(int $itemId, string $userId) {
+		$value = $this->config->getUserValue(
+			$userId,
+			'athenaeum',
+			'json_export_frequency'
+		);
+		
+		if ($value == 'onmodify') {
+			try {
+				return $this->saveToJSON($itemId, $userId);
+			} catch (Exception $e) {
+				$this->handleException($e);
+			}
+		}
+	}
+
 	/**
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function dumpItemDetailsToJSON(int $itemId, string $userId) {
+	private function saveToJSON(int $itemId, string $userId) {
 
 		// try to find the item, excepts if none/many found
 		$item = $this->find($itemId, $userId);
@@ -742,6 +757,7 @@ class ItemMapper extends QBMapper {
 
 			return $newItemAttachment;
 		}, $this->db);
+		$this->saveToJSONOnModify($itemId, $userId);
 		return null;
 	}
 }

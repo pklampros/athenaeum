@@ -19,7 +19,7 @@
 				<ul v-else>
 					<div v-for="(file, index) in files"
 						:key="file">
-						<NcListItem :title="file.name"
+						<NcListItem :name="file.name"
 							@click="toggleItemsVisible(index)">
 							<template #indicator>
 								<CheckboxBlankCircle v-if="file.state == 'local'"
