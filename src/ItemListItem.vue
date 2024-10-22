@@ -68,10 +68,8 @@ export default {
 			return {
 				name: 'items_details',
 				params: {
-					// filter: this.$route.params.filter ? this.$route.params.filter : undefined,
 					itemId: this.item.id,
 				},
-				exact: true,
 			}
 		},
 	},

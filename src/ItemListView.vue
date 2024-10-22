@@ -47,7 +47,6 @@ export default {
 	data() {
 		return {
 			items: [],
-			// currentItemId: null,
 			updating: false,
 			loading: true,
 		}
@@ -65,53 +64,12 @@ export default {
 			}
 			return this.items.find((item) => item.id === this.currentItemId)
 		},
-
 		saveItemPossible() {
 			return this.currentItem && this.currentItem.title !== ''
 		},
 	},
 	async mounted() {
-		try {
-			const itemData = await fetchItems(this.currentFolder)
-			this.items = itemData.items
-			for (const i in this.items) {
-				fetchItemSummary(this.items[i].id).then((resp) => {
-					const contributions = resp.data.contributions
-					const sourceInfoExtra = resp.data.sourceInfo.length > 0
-						&& 'extra' in resp.data.sourceInfo[0]
-						? resp.data.sourceInfo[0].extra
-						: {}
-					if (contributions.length !== 0) {
-						// item.authors = contributions.map(c => c.contributor_name_display).join(',')
-						this.$set(this.items[i], 'authors', contributions.map(c => c.contributor_name_display).join(','))
-					} else if ('authors' in sourceInfoExtra) {
-						this.$set(this.items[i], 'authors', sourceInfoExtra.authors)
-					}
-					if ('journal' in sourceInfoExtra) {
-						this.$set(this.items[i], 'journal', sourceInfoExtra.journal)
-					}
-					if ('published' in sourceInfoExtra) {
-						this.$set(this.items[i], 'published', sourceInfoExtra.published)
-					}
-				}).catch((error) => {
-					throw convertAxiosError(error)
-				})
-			}
-			if (!this.currentItemId && this.items.length > 0) {
-				// go directly to the first item
-				this.$router.push({
-					name: 'items_details',
-					params: {
-						folder: this.currentFolder,
-						itemId: this.items[0].id,
-					},
-				})
-			}
-		} catch (e) {
-			console.error(e)
-			showError(t('athenaeum', 'Could not fetch items (route mounting failed)'))
-		}
-		this.loading = false
+		await this.fetchData()
 	},
 
 	methods: {
@@ -179,6 +137,49 @@ export default {
 				console.error(e)
 				showError(t('athenaeum', 'Could not delete the item'))
 			}
+		},
+		async fetchData() {
+			try {
+				const itemData = await fetchItems(this.currentFolder)
+				this.items = itemData.items
+				for (const i in this.items) {
+					fetchItemSummary(this.items[i].id).then((resp) => {
+						const contributions = resp.data.contributions
+						const sourceInfoExtra = resp.data.sourceInfo.length > 0
+							&& 'extra' in resp.data.sourceInfo[0]
+							? resp.data.sourceInfo[0].extra
+							: {}
+						if (contributions.length !== 0) {
+							// item.authors = contributions.map(c => c.contributor_name_display).join(',')
+							this.$set(this.items[i], 'authors', contributions.map(c => c.contributor_name_display).join(','))
+						} else if ('authors' in sourceInfoExtra) {
+							this.$set(this.items[i], 'authors', sourceInfoExtra.authors)
+						}
+						if ('journal' in sourceInfoExtra) {
+							this.$set(this.items[i], 'journal', sourceInfoExtra.journal)
+						}
+						if ('published' in sourceInfoExtra) {
+							this.$set(this.items[i], 'published', sourceInfoExtra.published)
+						}
+					}).catch((error) => {
+						throw convertAxiosError(error)
+					})
+				}
+				if (!this.currentItemId && this.items.length > 0) {
+					// go directly to the first item
+					this.$router.push({
+						name: 'items_details',
+						params: {
+							folder: this.currentFolder,
+							itemId: this.items[0].id,
+						},
+					})
+				}
+			} catch (e) {
+				console.error(e)
+				showError(t('athenaeum', 'Could not fetch items (route mounting failed)'))
+			}
+			this.loading = false
 		},
 	},
 }
