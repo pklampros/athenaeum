@@ -150,6 +150,7 @@ appstore:
 	--exclude="../$(app_name)/container" \
 	--exclude="../$(app_name)/makeApp.sh" \
 	--exclude="../$(app_name)/makeAppStore.sh" \
+	--exclude="../$(app_name)/athenaeum.code-workspace" \
 	-cvzf $(appstore_package_name).tar.gz ../$(app_name) \
 
 .PHONY: test
