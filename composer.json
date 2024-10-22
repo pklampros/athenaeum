@@ -16,8 +16,7 @@
 		"symfony/event-dispatcher": "^5.3.11",
 		"nextcloud/ocp": "v29.0.8",
 		"psalm/phar": "^4.10",
-		"nextcloud/coding-standard": "^1.0",
-		"php-mime-mail-parser/php-mime-mail-parser": "^8.0"
+		"nextcloud/coding-standard": "^1.0"
 	},
 	"scripts": {
 		"lint": "find . -name \\*.php -not -path './vendor/*' -print0 | xargs -0 -n1 php -l",
@@ -41,7 +40,8 @@
 		}
 	},
 	"require": {
-		"ext-mailparse": "*"
+		"ext-mailparse": "*",
+		"php-mime-mail-parser/php-mime-mail-parser": "^8.0"
 	},
 	"autoload-dev": {
 		"psr-4": {
