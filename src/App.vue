@@ -47,10 +47,8 @@
 			</template>
 		</NcAppNavigation>
 
-		<ItemListView v-if="isItemListView()"
-			:key="currentView" />
-		<SourceListView v-if="isSourceListView()"
-			:key="currentView" />
+		<ItemListView v-if="isItemListView()" />
+		<SourceListView v-if="isSourceListView()" />
 
 		<EmlImportModal :visible.sync="emlImportModalVisible"
 			@modalClosed="hideSubmitEMLModal" />
@@ -104,14 +102,6 @@ export default {
 			emlImportModalVisible: false,
 		}
 	},
-	computed: {
-		currentView() {
-			return {
-				view: this.$route.name,
-				folder: this.$route.params.folder,
-			}
-		},
-	},
 	async mounted() {
 		this.loading = true
 		try {
@@ -130,14 +120,14 @@ export default {
 	methods: {
 		isItemListView() {
 			return (
-				this.currentView.view === ViewMode.ITEMS
-				|| this.currentView.view === ViewMode.ITEMS_DETAILS
+				this.$route.name === ViewMode.ITEMS
+				|| this.$route.name === ViewMode.ITEMS_DETAILS
 			)
 		},
 		isSourceListView() {
 			return (
-				this.currentView.view === ViewMode.SOURCES
-				|| this.currentView.view === ViewMode.SOURCES_DETAILS
+				this.$route.name === ViewMode.SOURCES
+				|| this.$route.name === ViewMode.SOURCES_DETAILS
 			)
 		},
 		showSubmitEMLModal() {
