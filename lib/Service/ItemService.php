@@ -75,6 +75,14 @@ class ItemService {
 		}
 	}
 
+	public function getAttachments(int $id, string $userId): array {
+		try {
+			return $this->mapper->getAttachments($id, $userId);
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
+	}
+
 	public function attachFile(int $itemId, string $fileName, string $fileMime,
 		int $fileSize, $fileData, string $userId): ItemAttachment {
 		try {

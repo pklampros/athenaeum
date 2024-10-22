@@ -72,6 +72,15 @@ class ItemController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 */
+	public function getAttachments(int $itemId): DataResponse {
+		return $this->handleNotFound(function () use ($itemId) {
+			return $this->itemService->getAttachments($itemId, $this->userId);
+		});
+	}
+
+	/**
+	 * @NoAdminRequired
+	 */
 	public function attachFile(): DataResponse {
 		$newFile = $this->request->getUploadedFile('file');
 		$itemId = $this->request->post['item_id'];
@@ -107,20 +116,19 @@ class ItemController extends Controller {
 		if (!$itemId) {
 			return new DataResponse("No item id given", Http::STATUS_NOT_FOUND);
 		}
-		$response = array();
-		for ($i = 0; $i < $fileCount; $i++) {
-			$newFile = $this->request->getUploadedFile("" . $i);
-			
-			$fileName = $newFile['name'];
-			$fileMime = $newFile['type'];
-			$fileSize = $newFile['size'];
-			$fileData = file_get_contents($newFile['tmp_name']);
-			
-			array_push($response, $this->itemService->attachFile((int) $itemId, $fileName,
-				$fileMime, $fileSize, $fileData, $this->userId));
-		}
-		return $this->handleNotFound(function () use ($itemId, $fileName, $fileMime, 
-			$fileSize, $fileData) {
+		return $this->handleNotFound(function () use ($itemId, $fileCount) {
+			$response = array();
+			for ($i = 0; $i < $fileCount; $i++) {
+				$newFile = $this->request->getUploadedFile("" . $i);
+
+				$fileName = $newFile['name'];
+				$fileMime = $newFile['type'];
+				$fileSize = $newFile['size'];
+				$fileData = file_get_contents($newFile['tmp_name']);
+
+				array_push($response, $this->itemService->attachFile((int) $itemId, $fileName,
+					$fileMime, $fileSize, $fileData, $this->userId));
+			}
 			return $response;
 		});
 	}

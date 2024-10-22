@@ -79,7 +79,7 @@ import { NcModal, NcButton, NcListItem, NcLoadingIcon } from '@nextcloud/vue'
 import CheckboxBlankCircle from 'vue-material-design-icons/CheckboxBlankCircle.vue'
 import CheckCircle from 'vue-material-design-icons/CheckCircle.vue'
 
-import { attachFiles } from './service/ItemService'
+import { attachFiles } from './service/ItemService.js'
 
 export default {
 	name: 'AttachmentUploadModal',
@@ -136,7 +136,17 @@ export default {
 		},
 		async submitFiles() {
 			this.uploading = true
-			await attachFiles(this.files, this.itemId)
+			for (const fidx in this.files) {
+				const file = this.files[fidx]
+				file.state = 'saving'
+				this.$set(this.files, fidx, file)
+			}
+			const result = await attachFiles(this.files, this.itemId)
+			for (const fidx in result) {
+				const file = this.files[fidx]
+				file.state = result[fidx].state
+				this.$set(this.files, fidx, file)
+			}
 			this.uploading = false
 		},
 		closeModal() {

@@ -106,7 +106,7 @@ class ItemMapper extends QBMapper {
 		return $fieldData;
 	}
 
-	private function getAttachments($id, $userId) {
+	public function getAttachments($id, $userId) {
 		$itemAttachmentMapper = new ItemAttachmentMapper($this->db, $this->storage);
 
 		return $itemAttachmentMapper->findAllByItem($id, $userId);

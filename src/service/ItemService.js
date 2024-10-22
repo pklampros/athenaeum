@@ -85,6 +85,25 @@ export function fetchItemDetails(id) {
 /**
  *
  * @param {number} id Item id
+ */
+export function fetchItemAttachments(id) {
+	const url = generateUrl('/apps/athenaeum/item/attachments/' + id)
+	const params = {
+	}
+
+	return axios
+		.get(url, {
+			params,
+		})
+		.then((resp) => resp.data)
+		.catch((error) => {
+			throw convertAxiosError(error)
+		})
+}
+
+/**
+ *
+ * @param {number} id Item id
  * @param {string} newFolder The folder to send the item to
  */
 export function itemChangeFolder(id, newFolder) {
@@ -127,7 +146,7 @@ export function convertToLibraryItemDetailed(itemData) {
 
 /**
  *
- * @param {string} file The filt to attach
+ * @param {string} file The file to attach
  * @param {number} itemId The item to attach the file to
  */
 export function attachFile(file, itemId) {
@@ -186,10 +205,9 @@ export async function attachFiles(files, itemId) {
 				},
 			},
 		).then((response) => {
-			console.log(response)
 			for (const i of indices) {
 				const fo = files[i]
-				fo.state = 'exists'
+				fo.state = 'saved'
 				files[i] = fo
 			}
 		}).catch(() => {

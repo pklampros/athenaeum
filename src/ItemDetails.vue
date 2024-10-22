@@ -163,6 +163,7 @@ import {
 	fetchItemDetails,
 	convertToLibraryItemDetailed,
 	itemChangeFolder,
+	fetchItemAttachments,
 } from './service/ItemService.js'
 
 import AttachmentUploadModal from './AttachmentUploadModal.vue'
@@ -383,8 +384,9 @@ export default {
 		showAttachmentModal() {
 			this.attachmentModalVisible = true
 		},
-		hideAttachmentModal() {
+		async hideAttachmentModal() {
 			this.attachmentModalVisible = false
+			this.item.attachments = await fetchItemAttachments(this.item.id)
 		},
 	},
 }
