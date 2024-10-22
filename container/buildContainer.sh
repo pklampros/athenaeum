@@ -22,5 +22,5 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 #CMD mv /usr/local/bin/composer.phar /src/build/ && /src/makeApp.sh n
 ENV PATH="/root/n/bin:${PATH}"
 RUN npm i -g npm-check
-CMD /src/makeApp.sh n
+CMD /athenaeum/makeApp.sh n
 EOF
