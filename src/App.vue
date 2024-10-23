@@ -47,7 +47,8 @@
 			</template>
 		</NcAppNavigation>
 
-		<ItemListView v-if="isItemListView()" />
+		<ItemListView v-if="isItemListView()"
+			:key="$route.params.folder" />
 		<SourceListView v-if="isSourceListView()" />
 
 		<EmlImportModal :visible.sync="emlImportModalVisible"
