@@ -32,11 +32,11 @@ class InboxItemController extends Controller {
 	 * @NoAdminRequired
 	 */
 	public function index(
-		string $folder = "",
+		string $folder = '',
 		int $limit = 50,
 		int $offset = 0,
 		?bool $showAll = false,
-		string $search = ''
+		string $search = '',
 	): DataResponse {
 		return new DataResponse($this->inboxItemService->findAll(
 			$this->userId, $folder, $limit, $offset, $showAll, $search
@@ -72,7 +72,7 @@ class InboxItemController extends Controller {
 	}
 
 	public function hasEllipsis($text) {
-		return str_contains($text, "...") || str_contains($text, "…");
+		return str_contains($text, '...') || str_contains($text, '…');
 	}
 
 	public function cleanSafeLinks($href) {
@@ -85,8 +85,8 @@ class InboxItemController extends Controller {
 
 	public function getAlertData(\DOMDocument $doc, string $emailSubject) {
 		$links = $doc->getElementsByTagName('a');
-		$searchTerm = "";
-		$alertId = "";
+		$searchTerm = '';
+		$alertId = '';
 		$termIncomplete = false;
 
 		foreach ($links as $link) {
@@ -102,12 +102,12 @@ class InboxItemController extends Controller {
 				$alertId = $matches[1];
 			}
 		}
-		if ($searchTerm == "") {
+		if ($searchTerm == '') {
 			if ($this->hasEllipsis($emailSubject)) {
 				// full search term is not in the subject, search the body
 				$boldTxts = $doc->getElementsByTagName('b');
 				foreach ($boldTxts as $boldTxt) {
-					if (preg_match("/(.*) - new results/",
+					if (preg_match('/(.*) - new results/',
 						$boldTxt->textContent, $matches)) {
 						$searchTerm = $matches[1];
 						if ($this->hasEllipsis($searchTerm)) {
@@ -124,54 +124,54 @@ class InboxItemController extends Controller {
 				$emailSubject, $matches)) {
 				# only on 05/10/2017
 				$searchTerm = $matches[1];
-			} elseif (preg_match("/(.*) - new results/",
+			} elseif (preg_match('/(.*) - new results/',
 				$emailSubject, $matches)) {
 				# from 07/10/2017
 				$searchTerm = $matches[1];
 			}
 		}
-		if ($searchTerm == "") {
+		if ($searchTerm == '') {
 			// didn't find the true term, stick with the incomplete one
 			$searchTerm = $incompleteSearchTerm;
 		}
 		
-		if ($searchTerm == "") {
+		if ($searchTerm == '') {
 			// accept defeat, couldn't find the true term
-			throw new \Exception("Search term not found in email!");
+			throw new \Exception('Search term not found in email!');
 		}
 		
 		$cleanSearchTerm = $searchTerm;
-		while (str_ends_with($cleanSearchTerm, " - new results")) {
-			$cleanSearchTerm = substr($cleanSearchTerm, 0, -strlen(" - new results"));
+		while (str_ends_with($cleanSearchTerm, ' - new results')) {
+			$cleanSearchTerm = substr($cleanSearchTerm, 0, -strlen(' - new results'));
 		}
 
-		if ($alertId == "") {
-			throw new \Exception("Alert ID not found in email!");
+		if ($alertId == '') {
+			throw new \Exception('Alert ID not found in email!');
 		}
-		return array(
-			"alertId" => $alertId,
-			"searchTerm" => $searchTerm,
-			"cleanSearchTerm" => $cleanSearchTerm,
-			"termIncomplete" => $termIncomplete
-		);
+		return [
+			'alertId' => $alertId,
+			'searchTerm' => $searchTerm,
+			'cleanSearchTerm' => $cleanSearchTerm,
+			'termIncomplete' => $termIncomplete
+		];
 	}
 
 	public function getItems(\DOMDocument $doc) {
 		$links = $doc->getElementsByTagName('a');
-		$items = array();
+		$items = [];
 		foreach ($links as $link) {
 			$href = $link->getAttribute('href');
 			$href = $this->cleanSafeLinks($href);
 
 			$title = $link->textContent;
-			$trueURL = "";
+			$trueURL = '';
 			if (preg_match("/.*?scholar_url\?url=(.*)&hl.*?/",
 				$href, $matches)) {
 				$trueURL = urldecode($matches[1]);
 			}
 			if ($trueURL) {
-				$authorsJournalDate = "";
-				$excerpt = "";
+				$authorsJournalDate = '';
+				$excerpt = '';
 				$nextSibling = $link->parentNode->nextSibling;
 				$isDiv = $nextSibling->tagName == 'div';
 				if ($isDiv) {
@@ -188,9 +188,9 @@ class InboxItemController extends Controller {
 					}
 				}
 
-				$authors = "";
-				$journal = "";
-				$published = "";
+				$authors = '';
+				$journal = '';
+				$published = '';
 
 				// remove funky non-breaking unicode spaces
 				$authorsJournalDate = preg_replace('~\x{00a0}~siu', ' ', $authorsJournalDate);
@@ -200,7 +200,7 @@ class InboxItemController extends Controller {
 					$authors = trim($grps[0]);
 				}
 				if (sizeof($grps) > 1) {
-					$journalDate = explode(",", $grps[1], 2);
+					$journalDate = explode(',', $grps[1], 2);
 					if (sizeof($journalDate) == 2) {
 						$journal = trim($journalDate[0]);
 						$published = trim($journalDate[1]);
@@ -216,18 +216,18 @@ class InboxItemController extends Controller {
 
 				// remove various space characters
 				$excerpt = preg_replace('~\x{00a0}~siu', ' ', $excerpt);
-				$excerpt = str_replace("\n", " ", $excerpt);
-				$excerpt = str_replace("\r", " ", $excerpt);
-				$excerpt = str_replace("  ", " ", $excerpt);
+				$excerpt = str_replace("\n", ' ', $excerpt);
+				$excerpt = str_replace("\r", ' ', $excerpt);
+				$excerpt = str_replace('  ', ' ', $excerpt);
 
-				array_push($items, array(
-					"url" => $trueURL,
-					"title" => $title,
-					"authors" => $authors,
-					"journal" => $journal,
-					"published" => $published,
-					"excerpt" => $excerpt
-				));
+				array_push($items, [
+					'url' => $trueURL,
+					'title' => $title,
+					'authors' => $authors,
+					'journal' => $journal,
+					'published' => $published,
+					'excerpt' => $excerpt
+				]);
 			}
 		}
 		return $items;
@@ -239,33 +239,33 @@ class InboxItemController extends Controller {
 	public function extractFromEML(): DataResponse {
 		$fileCount = $this->request->post['fileCount'];
 		$fileMetadata = json_decode($this->request->post['fileMetadata']);
-		$responses = array();
+		$responses = [];
 		for ($i = 0; $i < $fileCount; $i++) {
-			$newFile = $this->request->getUploadedFile("" . $i);
+			$newFile = $this->request->getUploadedFile('' . $i);
 			$parser = new Parser();
 			$parser->setText(file_get_contents($newFile['tmp_name']));
 
 			$emailSubject = $parser->getHeader('subject');
 
-			$result = array(
-				"isResultsEmail" => false
-			);
+			$result = [
+				'isResultsEmail' => false
+			];
 
 			if (preg_match("/Scholar Alert - \[ (.*) \]/",
 				$emailSubject, $matches)) {
 				# up to 03/10/2017
-				$result["isResultsEmail"] = true;
+				$result['isResultsEmail'] = true;
 			} elseif (preg_match("/\[ (.*) \] - new results/",
 				$emailSubject, $matches)) {
 				# only on 05/10/2017
-				$result["isResultsEmail"] = true;
-			} elseif (preg_match("/(.*) - new results/",
+				$result['isResultsEmail'] = true;
+			} elseif (preg_match('/(.*) - new results/',
 				$emailSubject, $matches)) {
 				# from 07/10/2017
-				$result["isResultsEmail"] = true;
+				$result['isResultsEmail'] = true;
 			}
 			
-			if ($result["isResultsEmail"]) {
+			if ($result['isResultsEmail']) {
 				$doc = new \DOMDocument('1.0', 'UTF-8');
 				// the below xml hack is required to allow the domdocument to actually read UTF8
 				// https://stackoverflow.com/questions/39148170/utf-8-with-php-domdocument-loadhtml
@@ -277,13 +277,13 @@ class InboxItemController extends Controller {
 				}
 				$alertData = $this->getAlertData($doc, $emailSubject);
 				
-				$result["subject"] = $emailSubject;
-				$result["received"] = $receivedDate;
-				$result["alertId"] = $alertData["alertId"];
-				$result["searchTerm"] = $alertData["searchTerm"];
-				$result["cleanSearchTerm"] = $alertData["cleanSearchTerm"];
-				$result["termIncomplete"] = $alertData["termIncomplete"];
-				$result["items"] = $this->getItems($doc);
+				$result['subject'] = $emailSubject;
+				$result['received'] = $receivedDate;
+				$result['alertId'] = $alertData['alertId'];
+				$result['searchTerm'] = $alertData['searchTerm'];
+				$result['cleanSearchTerm'] = $alertData['cleanSearchTerm'];
+				$result['termIncomplete'] = $alertData['termIncomplete'];
+				$result['items'] = $this->getItems($doc);
 
 				$response = $this->inboxItemService->createFromEML($result, $this->userId);
 				$responses[$newFile['name']] = $response;
@@ -293,7 +293,7 @@ class InboxItemController extends Controller {
 		if (count($responses) > 0) {
 			return new DataResponse($responses);
 		} else {
-			return new DataResponse("No file sent", Http::STATUS_NOT_FOUND);
+			return new DataResponse('No file sent', Http::STATUS_NOT_FOUND);
 		}
 	}
 

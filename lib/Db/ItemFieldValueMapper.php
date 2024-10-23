@@ -29,8 +29,8 @@ class ItemFieldValueMapper extends QBMapper {
 		$qb->select('*')
 			->from('athm_item_field_values')
 			->where($qb->expr()
-					   ->eq('id',
-					   	$qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
+				->eq('id',
+					$qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
 		return $this->findEntity($qb);
 	}
 
@@ -44,14 +44,14 @@ class ItemFieldValueMapper extends QBMapper {
 		$qb->select('*')
 			->from('athm_item_field_values')
 			->where($qb->expr()
-					   ->eq('item_id',
-					   	$qb->createNamedParameter($itemId, IQueryBuilder::PARAM_INT)))
+				->eq('item_id',
+					$qb->createNamedParameter($itemId, IQueryBuilder::PARAM_INT)))
 			->andWhere($qb->expr()
-					   	  ->eq('field_id',
-					   	  	$qb->createNamedParameter($fieldId, IQueryBuilder::PARAM_INT)))
+				->eq('field_id',
+					$qb->createNamedParameter($fieldId, IQueryBuilder::PARAM_INT)))
 			->andWhere($qb->expr()
-						  ->eq('order',
-						  	$qb->createNamedParameter($order, IQueryBuilder::PARAM_INT)));
+				->eq('order',
+					$qb->createNamedParameter($order, IQueryBuilder::PARAM_INT)));
 		return $this->findEntity($qb);
 	}
 
@@ -64,11 +64,11 @@ class ItemFieldValueMapper extends QBMapper {
 		$qb->select('*')
 			->from('athm_item_field_values')
 			->where($qb->expr()
-					   ->eq('item_id',
-					   	$qb->createNamedParameter($itemId, IQueryBuilder::PARAM_INT)))
+				->eq('item_id',
+					$qb->createNamedParameter($itemId, IQueryBuilder::PARAM_INT)))
 			->andWhere($qb->expr()
-					   	  ->eq('field_id',
-					   	  	$qb->createNamedParameter($fieldId, IQueryBuilder::PARAM_INT)));
+				->eq('field_id',
+					$qb->createNamedParameter($fieldId, IQueryBuilder::PARAM_INT)));
 		return $this->findEntities($qb);
 	}
 
@@ -80,17 +80,17 @@ class ItemFieldValueMapper extends QBMapper {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
-			->from('athm_item_field_values', "ifv")
-			->innerJoin("ifv", "athm_fields", "f", "f.id = ifv.field_id")
+			->from('athm_item_field_values', 'ifv')
+			->innerJoin('ifv', 'athm_fields', 'f', 'f.id = ifv.field_id')
 			->where($qb->expr()
-					   ->eq('ifv.item_id',
-					   	$qb->createNamedParameter($itemId, IQueryBuilder::PARAM_INT)))
+				->eq('ifv.item_id',
+					$qb->createNamedParameter($itemId, IQueryBuilder::PARAM_INT)))
 			->andWhere($qb->expr()
-					   	  ->eq('f.field_name',
-					   	  	$qb->createNamedParameter($fieldId, IQueryBuilder::PARAM_INT)))
+				->eq('f.field_name',
+					$qb->createNamedParameter($fieldId, IQueryBuilder::PARAM_INT)))
 			->andWhere($qb->expr()
-						  ->eq('ifv.order',
-						  	$qb->createNamedParameter($order, IQueryBuilder::PARAM_INT)));
+				->eq('ifv.order',
+					$qb->createNamedParameter($order, IQueryBuilder::PARAM_INT)));
 		return $this->findEntity($qb);
 	}
 

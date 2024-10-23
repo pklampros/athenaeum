@@ -69,7 +69,7 @@ class ItemMapper extends QBMapper {
 			->addSelect('ci.contribution_type_id')
 			->addSelect('ci.contributor_name_display')
 			->from('athm_contributions', 'ci')
-			->innerJoin("ci", "athm_contributors", "co", "co.id = ci.contributor_id")
+			->innerJoin('ci', 'athm_contributors', 'co', 'co.id = ci.contributor_id')
 			->where($qb->expr()->eq('ci.item_id',
 				$qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
 		
@@ -92,7 +92,7 @@ class ItemMapper extends QBMapper {
 			->addSelect('f.name')
 			->addSelect('f.type_hint')
 			->from('athm_fields', 'f')
-			->innerJoin("f", "athm_item_field_values", "ifv", "f.id = ifv.field_id")
+			->innerJoin('f', 'athm_item_field_values', 'ifv', 'f.id = ifv.field_id')
 			->where($qb->expr()->eq('ifv.item_id',
 				$qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
 		
@@ -127,15 +127,15 @@ class ItemMapper extends QBMapper {
 			->addSelect('s.importance')
 			->addSelect('s.source_type')
 			->from('athm_item_sources', 'its')
-			->innerJoin("its", "athm_sources", "s", "s.id = its.source_id")
+			->innerJoin('its', 'athm_sources', 's', 's.id = its.source_id')
 			->where($qb->expr()->eq('its.item_id',
 				$qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
 		
 		$result = $qb->executeQuery();
-		$sourceInfo = array();
+		$sourceInfo = [];
 		try {
 			while ($fieldData = $result->fetch()) {
-				$fieldData['extra'] = json_decode($fieldData["extra"], true);
+				$fieldData['extra'] = json_decode($fieldData['extra'], true);
 				$sourceInfo[] = $fieldData;
 				// $sourceData = json_decode($fieldData["extra"], true);
 				// unset($sourceData['sourceId']);
@@ -205,15 +205,15 @@ class ItemMapper extends QBMapper {
 			->addSelect('f.name')
 			->addSelect('f.type_hint')
 			->from('athm_fields', 'f')
-			->innerJoin("f", "athm_item_field_values", "ifv", "f.id = ifv.field_id")
+			->innerJoin('f', 'athm_item_field_values', 'ifv', 'f.id = ifv.field_id')
 			->where($qb->expr()->eq('ifv.item_id',
 				$qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
 		
 		$result = $qb->executeQuery();
 		try {
 			while ($fieldData = $result->fetch()) {
-				$field = $fieldData["name"];
-				$value = $fieldData["value"];
+				$field = $fieldData['name'];
+				$value = $fieldData['value'];
 				if ($field == 'url') {
 					$inboxItem->setUrl($value);
 				} elseif ($field == 'inbox_read') {
@@ -239,7 +239,7 @@ class ItemMapper extends QBMapper {
 	}
 
 	public function decideLater(int $id, string $userId) {
-		$this->changeFolder($id, $this->findFolderId("inbox/decide_later", $userId));
+		$this->changeFolder($id, $this->findFolderId('inbox/decide_later', $userId));
 	}
 	
 	/**
@@ -252,8 +252,8 @@ class ItemMapper extends QBMapper {
 		$qb->select('i.*')
 			->from('athm_items', 'i')
 			->where($qb->expr()->eq('i.user_id', $qb->createNamedParameter($userId)))
-			->innerJoin("i", "athm_item_field_values", "ifv", "i.id = ifv.item_id")
-			->innerJoin("i", "athm_fields", "f", "f.id = ifv.field_id")
+			->innerJoin('i', 'athm_item_field_values', 'ifv', 'i.id = ifv.item_id')
+			->innerJoin('i', 'athm_fields', 'f', 'f.id = ifv.field_id')
 			->where($qb->expr()->eq('f.name', $qb->createNamedParameter($fieldName)))
 			->andWhere($qb->expr()->eq('ifv.value', $qb->createNamedParameter($fieldValue)));
 		return $this->findEntity($qb);
@@ -269,58 +269,58 @@ class ItemMapper extends QBMapper {
 		int $limit = 50,
 		int $offset = 0,
 		?bool $showAll = false,
-		string $search = ''
+		string $search = '',
 	): array {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
 		$qb->selectAlias($qb->createFunction('COUNT(*)'), 'count')
-		   ->from('athm_items')
-		   ->where($qb->expr()->eq('user_id', $qb->createNamedParameter($userId)))
-		   ->andWhere($qb->expr()->eq('folder_id', $qb->createNamedParameter($folderId)));
-		   $cursor = $qb->execute();
+			->from('athm_items')
+			->where($qb->expr()->eq('user_id', $qb->createNamedParameter($userId)))
+			->andWhere($qb->expr()->eq('folder_id', $qb->createNamedParameter($folderId)));
+		$cursor = $qb->execute();
 		$row = $cursor->fetch();
 		$cursor->closeCursor();
 		$totalCount = $row['count'];
 
 		$qb = $this->db->getQueryBuilder();
 		$qb->selectAlias($qb->createFunction('SUM(s.importance)'), 'source_importance')
-		   ->addSelect('it.*')
-		   ->from('athm_items', 'it')
-		   ->where($qb->expr()->eq('it.user_id', $qb->createNamedParameter($userId)))
-		   ->andWhere($qb->expr()->eq('it.folder_id', $qb->createNamedParameter($folderId)))
-		   ->innerJoin("it", "athm_item_sources", "its", "it.id = its.item_id")
-		   ->innerJoin("its", "athm_sources", "s", "s.id = its.source_id")
-		   ->groupBy('it.id')
-		   ->orderBy('source_importance', 'DESC')
-		   ->setFirstResult($offset)
-		   ->setMaxResults($limit);
-		return array(
+			->addSelect('it.*')
+			->from('athm_items', 'it')
+			->where($qb->expr()->eq('it.user_id', $qb->createNamedParameter($userId)))
+			->andWhere($qb->expr()->eq('it.folder_id', $qb->createNamedParameter($folderId)))
+			->innerJoin('it', 'athm_item_sources', 'its', 'it.id = its.item_id')
+			->innerJoin('its', 'athm_sources', 's', 's.id = its.source_id')
+			->groupBy('it.id')
+			->orderBy('source_importance', 'DESC')
+			->setFirstResult($offset)
+			->setMaxResults($limit);
+		return [
 			'items' => $this->findEntities($qb),
 			'totalCount' => $totalCount
-		);
+		];
 	}
 
 	/**
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
-	 * This asssumes that the tables have an "id" field
+	 *                               This asssumes that the tables have an "id" field
 	 */
 	private function getIdFromColumnValue(string $table, string $colName,
 		string $value): int {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('id')
-		  ->from($table)
-		  ->where($qb->expr()->eq($colName, $qb->createNamedParameter($value)));
+			->from($table)
+			->where($qb->expr()->eq($colName, $qb->createNamedParameter($value)));
 		
 		$result = $qb->executeQuery();
 		$resultId = 0; # functions as null
 		try {
-			$sourceInfo = array();
+			$sourceInfo = [];
 			while ($fieldData = $result->fetch()) {
 				if ($resultId != 0) {
 					throw new MultipleObjectsReturnedException();
 				}
-				$resultId = $fieldData["id"];
+				$resultId = $fieldData['id'];
 			}
 		} finally {
 			$result->closeCursor();
@@ -383,11 +383,11 @@ class ItemMapper extends QBMapper {
 			$qb->selectAlias($qb->createFunction('MAX(`order`)'), 'max_order')
 				->from('athm_item_field_values')
 				->where($qb->expr()
-						->eq('item_id',
-							$qb->createNamedParameter($itemId, IQueryBuilder::PARAM_INT)))
+					->eq('item_id',
+						$qb->createNamedParameter($itemId, IQueryBuilder::PARAM_INT)))
 				->andWhere($qb->expr()
-							->eq('field_id',
-								$qb->createNamedParameter($fieldId, IQueryBuilder::PARAM_INT)));
+					->eq('field_id',
+						$qb->createNamedParameter($fieldId, IQueryBuilder::PARAM_INT)));
 			$cursor = $qb->execute();
 			$row = $cursor->fetch();
 			$cursor->closeCursor();
@@ -437,7 +437,7 @@ class ItemMapper extends QBMapper {
 	/**
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
-	 * This function should be called within an atomic
+	 *                               This function should be called within an atomic
 	 */
 	public function insertWithData(string $title, int $itemTypeId, int $folderId,
 		\DateTime $dateAdded, \DateTime $dateModified,
@@ -478,7 +478,7 @@ class ItemMapper extends QBMapper {
 	/**
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
-	 * This function should be called within an atomic
+	 *                               This function should be called within an atomic
 	 */
 	public function updateWithData(int $itemId, string $title, int $itemTypeId, int $folder,
 		\DateTime $dateModified,
@@ -506,7 +506,7 @@ class ItemMapper extends QBMapper {
 	 * @throws DoesNotExistException
 	 */
 	public function inboxToDecideLater(int $id, string $userId): Item {
-		$folderId = $this->findFolderId("inbox/decide_later");
+		$folderId = $this->findFolderId('inbox/decide_later');
 		$this->changeFolder($id, $folderId);
 	}
 
@@ -518,15 +518,15 @@ class ItemMapper extends QBMapper {
 		\DateTime $dateModified, string $userId): Item {
 		return $this->atomic(function () use (&$id, &$itemData, &$dateAdded,
 			&$dateModified, &$userId) {
-			$newItemData = array();
+			$newItemData = [];
 			if (array_key_exists('url', $itemData)) {
 				$itemData['url'] = $itemData['url'];
 			}
-			$itemTypeId = $this->findItemTypeId("paper");
-			$folderId = $this->findFolderId("library");
+			$itemTypeId = $this->findItemTypeId('paper');
+			$folderId = $this->findFolderId('library');
 			if (array_key_exists('authorList', $itemData)) {
-				$contributorMapper = new ContributorMapper($this->db, $this->storage, 
-				$this->config, $this->appName);
+				$contributorMapper = new ContributorMapper($this->db, $this->storage,
+					$this->config, $this->appName);
 				foreach ($itemData['authorList'] as $index => $author) {
 					$contributor = new Contributor();
 					$contributor->setFirstName($author['firstName']);
@@ -545,7 +545,8 @@ class ItemMapper extends QBMapper {
 			return $this->updateWithData(
 				$id, $itemData['title'], $itemTypeId, $folderId,
 				$dateModified, $newItemData, $userId
-			);;
+			);
+			;
 		}, $this->db);
 	}
 
@@ -558,14 +559,14 @@ class ItemMapper extends QBMapper {
 			$newItem = $this->insert($item);
 			$qb = $this->db->getQueryBuilder();
 			$qb->select('id')
-			  ->from('athm_fields')
-			  ->where($qb->expr()->eq('name', $qb->createNamedParameter('url')));
+				->from('athm_fields')
+				->where($qb->expr()->eq('name', $qb->createNamedParameter('url')));
 			$fieldID = $this->findEntity($qb)->id;
 			$qb->insert('athm_item_field_values')
-			   ->setValue('item_id', $qb->createNamedParameter($newItem->id, IQueryBuilder::PARAM_INT))
-			   ->setValue('field_id', $qb->createNamedParameter($fieldID, IQueryBuilder::PARAM_INT))
-			   ->setValue('order', 0)
-			   ->setValue('value', $qb->createNamedParameter($url));
+				->setValue('item_id', $qb->createNamedParameter($newItem->id, IQueryBuilder::PARAM_INT))
+				->setValue('field_id', $qb->createNamedParameter($fieldID, IQueryBuilder::PARAM_INT))
+				->setValue('order', 0)
+				->setValue('value', $qb->createNamedParameter($url));
 			$qb->executeStatement();
 			$this->saveToJSONOnModify($newItem->id, $newItem->userId);
 			return $newItem;
@@ -579,40 +580,40 @@ class ItemMapper extends QBMapper {
 	public function createFromEML(array $emlData, \DateTime $dateAdded,
 		\DateTime $dateModified, string $userId): array {
 		return $this->atomic(function () use (&$emlData, &$dateAdded, &$dateModified, &$userId) {
-			$sourceMapper = new SourceMapper($this->db, $this->storage, 
+			$sourceMapper = new SourceMapper($this->db, $this->storage,
 				$this->config, $this->appName);
 
-			$itemResultData = array();
-			$trimmedTerm = $emlData["searchTerm"];
+			$itemResultData = [];
+			$trimmedTerm = $emlData['searchTerm'];
 			if (strlen($trimmedTerm) > 7) {
 				$trimmedTerm = substr($trimmedTerm, 0, 6) . '...';
 			}
 			$source = $sourceMapper->getOrInsertByUid(
-				$emlData["alertId"], "scholarAlert", 0,
+				$emlData['alertId'], 'scholarAlert', 0,
 				'Scholar alert (' . $trimmedTerm . ')',
-				'Scholar alert for the search term: ' . $emlData["searchTerm"],
+				'Scholar alert for the search term: ' . $emlData['searchTerm'],
 				$userId
 			);
-			$emailData = array(
-				'emailSubject' => $emlData["subject"],
+			$emailData = [
+				'emailSubject' => $emlData['subject'],
 				'alertId' => $source->getUid(),
-				'searchTerm' => $emlData["searchTerm"],
-				'emailReceived' => $emlData["received"]
-			);
-			$itemTypeId = $this->findItemTypeId("paper");
-			$defaultFolder = "inbox";
+				'searchTerm' => $emlData['searchTerm'],
+				'emailReceived' => $emlData['received']
+			];
+			$itemTypeId = $this->findItemTypeId('paper');
+			$defaultFolder = 'inbox';
 			$folderId = $this->findFolderId($defaultFolder);
 
 
-			foreach ($emlData["items"] as $emlItem) {
+			foreach ($emlData['items'] as $emlItem) {
 				$emailItemData = $emailData;
-				$emailItemData['excerpt'] = $emlItem["excerpt"];
-				$emailItemData['authors'] = $emlItem["authors"];
-				$emailItemData['journal'] = $emlItem["journal"];
-				$emailItemData['published'] = $emlItem["published"];
+				$emailItemData['excerpt'] = $emlItem['excerpt'];
+				$emailItemData['authors'] = $emlItem['authors'];
+				$emailItemData['journal'] = $emlItem['journal'];
+				$emailItemData['published'] = $emlItem['published'];
 				$extra = json_encode($emailItemData, JSON_FORCE_OBJECT);
 
-				$itemUrl = $emlItem["url"];
+				$itemUrl = $emlItem['url'];
 				$item = null;
 				$itemIsNew = false;
 				$itemFolderPath = $defaultFolder;
@@ -623,15 +624,15 @@ class ItemMapper extends QBMapper {
 					$itemFolderPath = $folder->getPath();
 				} catch (DoesNotExistException $ie) {
 					// new item
-					$newItemData = array(
+					$newItemData = [
 						'url' => $itemUrl,
 						'inbox_read' => false,
 						'inbox_importance' => 0,
 						'inbox_needs_review' => false
-					);
+					];
 					
 					$item = $this->insertWithData(
-						$emlItem["title"], $itemTypeId, $folderId, $dateAdded,
+						$emlItem['title'], $itemTypeId, $folderId, $dateAdded,
 						$dateModified, $newItemData, $userId
 					);
 					$itemIsNew = true;
@@ -650,13 +651,13 @@ class ItemMapper extends QBMapper {
 					$itemSource->setExtra($extra);
 					$itemSourceMapper->insert($itemSource);
 				}
-				$itemResultData[] = array(
+				$itemResultData[] = [
 					'id' => $item->getId(),
 					'folderPath' => $itemFolderPath,
 					'title' => $item->getTitle(),
 					'item_new' => $itemIsNew,
 					'item_source_new' => $itemSourceIsNew
-				);
+				];
 			}
 			return $itemResultData;
 		}, $this->db);
@@ -694,18 +695,18 @@ class ItemMapper extends QBMapper {
 
 		try {
 			$itemDatafolder->get($fileName);
-		} catch(\OCP\Files\NotFoundException $e) {
+		} catch (\OCP\Files\NotFoundException $e) {
 			// does not exist, continue
 		}
 		$itemDetails = $this->getWithDetails($itemId, $userId);
 		
 		$dbid = $this->config->getUserValue($userId, $this->appName, 'dbid');
 
-		if ($dbid == "") {
-			throw new \Exception("dbid not found!");
+		if ($dbid == '') {
+			throw new \Exception('dbid not found!');
 		}
 
-		$itemData = array();
+		$itemData = [];
 		$itemData['details'] = $itemDetails;
 		$itemData['dbid'] = $dbid;
 		$itemData['written'] = new \DateTime;
@@ -738,7 +739,7 @@ class ItemMapper extends QBMapper {
 							$itemId, $givenFileName, $fileData, $userId);
 						// file does not exist, create and continue
 						break;
-					} catch(FileExistsException $e) {
+					} catch (FileExistsException $e) {
 						// file already exists, keep trying names
 					}
 				}

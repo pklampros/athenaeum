@@ -32,14 +32,14 @@ class ItemAttachmentMapper extends QBMapper {
 			try {
 				$itemAttachmentsFolder->get($fileName);
 				throw new FileExistsException('File already exists: ' . $fileName);
-			} catch(\OCP\Files\NotFoundException $e) {
+			} catch (\OCP\Files\NotFoundException $e) {
 				// does not exist, continue
 			}
 			$itemAttachmentsFolder->newFile($fileName, $fileData);
 			$mainFolder = $fsh->getMainFolder($userId);
 			$finalFile = $itemAttachmentsFolder->get($fileName)->getPath();
 			return $mainFolder->getRelativePath($finalFile);
-		} catch(\OCP\Files\NotPermittedException $e) {
+		} catch (\OCP\Files\NotPermittedException $e) {
 			// can not access or create main folder
 			throw new StorageException('Cant access or create file ' . $fileName);
 		}

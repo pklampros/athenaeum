@@ -43,13 +43,13 @@ class ContributionMapper extends QBMapper {
 		$qb->select('*')
 			->from('athm_contributions')
 			->where($qb->expr()
-					   ->eq('item_id',
-					   	$qb->createNamedParameter($itemId,
-					   		IQueryBuilder::PARAM_INT)))
+				->eq('item_id',
+					$qb->createNamedParameter($itemId,
+						IQueryBuilder::PARAM_INT)))
 			->andWhere($qb->expr()
-						  ->eq('contributor_id',
-						  	$qb->createNamedParameter($contributorId,
-						  		IQueryBuilder::PARAM_INT)));
+				->eq('contributor_id',
+					$qb->createNamedParameter($contributorId,
+						IQueryBuilder::PARAM_INT)));
 		return $this->findEntity($qb);
 	}
 

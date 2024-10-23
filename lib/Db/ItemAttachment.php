@@ -26,9 +26,9 @@ use OCP\AppFramework\Db\Entity;
  */
 class ItemAttachment extends Entity implements JsonSerializable {
 	protected int $itemId = 0;
-	protected string $path = "";
-	protected ?string $mimeType = "";
-	protected ?string $notes = "";
+	protected string $path = '';
+	protected ?string $mimeType = '';
+	protected ?string $notes = '';
 	protected string $userId = '';
 
 	public function jsonSerialize(): array {

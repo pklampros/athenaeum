@@ -31,17 +31,17 @@ class ItemController extends Controller {
 	 * @NoAdminRequired
 	 */
 	public function index(
-		string $folder = "library",
+		string $folder = 'library',
 		int $limit = 50,
 		int $offset = 0,
 		?bool $showAll = false,
-		string $search = ''
+		string $search = '',
 	): DataResponse {
 		return new DataResponse($this->itemService->findAll(
 			$this->userId, $folder, $limit, $offset, $showAll, $search
 		));
 	}
-
+	
 	/**
 	 * @NoAdminRequired
 	 */
@@ -94,10 +94,10 @@ class ItemController extends Controller {
 		$newFile = $this->request->getUploadedFile('file');
 		$itemId = $this->request->post['item_id'];
 		if (!$newFile) {
-			return new DataResponse("No file sent", Http::STATUS_NOT_FOUND);
+			return new DataResponse('No file sent', Http::STATUS_NOT_FOUND);
 		}
 		if (!$itemId) {
-			return new DataResponse("No item id given", Http::STATUS_NOT_FOUND);
+			return new DataResponse('No item id given', Http::STATUS_NOT_FOUND);
 		}
 		$fileName = $newFile['name'];
 		$fileMime = $newFile['type'];
@@ -107,7 +107,7 @@ class ItemController extends Controller {
 		
 		return $this->handleNotFound(function () use ($itemId, $fileName, $fileMime,
 			$fileSize, $fileData) {
-			return $this->itemService->attachFile((int) $itemId, $fileName, $fileMime,
+			return $this->itemService->attachFile((int)$itemId, $fileName, $fileMime,
 				$fileSize, $fileData, $this->userId);
 		});
 	}
@@ -120,22 +120,22 @@ class ItemController extends Controller {
 		$itemId = $this->request->post['item_id'];
 
 		if ($fileCount == 0) {
-			return new DataResponse("No file sent", Http::STATUS_NOT_FOUND);
+			return new DataResponse('No file sent', Http::STATUS_NOT_FOUND);
 		}
 		if (!$itemId) {
-			return new DataResponse("No item id given", Http::STATUS_NOT_FOUND);
+			return new DataResponse('No item id given', Http::STATUS_NOT_FOUND);
 		}
 		return $this->handleNotFound(function () use ($itemId, $fileCount) {
-			$response = array();
+			$response = [];
 			for ($i = 0; $i < $fileCount; $i++) {
-				$newFile = $this->request->getUploadedFile("" . $i);
+				$newFile = $this->request->getUploadedFile('' . $i);
 
 				$fileName = $newFile['name'];
 				$fileMime = $newFile['type'];
 				$fileSize = $newFile['size'];
 				$fileData = file_get_contents($newFile['tmp_name']);
 
-				array_push($response, $this->itemService->attachFile((int) $itemId, $fileName,
+				array_push($response, $this->itemService->attachFile((int)$itemId, $fileName,
 					$fileMime, $fileSize, $fileData, $this->userId));
 			}
 			return $response;
@@ -169,7 +169,8 @@ class ItemController extends Controller {
 		return $this->handleNotFound(function () use ($id, $title, $itemTypeId,
 			$folderId) {
 			return $this->itemService->update($id, $title, $itemTypeId, $folderId,
-			$this->userId);;
+				$this->userId);
+			;
 		});
 	}
 

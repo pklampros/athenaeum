@@ -51,7 +51,7 @@ class ContributorMapper extends QBMapper {
 		$firstName = strtolower($firstName);
 		$lastName = strtolower($lastName);
 		$displayName = strtolower($displayName);
-		$fullName = $firstName." ".$lastName;
+		$fullName = $firstName . ' ' . $lastName;
 		$qb = $this->db->getQueryBuilder();
 		# find contributors whose last name, full name or display name is
 		# similar (contain the one given). Make sure that we don't get last
@@ -65,16 +65,16 @@ class ContributorMapper extends QBMapper {
 			->addSelect('ci.contribution_type_id')
 			->addSelect('ci.contributor_name_display')
 			->from('athm_contributions', 'ci')
-			->innerJoin("ci", "athm_contributors", "co", "co.id = ci.contributor_id")
+			->innerJoin('ci', 'athm_contributors', 'co', 'co.id = ci.contributor_id')
 			->where($qb->expr()->andx(
 				'LOWER(co.last_name) LIKE :ln',
 				'LENGTH(co.last_name) < 3*LENGTH(:ln)'
 			))
 			->orWhere('LOWER(ci.contributor_name_display) LIKE :dn')
 			->orWhere('LOWER(ci.contributor_name_display) LIKE :fn')
-			->setParameter('ln', '%'.addcslashes($lastName, '%_').'%')
-			->setParameter('dn', '%'.addcslashes($displayName, '%_').'%')
-			->setParameter('fn', '%'.addcslashes($fullName, '%_').'%');
+			->setParameter('ln', '%' . addcslashes($lastName, '%_') . '%')
+			->setParameter('dn', '%' . addcslashes($displayName, '%_') . '%')
+			->setParameter('fn', '%' . addcslashes($fullName, '%_') . '%');
 
 		$contributionData = [];
 		$result = $qb->executeQuery();
@@ -85,7 +85,7 @@ class ContributorMapper extends QBMapper {
 				$contribution['firstName'] = $row['first_name'];
 				$contribution['lastName'] = $row['last_name'];
 				$contribution['displayName'] = $row['contributor_name_display'];
-				$levFullName = levenshtein($fullName, $row['first_name']." ".$row['last_name']);
+				$levFullName = levenshtein($fullName, $row['first_name'] . ' ' . $row['last_name']);
 				$levDisplayName = levenshtein($displayName, $row['contributor_name_display']);
 				$contribution['lev_similarity'] = max($levFullName, $levDisplayName);
 				array_push($contributionData, $contribution);
@@ -103,7 +103,7 @@ class ContributorMapper extends QBMapper {
 	public function freeSearch(string $term): array {
 		$nameParts = explode(' ', $term);
 		$lastName = end($nameParts);
-		$firstName = "";
+		$firstName = '';
 		if (sizeof($nameParts) > 1) {
 			$firstName = implode(' ', array_slice($nameParts, 0, -1));
 		}
@@ -120,9 +120,9 @@ class ContributorMapper extends QBMapper {
 		$qb->select('*')
 			->from('athm_contributors')
 			->where($qb->expr()
-					   ->eq('first_name', $qb->createNamedParameter($firstName)))
+				->eq('first_name', $qb->createNamedParameter($firstName)))
 			->andWhere($qb->expr()
-						  ->eq('last_name', $qb->createNamedParameter($lastName)));
+				->eq('last_name', $qb->createNamedParameter($lastName)));
 		return $this->findEntity($qb);
 	}
 
@@ -181,17 +181,17 @@ class ContributorMapper extends QBMapper {
 
 		try {
 			$contributorDatafolder->get($fileName);
-		} catch(\OCP\Files\NotFoundException $e) {
+		} catch (\OCP\Files\NotFoundException $e) {
 			// does not exist, continue
 		}
 		
 		$dbid = $this->config->getUserValue($userId, $this->appName, 'dbid');
 
-		if ($dbid == "") {
-			throw new \Exception("dbid not found!");
+		if ($dbid == '') {
+			throw new \Exception('dbid not found!');
 		}
 
-		$contributorData = array();
+		$contributorData = [];
 		$contributorData['details'] = $contributor;
 		$contributorData['dbid'] = $dbid;
 		$contributorData['written'] = new \DateTime;

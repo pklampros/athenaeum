@@ -33,13 +33,13 @@ class UserInfoApiController extends ApiController {
 	 */
 	public function userInit(): DataResponse {
 		$uis = \OC::$server->query(UserInfoService::class);
-		$userDBID = $uis->getUserValue("dbid", $this->userId);
+		$userDBID = $uis->getUserValue('dbid', $this->userId);
 		if ($userDBID == '') {
 			// The purpose of this code is to create fields and
 			// values in the database that are default per user
 			$this->service->createDefaultData($this->userId);
-			$uis->setUserValue("dbid", $this->userId, uniqid());
-			$userDBID = $uis->getUserValue("dbid", $this->userId);
+			$uis->setUserValue('dbid', $this->userId, uniqid());
+			$userDBID = $uis->getUserValue('dbid', $this->userId);
 			// Transaction has failed don't set a dbid
 		}
 		return new DataResponse($userDBID);

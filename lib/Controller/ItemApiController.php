@@ -32,11 +32,11 @@ class ItemApiController extends ApiController {
 	 * @NoAdminRequired
 	 */
 	public function index(
-		string $folder = "library",
+		string $folder = 'library',
 		int $limit = 50,
 		int $offset = 0,
 		?bool $showAll = false,
-		string $search = ''
+		string $search = '',
 	): DataResponse {
 		return new DataResponse($this->itemService->findAll(
 			$this->userId, $folder, $limit, $offset, $showAll, $search
@@ -52,7 +52,7 @@ class ItemApiController extends ApiController {
 		// GET /url/<id>
 		$decodedURL = urldecode(urldecode($url));
 		return $this->handleNotFound(function () use ($decodedURL) {
-			return $this->itemService->findByFieldValue("url", $decodedURL, $this->userId);
+			return $this->itemService->findByFieldValue('url', $decodedURL, $this->userId);
 		});
 	}
 

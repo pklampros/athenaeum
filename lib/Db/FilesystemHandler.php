@@ -15,7 +15,7 @@ class FilesystemHandler {
 
 	public function __construct(IRootFolder $storage) {
 		$this->storage = $storage;
-		$this->mainFolderName = "Athenaeum";
+		$this->mainFolderName = 'Athenaeum';
 	}
 
 	private function getUserFolder($userId) : Folder {
@@ -61,7 +61,7 @@ class FilesystemHandler {
 		try {
 			try {
 				$newFolder = $rootFolder->get($newFolderName);
-			} catch(\OCP\Files\NotFoundException $e) {
+			} catch (\OCP\Files\NotFoundException $e) {
 				// folder not found, try to create it
 				$rootFolder->newFolder($newFolderName);
 				$newFolder = $rootFolder->get($newFolderName);
@@ -70,7 +70,7 @@ class FilesystemHandler {
 				throw new StorageException('Can not access folder ' .
 										$newFolderName . ' because it is a file');
 			}
-		} catch(\OCP\Files\NotPermittedException $e) {
+		} catch (\OCP\Files\NotPermittedException $e) {
 			// can not access or create folder
 			throw new StorageException('Cant access or create folder ' .
 									   $newFolderName);

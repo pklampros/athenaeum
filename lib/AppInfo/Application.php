@@ -6,14 +6,14 @@ declare(strict_types=1);
 
 namespace OCA\Athenaeum\AppInfo;
 
+use OCA\Athenaeum\Service\UserInfoService;
+use OCA\Athenaeum\Settings\PersonalSettingsForm;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCP\IConfig;
 use OCP\IServerContainer;
-use OCA\Athenaeum\Service\UserInfoService;
-use OCA\Athenaeum\Settings\PersonalSettingsForm;
 
 include_once __DIR__ . '/../../vendor/autoload.php';
 
@@ -46,6 +46,6 @@ class Application extends App implements IBootstrap {
 		);
 	}
 
-    public function boot(IBootContext $context): void {
-    }
+	public function boot(IBootContext $context): void {
+	}
 }

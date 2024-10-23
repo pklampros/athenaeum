@@ -29,7 +29,7 @@ class ItemSourceMapper extends QBMapper {
 		$qb->select('*')
 			->from('athm_item_sources')
 			->where($qb->expr()
-					   ->eq('id', $qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
+				->eq('id', $qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
 		return $this->findEntity($qb);
 	}
 
@@ -42,13 +42,13 @@ class ItemSourceMapper extends QBMapper {
 		$qb->select('*')
 			->from('athm_item_sources')
 			->where($qb->expr()
-					   ->eq('item_id',
-					   	$qb->createNamedParameter($itemId,
-					   		IQueryBuilder::PARAM_INT)))
+				->eq('item_id',
+					$qb->createNamedParameter($itemId,
+						IQueryBuilder::PARAM_INT)))
 			->andWhere($qb->expr()
-						  ->eq('source_id',
-						  	$qb->createNamedParameter($sourceId,
-						  		IQueryBuilder::PARAM_INT)));
+				->eq('source_id',
+					$qb->createNamedParameter($sourceId,
+						IQueryBuilder::PARAM_INT)));
 		return $this->findEntity($qb);
 	}
 
@@ -58,7 +58,7 @@ class ItemSourceMapper extends QBMapper {
 	public function itemSourceExists(int $itemId, int $sourceId): bool {
 		try {
 			$this->findByItemSource($itemId, $sourceId);
-		} catch(DoesNotExistException $ie) {
+		} catch (DoesNotExistException $ie) {
 			return false;
 		}
 		return true;

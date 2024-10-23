@@ -20,7 +20,10 @@ use OCP\IConfig;
 class InboxItemService {
 	private ItemMapper $mapper;
 
-	public function __construct(private IConfig $config, ItemMapper $mapper) {
+	public function __construct(
+		private IConfig $config,
+		ItemMapper $mapper,
+	) {
 		$this->mapper = $mapper;
 	}
 
@@ -29,15 +32,15 @@ class InboxItemService {
 	 */
 	public function findAll(
 		string $userId,
-		string $folder = "",
+		string $folder = '',
 		int $limit = 50,
 		int $offset = 0,
 		?bool $showAll = false,
-		string $search = ''
+		string $search = '',
 	): array {
-		$fullFolder = "inbox";
+		$fullFolder = 'inbox';
 		if ($folder) {
-			$fullFolder = $fullFolder . "/" . $folder;
+			$fullFolder = $fullFolder . '/' . $folder;
 		}
 		return $this->mapper->findAll(
 			$userId, $this->mapper->findFolderId($fullFolder), $limit, $offset, $showAll, $search

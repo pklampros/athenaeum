@@ -35,7 +35,7 @@ class InboxItemApiController extends ApiController {
 		int $limit = 50,
 		int $offset = 0,
 		?bool $showAll = false,
-		string $search = ''
+		string $search = '',
 	): DataResponse {
 		return new DataResponse($this->service->findAll(
 			$this->userId, $limit, $offset, $showAll, $search

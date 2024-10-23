@@ -138,17 +138,17 @@ class SourceMapper extends QBMapper {
 
 		try {
 			$sourcesDatafolder->get($fileName);
-		} catch(\OCP\Files\NotFoundException $e) {
+		} catch (\OCP\Files\NotFoundException $e) {
 			// does not exist, continue
 		}
 		
 		$dbid = $this->config->getUserValue($userId, $this->appName, 'dbid');
 
-		if ($dbid == "") {
-			throw new \Exception("dbid not found!");
+		if ($dbid == '') {
+			throw new \Exception('dbid not found!');
 		}
 
-		$sourceData = array();
+		$sourceData = [];
 		$sourceData['details'] = $source;
 		$sourceData['dbid'] = $dbid;
 		$sourceData['written'] = new \DateTime;

@@ -28,11 +28,11 @@ class ItemService {
 	 */
 	public function findAll(
 		string $userId,
-		string $folder = "library",
+		string $folder = 'library',
 		int $limit = 50,
 		int $offset = 0,
 		?bool $showAll = false,
-		string $search = ''
+		string $search = '',
 	): array {
 		return $this->mapper->findAll(
 			$userId, $this->mapper->findFolderId($folder), $limit, $offset, $showAll, $search
@@ -164,9 +164,9 @@ class ItemService {
 		try {
 			$entity = new Item();
 			$entity->setTitle($title);
-			$itemTypeId = $this->mapper->findItemTypeId("paper");
+			$itemTypeId = $this->mapper->findItemTypeId('paper');
 			$entity->setItemTypeId($itemTypeId);
-			$folderId = $this->mapper->findFolderId("inbox");
+			$folderId = $this->mapper->findFolderId('inbox');
 			$entity->setFolderId($folderId);
 			$currentDate = new \DateTime;
 			$entity->setDateAdded($currentDate);
