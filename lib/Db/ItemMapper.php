@@ -108,16 +108,16 @@ class ItemMapper extends QBMapper {
 		return $fieldData;
 	}
 
-	public function getAttachments($id, $userId) {
+	public function getAttachments($itemId, $userId): array {
 		$itemAttachmentMapper = new ItemAttachmentMapper($this->db, $this->storage);
 
-		return $itemAttachmentMapper->findAllByItem($id, $userId);
+		return $itemAttachmentMapper->findAllByItem($itemId, $userId);
 	}
 
-	public function removeAttachment($id, $userId) {
+	public function removeAttachment($attachmentId, $userId): bool {
 		$itemAttachmentMapper = new ItemAttachmentMapper($this->db, $this->storage);
 
-		return $itemAttachmentMapper->findAllByItem($id, $userId);
+		return $itemAttachmentMapper->removeAttachment($attachmentId, $userId);
 	}
 
 	private function getSourceInfo($id) {

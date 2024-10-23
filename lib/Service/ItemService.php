@@ -67,25 +67,25 @@ class ItemService {
 		}
 	}
 
-	public function getSummary(int $id, string $userId): ItemDetails {
+	public function getSummary(int $itemId, string $userId): ItemDetails {
 		try {
-			return $this->mapper->getSummary($id, $userId);
+			return $this->mapper->getSummary($itemId, $userId);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}
 	}
 
-	public function getAttachments(int $id, string $userId): array {
+	public function getAttachments(int $itemId, string $userId): array {
 		try {
-			return $this->mapper->getAttachments($id, $userId);
+			return $this->mapper->getAttachments($itemId, $userId);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}
 	}
 
-	public function removeAttachment(int $id, string $userId): array {
+	public function removeAttachment(int $attachmentId, string $userId): bool {
 		try {
-			return $this->mapper->removeAttachment($id, $userId);
+			return $this->mapper->removeAttachment($attachmentId, $userId);
 		} catch (Exception $e) {
 			$this->handleException($e);
 		}

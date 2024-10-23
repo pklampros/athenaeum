@@ -24,6 +24,21 @@ class ItemAttachmentMapper extends QBMapper {
 		$this->storage = $storage;
 	}
 
+	/**
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws DoesNotExistException
+	 */
+	public function find(int $id, string $userId): Item {
+		/* @var $qb IQueryBuilder */
+		$qb = $this->db->getQueryBuilder();
+		$qb->select('*')
+			->from('athm_item_attchm')
+			->where($qb->expr()->eq('id',
+				$qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()->eq('user_id',
+				$qb->createNamedParameter($userId, IQueryBuilder::PARAM_STR)));
+		return $this->findEntity($qb);
+	}
 
 	public function createAttachmentFile($itemId, string $fileName, $fileData, string $userId) : string {
 		$fsh = new FilesystemHandler($this->storage);
@@ -58,6 +73,37 @@ class ItemAttachmentMapper extends QBMapper {
 			->andWhere($qb->expr()->eq('user_id',
 				$qb->createNamedParameter($userId, IQueryBuilder::PARAM_STR)));
 		return $this->findEntities($qb);
+	}
+
+	private function getAttachmentAsFile($path, $userId) {
+		$fsh = new FilesystemHandler($this->storage);
+		$mainFolder = $fsh->getMainFolder($userId);
+		return $mainFolder->get($path);
+	}
+
+	/**
+	 * @throws DoesNotExistException
+	 */
+	public function removeAttachment(int $attachmentId, string $userId): bool {
+		// First try to find an attachment with this id for this user. Throws an
+		// exception if not found (which will be picked up further down the stack)
+		$qb = $this->db->getQueryBuilder();
+		$qb->select('*')
+			->from('athm_item_attchm')
+			->where($qb->expr()->eq('id',
+				$qb->createNamedParameter($attachmentId, IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()->eq('user_id',
+				$qb->createNamedParameter($userId, IQueryBuilder::PARAM_STR)));
+		$entity = $this->findEntity($qb);
+
+		try {
+			$path = $entity->getPath();
+			$this->getAttachmentAsFile($path, $userId)->delete();
+		} catch (\OCP\Files\NotFoundException $e) {
+			// does not exist, continue
+		}
+		$this->delete($entity);
+		return true;
 	}
 
 	public function pathExists(int $itemId, string $path): bool {

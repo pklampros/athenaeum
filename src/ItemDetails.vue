@@ -115,7 +115,7 @@
 							<NcButton v-tooltip="'Remove attachment'"
 								aria-label="Remove attachment"
 								type="tertiary"
-								@click="removeAttachment(item.id, attachment.id)">
+								@click="removeAttachment(attachment.id)">
 								<template #icon>
 									<MinusCircle :size="20" />
 								</template>
@@ -150,6 +150,10 @@
 		<AttachmentUploadModal :visible.sync="attachmentModalVisible"
 			:item-id.sync="item.id"
 			@modalClosed="hideAttachmentModal" />
+		<ApproveDialog :visible.sync="hasAttachmentRemoveId"
+			name="Confirmation"
+			message="Are you sure you want to remove this attachment?"
+			@dialog-ok="okToRemoveAttachment" />
 	</NcAppContentDetails>
 	<NcAppContentDetails v-else>
 		<NcEmptyContent :title="t('athenaeum', 'No item selected')">
@@ -185,9 +189,15 @@ import {
 	convertToLibraryItemDetailed,
 	itemChangeFolder,
 	fetchItemAttachments,
+	removeItemAttachment,
 } from './service/ItemService.js'
 
 import AttachmentUploadModal from './AttachmentUploadModal.vue'
+import ApproveDialog from './ApproveDialog.vue'
+
+import 'toastify-js/src/toastify.css'
+
+import Toastify from 'toastify-js'
 
 export default {
 	name: 'ItemDetails',
@@ -211,6 +221,7 @@ export default {
 		// project components
 		AuthorEditList,
 		AttachmentUploadModal,
+		ApproveDialog,
 	},
 	props: {
 		itemId: {
@@ -229,7 +240,13 @@ export default {
 				contributors: false,
 			},
 			attachmentModalVisible: false,
+			attachmentRemoveId: null,
 		}
+	},
+	computed: {
+		hasAttachmentRemoveId() {
+			return this.attachmentRemoveId !== null
+		},
 	},
 	watch: {
 		async itemId(itemId) {
@@ -410,8 +427,27 @@ export default {
 			this.attachmentModalVisible = false
 			this.item.attachments = await fetchItemAttachments(this.item.id)
 		},
-		removeAttachment(itemId, attachmentId) {
-
+		removeAttachment(attachmentId) {
+			this.attachmentRemoveId = attachmentId
+		},
+		async okToRemoveAttachment() {
+			if (!this.hasAttachmentRemoveId) return
+			const attachmentId = this.attachmentRemoveId
+			this.attachmentRemoveId = null
+			await removeItemAttachment(attachmentId)
+			this.item.attachments = await fetchItemAttachments(this.item.id)
+			Toastify({
+				text: 'Attachment deleted',
+				duration: 1500,
+				close: false,
+				gravity: 'bottom',
+				position: 'center',
+				stopOnFocus: true,
+				style: {
+					background: '#00000066',
+					text: 'white',
+				},
+			}).showToast()
 		},
 	},
 }
