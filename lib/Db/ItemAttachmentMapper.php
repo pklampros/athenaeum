@@ -53,7 +53,10 @@ class ItemAttachmentMapper extends QBMapper {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
 			->from('athm_item_attchm')
-			->where($qb->expr()->eq('item_id', $qb->createNamedParameter($itemId, IQueryBuilder::PARAM_INT)));
+			->where($qb->expr()->eq('item_id',
+				$qb->createNamedParameter($itemId, IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()->eq('user_id',
+				$qb->createNamedParameter($userId, IQueryBuilder::PARAM_STR)));
 		return $this->findEntities($qb);
 	}
 
@@ -62,8 +65,10 @@ class ItemAttachmentMapper extends QBMapper {
 		$qb = $this->db->getQueryBuilder();
 		$qb->selectAlias($qb->createFunction('COUNT(`id`)'), 'count')
 			->from('athm_item_attchm')
-			->where($qb->expr()->eq('item_id', $qb->createNamedParameter($itemId, IQueryBuilder::PARAM_INT)))
-			->andWhere($qb->expr()->eq('path', $qb->createNamedParameter($path)));
+			->where($qb->expr()->eq('item_id',
+				$qb->createNamedParameter($itemId, IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()->eq('path',
+				$qb->createNamedParameter($path)));
 		$cursor = $qb->execute();
 		$row = $cursor->fetch();
 		$cursor->closeCursor();
@@ -79,8 +84,10 @@ class ItemAttachmentMapper extends QBMapper {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
 			->from('athm_item_attchm')
-			->where($qb->expr()->eq('item_id', $qb->createNamedParameter($item_id, IQueryBuilder::PARAM_INT)))
-			->andWhere($qb->expr()->eq('path', $qb->createNamedParameter($path)));
+			->where($qb->expr()->eq('item_id',
+				$qb->createNamedParameter($item_id, IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()->eq('path',
+				$qb->createNamedParameter($path)));
 		return $this->findEntity($qb);
 	}
 }

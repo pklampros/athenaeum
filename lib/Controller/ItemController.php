@@ -81,6 +81,15 @@ class ItemController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 */
+	public function removeAttachment(int $attachmentId): DataResponse {
+		return $this->handleNotFound(function () use ($attachmentId) {
+			return $this->itemService->removeAttachment($attachmentId, $this->userId);
+		});
+	}
+
+	/**
+	 * @NoAdminRequired
+	 */
 	public function attachFile(): DataResponse {
 		$newFile = $this->request->getUploadedFile('file');
 		$itemId = $this->request->post['item_id'];

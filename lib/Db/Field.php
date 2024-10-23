@@ -17,16 +17,20 @@ use OCP\AppFramework\Db\Entity;
  * @method setName(string $name): void
  * @method getTypeHint(): string
  * @method setTypeHint(string $typeHint): void
+ * @method getUserId(): string
+ * @method setUserId(string $userId): void
  */
 class Field extends Entity implements JsonSerializable {
 	protected string $name = '';
 	protected string $typeHint = ''; // "string", "int", "float", "bool"
+	protected string $userId = '';
 
 	public function jsonSerialize(): array {
 		return [
 			'id' => $this->id,
 			'name' => $this->name,
-			'typeHint' => $this->typeHint
+			'typeHint' => $this->typeHint,
+			'userId' => $this->userId
 		];
 	}
 }

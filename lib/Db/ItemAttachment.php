@@ -21,12 +21,15 @@ use OCP\AppFramework\Db\Entity;
  * @method setMimeType(string $mimeType): void
  * @method getNotes(): string
  * @method setNotes(string $notes): void
+ * @method getUserId(): string
+ * @method setUserId(string $userId): void
  */
 class ItemAttachment extends Entity implements JsonSerializable {
 	protected int $itemId = 0;
 	protected string $path = "";
 	protected ?string $mimeType = "";
 	protected ?string $notes = "";
+	protected string $userId = '';
 
 	public function jsonSerialize(): array {
 		return [
@@ -34,7 +37,8 @@ class ItemAttachment extends Entity implements JsonSerializable {
 			'itemId' => $this->itemId,
 			'path' => $this->path,
 			'mimeType' => $this->mimeType,
-			'notes' => $this->notes
+			'notes' => $this->notes,
+			'userId' => $this->userId
 		];
 	}
 }

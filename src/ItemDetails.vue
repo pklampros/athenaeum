@@ -95,21 +95,34 @@
 				style="margin-top: 10px;">
 				<div class="field-label">
 					<h3>Attachments ({{ item.attachments.length }})</h3>
-					<NcButton aria-label="Add"
-						type="tertiary"
-						@click="showAttachmentModal">
-						<template #icon>
-							<PlusCircle :size="20" />
-						</template>
-					</NcButton>
+					<div class="list-plus-button-wrap">
+						<NcButton aria-label="Add"
+							type="tertiary"
+							@click="showAttachmentModal">
+							<template #icon>
+								<PlusCircle :size="20" />
+							</template>
+						</NcButton>
+					</div>
 				</div>
 				<ul v-if="item.attachments.length">
 					<NcListItem v-for="attachment in item.attachments"
 						:key="attachment.id"
 						:name="attachment.path"
-						:compact="true" />
+						:compact="true"
+						:force-display-actions="true">
+						<template #extra-actions>
+							<NcButton v-tooltip="'Remove attachment'"
+								aria-label="Remove attachment"
+								type="tertiary"
+								@click="removeAttachment(item.id, attachment.id)">
+								<template #icon>
+									<MinusCircle :size="20" />
+								</template>
+							</NcButton>
+						</template>
+					</NcListItem>
 				</ul>
-				<!-- <pre>{{ JSON.stringify(item.attachments, null, 2) }}</pre> -->
 			</div>
 			<div class="details-footer">
 				<NcButton aria-label="Remove item"
@@ -148,13 +161,21 @@
 </template>
 
 <script>
-import { NcAppContentDetails, NcRichContenteditable, NcEmptyContent, NcButton, NcUserBubble, NcListItem } from '@nextcloud/vue'
+import {
+	NcAppContentDetails,
+	NcRichContenteditable,
+	NcEmptyContent,
+	NcButton,
+	NcUserBubble,
+	NcListItem,
+} from '@nextcloud/vue'
 
 import Delete from 'vue-material-design-icons/Delete.vue'
 import School from 'vue-material-design-icons/School.vue'
 import OpenInNew from 'vue-material-design-icons/OpenInNew.vue'
 import Pencil from 'vue-material-design-icons/Pencil.vue'
 import PlusCircle from 'vue-material-design-icons/PlusCircle.vue'
+import MinusCircle from 'vue-material-design-icons/MinusCircle.vue'
 
 import AuthorEditList from './AuthorEditList.vue'
 
@@ -185,6 +206,7 @@ export default {
 		OpenInNew,
 		Pencil,
 		PlusCircle,
+		MinusCircle,
 
 		// project components
 		AuthorEditList,
@@ -388,6 +410,9 @@ export default {
 			this.attachmentModalVisible = false
 			this.item.attachments = await fetchItemAttachments(this.item.id)
 		},
+		removeAttachment(itemId, attachmentId) {
+
+		},
 	},
 }
 
@@ -437,5 +462,13 @@ export default {
 	font-weight: bold;
 	margin: 8px 0px 8px 12px;
 	text-align: start;
+}
+
+.list-plus-button-wrap {
+	// This is the .list-item__wrapper padding (4px), along with
+	// the list-item padding (2xbaseline) plus the margin of the
+	// actions (1xbaseline) minus the padding of the .field-label.
+	// Assumes that #extra-actions are used for the buttons.
+	padding: 0 calc(4px + 3 * var(--default-grid-baseline) - 1px) 0 0;
 }
 </style>

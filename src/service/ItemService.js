@@ -84,6 +84,25 @@ export function fetchItemDetails(id) {
 
 /**
  *
+ * @param {number} id Attachment id
+ */
+export function removeItemAttachment(id) {
+	const url = generateUrl('/apps/athenaeum/item/attachment/remove/' + id)
+	const params = {
+	}
+
+	return axios
+		.get(url, {
+			params,
+		})
+		.then((resp) => resp.data)
+		.catch((error) => {
+			throw convertAxiosError(error)
+		})
+}
+
+/**
+ *
  * @param {number} id Item id
  */
 export function fetchItemAttachments(id) {

@@ -52,8 +52,10 @@ class ItemMapper extends QBMapper {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
 			->from('athm_items')
-			->where($qb->expr()->eq('id', $qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)))
-			->andWhere($qb->expr()->eq('user_id', $qb->createNamedParameter($userId)));
+			->where($qb->expr()->eq('id',
+				$qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()->eq('user_id',
+				$qb->createNamedParameter($userId, IQueryBuilder::PARAM_STR)));
 		return $this->findEntity($qb);
 	}
 
@@ -107,6 +109,12 @@ class ItemMapper extends QBMapper {
 	}
 
 	public function getAttachments($id, $userId) {
+		$itemAttachmentMapper = new ItemAttachmentMapper($this->db, $this->storage);
+
+		return $itemAttachmentMapper->findAllByItem($id, $userId);
+	}
+
+	public function removeAttachment($id, $userId) {
 		$itemAttachmentMapper = new ItemAttachmentMapper($this->db, $this->storage);
 
 		return $itemAttachmentMapper->findAllByItem($id, $userId);
@@ -743,6 +751,7 @@ class ItemMapper extends QBMapper {
 			$itemAttachment->setItemId($itemId);
 			$itemAttachment->setPath($newFilePath);
 			$itemAttachment->setMimeType($fileMime);
+			$itemAttachment->setUserId($userId);
 
 			try {
 				$newItemAttachment = $itemAttachmentMapper->insert($itemAttachment);
