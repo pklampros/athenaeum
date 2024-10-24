@@ -12,7 +12,7 @@
 					:disabled="false"
 					:to="'/sources'">
 					<template #icon>
-						<Bookshelf :size="20" />
+						<Earth :size="20" />
 					</template>
 				</NcAppNavigationItem>
 				<NcAppNavigationItem v-for="folder in folders"
@@ -21,7 +21,11 @@
 					:disabled="false"
 					:to="'/items/' + folder.path">
 					<template #icon>
-						<Inbox v-if="folder.isinbox"
+						<Inbox v-if="folder.path === 'inbox'"
+							:size="20" />
+						<InboxMultiple v-else-if="folder.path === 'inbox:decide_later'"
+							:size="20" />
+						<Delete v-else-if="folder.path === 'wastebasket'"
 							:size="20" />
 						<Bookshelf v-else
 							:size="20" />
@@ -65,6 +69,9 @@ import {
 
 import Bookshelf from 'vue-material-design-icons/Bookshelf.vue'
 import Inbox from 'vue-material-design-icons/Inbox.vue'
+import InboxMultiple from 'vue-material-design-icons/InboxMultiple.vue'
+import Earth from 'vue-material-design-icons/Earth.vue'
+import Delete from 'vue-material-design-icons/Delete.vue'
 
 import ItemListView from './ItemListView.vue'
 import SourceListView from './SourceListView.vue'
@@ -87,6 +94,9 @@ export default {
 		// icons
 		Bookshelf,
 		Inbox,
+		InboxMultiple,
+		Earth,
+		Delete,
 
 		// project components
 		ItemListView,
