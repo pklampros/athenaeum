@@ -149,7 +149,7 @@
 		</div>
 		<AttachmentUploadModal :visible.sync="attachmentModalVisible"
 			:item-id.sync="item.id"
-			@modalClosed="hideAttachmentModal" />
+			@modal-closed="hideAttachmentModal" />
 		<ApproveDialog :visible.sync="hasAttachmentRemoveId"
 			name="Confirmation"
 			message="Are you sure you want to remove this attachment?"

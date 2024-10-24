@@ -56,7 +56,7 @@
 		<SourceListView v-if="isSourceListView()" />
 
 		<EmlImportModal :visible.sync="emlImportModalVisible"
-			@modalClosed="hideSubmitEMLModal" />
+			@modal-closed="hideSubmitEMLModal" />
 	</div>
 </template>
 

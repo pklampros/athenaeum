@@ -241,8 +241,7 @@ export default {
 			})
 		},
 		closeModal() {
-			// eslint-disable-next-line vue/custom-event-name-casing
-			this.$emit('modalClosed')
+			this.$emit('modal-closed')
 		},
 	},
 }
