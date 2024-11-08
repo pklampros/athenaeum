@@ -42,9 +42,6 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			$table->setPrimaryKey(['id']);
 
 			$table->addUniqueConstraint(['name']);
-
-			$table->addForeignKeyConstraint($schema->getTable('users'),
-				['user_id'], ['uid'], [], 'athm_contribn_types_user_id_fk');
 		}
 
 		if (!$schema->hasTable('athm_item_types')) {
@@ -65,9 +62,6 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			$table->setPrimaryKey(['id']);
 
 			$table->addUniqueConstraint(['name']);
-
-			$table->addForeignKeyConstraint($schema->getTable('users'),
-				['user_id'], ['uid'], [], 'athm_item_types_user_id_fk');
 		}
 
 		if (!$schema->hasTable('athm_contributors')) {
@@ -103,9 +97,6 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			$table->setPrimaryKey(['id']);
 
 			$table->addIndex(['user_id'], 'athm_contributors_user_id_idx');
-
-			$table->addForeignKeyConstraint($schema->getTable('users'),
-				['user_id'], ['uid'], [], 'athm_contributors_user_id_fk');
 		}
 
 		if (!$schema->hasTable('athm_fields')) {
@@ -131,9 +122,6 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			$table->setPrimaryKey(['id']);
 
 			$table->addUniqueConstraint(['name']);
-
-			$table->addForeignKeyConstraint($schema->getTable('users'),
-				['user_id'], ['uid'], [], 'athm_fields_user_id_fk');
 		}
 
 		if (!$schema->hasTable('athm_folders')) {
@@ -167,9 +155,6 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			$table->setPrimaryKey(['id']);
 
 			$table->addUniqueConstraint(['path', 'user_id']);
-
-			$table->addForeignKeyConstraint($schema->getTable('users'),
-				['user_id'], ['uid'], [], 'athm_folders_user_id_fk');
 		}
 
 		if (!$schema->hasTable('athm_items')) {
@@ -207,8 +192,6 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 				['item_type_id'], ['id'], [], 'athm_item_type_id_fk');
 			$table->addForeignKeyConstraint($schema->getTable('athm_folders'),
 				['folder_id'], ['id'], [], 'athm_item_folder_id_fk');
-			$table->addForeignKeyConstraint($schema->getTable('users'),
-				['user_id'], ['uid'], [], 'athm_items_user_id_fk');
 		}
 		
 		if (!$schema->hasTable('athm_item_attchm')) {
@@ -241,8 +224,6 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 
 			$table->addForeignKeyConstraint($schema->getTable('athm_items'),
 				['item_id'], ['id'], [], 'athm_item_attchm_item_id_fk');
-			$table->addForeignKeyConstraint($schema->getTable('users'),
-				['user_id'], ['uid'], [], 'athm_attchm_user_id_fk');
 		}
 
 		if (!$schema->hasTable('athm_contributions')) {
@@ -284,8 +265,6 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 				['contributor_id'], ['id'], [], 'athm_contributor_id_fk');
 			$table->addForeignKeyConstraint($schema->getTable('athm_contribn_types'),
 				['contribution_type_id'], ['id'], [], 'athm_contribution_type_id_fk');
-			$table->addForeignKeyConstraint($schema->getTable('users'),
-				['user_id'], ['uid'], [], 'athm_contributions_user_id_fk');
 		}
 		
 		if (!$schema->hasTable('athm_item_rel_types')) {
@@ -306,9 +285,6 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			$table->setPrimaryKey(['id']);
 
 			$table->addUniqueConstraint(['name']);
-
-			$table->addForeignKeyConstraint($schema->getTable('users'),
-				['user_id'], ['uid'], [], 'athm_item_rel_types_user_id_fk');
 		}
 
 		if (!$schema->hasTable('athm_item_item_rel')) {
@@ -342,8 +318,6 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 				['item_id_b'], ['id'], [], 'athm_item_rel_item_id_b_fk');
 			$table->addForeignKeyConstraint($schema->getTable('athm_item_rel_types'),
 				['rel_type_id'], ['id'], [], 'athm_item_rel_type_id_fk');
-			$table->addForeignKeyConstraint($schema->getTable('users'),
-				['user_id'], ['uid'], [], 'athm_item_item_rel_user_id_fk');
 		}
 
 		if (!$schema->hasTable('athm_item_field_values')) {
@@ -380,8 +354,6 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 				['item_id'], ['id'], [], 'athm_itm_fld_values_itm_id_fk');
 			$table->addForeignKeyConstraint($schema->getTable('athm_fields'),
 				['field_id'], ['id'], [], 'athm_itm_fld_values_fld_id_fk');
-			$table->addForeignKeyConstraint($schema->getTable('users'),
-				['user_id'], ['uid'], [], 'athm_itm_fld_values_user_id_fk');
 		}
 
 		if (!$schema->hasTable('athm_tags')) {
@@ -408,9 +380,6 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			$table->setPrimaryKey(['id']);
 
 			$table->addUniqueConstraint(['name', 'user_id']);
-
-			$table->addForeignKeyConstraint($schema->getTable('users'),
-				['user_id'], ['uid'], [], 'athm_tags_user_id_fk');
 		}
 		
 		if (!$schema->hasTable('athm_item_tags')) {
@@ -439,8 +408,6 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 				['item_id'], ['id'], [], 'athm_item_tags_item_id_fk');
 			$table->addForeignKeyConstraint($schema->getTable('athm_tags'),
 				['tag_id'], ['id'], [], 'athm_item_tags_tag_id_fk');
-			$table->addForeignKeyConstraint($schema->getTable('users'),
-				['user_id'], ['uid'], [], 'athm_item_tags_user_id_fk');
 		}
 
 		if (!$schema->hasTable('athm_sources')) {
@@ -483,8 +450,6 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 			$table->setPrimaryKey(['id']);
 			$table->addUniqueConstraint(['uid']);
 			$table->addIndex(['user_id'], 'athm_sources_user_id_idx');
-			$table->addForeignKeyConstraint($schema->getTable('users'),
-				['user_id'], ['uid'], [], 'athm_sources_user_id_fk');
 		}
 
 		if (!$schema->hasTable('athm_item_sources')) {
@@ -514,8 +479,6 @@ class Version000000Date20181013124731 extends SimpleMigrationStep {
 				['item_id'], ['id'], [], 'athm_item_sources_item_id_fk');
 			$table->addForeignKeyConstraint($schema->getTable('athm_sources'),
 				['source_id'], ['id'], [], 'athm_item_sources_source_id_fk');
-			$table->addForeignKeyConstraint($schema->getTable('users'),
-				['user_id'], ['uid'], [], 'athm_item_sources_user_id_fk');
 		}
 		
 		return $schema;
