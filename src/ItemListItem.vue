@@ -31,7 +31,7 @@
 			</NcActionButton>
 			<NcActionButton v-else
 				icon="icon-delete"
-				@click="deleteItem(item)">
+				@click="markItemDeleted">
 				{{ t('athenaeum', 'Delete item') }}
 			</NcActionButton>
 		</template>
@@ -71,6 +71,12 @@ export default {
 					itemId: this.item.id,
 				},
 			}
+		},
+	},
+	methods: {
+		markItemDeleted() {
+			this.$emit('item-change-folder', this.item.id, 'wastebasket',
+				'Item moved to Wastebasket')
 		},
 	},
 }

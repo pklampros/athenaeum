@@ -3,7 +3,7 @@
 	SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
-	<NcAppContentDetails v-if="item">
+	<NcAppContentDetails v-if="item && itemId >= 0">
 		<div style="max-width: 900px; margin: 0 auto;">
 			<div style="position: sticky; padding: 30px 18px;">
 				<h2 :title="item.title"
@@ -187,7 +187,6 @@ import { showError } from '@nextcloud/dialogs'
 import {
 	fetchItemDetails,
 	convertToLibraryItemDetailed,
-	itemChangeFolder,
 	fetchItemAttachments,
 	removeItemAttachment,
 } from './service/ItemService.js'
@@ -301,14 +300,15 @@ export default {
 			detailedItem.authorList = this.item.contributorData.contributors
 			await convertToLibraryItemDetailed(detailedItem)
 			this.itemFolderChanged()
+			this.showToast('Item moved to Library')
 		},
-		async decideLater() {
-			await itemChangeFolder(this.item.id, 'inbox:decide_later')
-			this.itemFolderChanged()
+		decideLater() {
+			this.$emit('item-change-folder', this.item.id, 'inbox:decide_later',
+				'Item moved to Decide later')
 		},
-		async markItemDeleted() {
-			await itemChangeFolder(this.item.id, 'wastebasket')
-			this.itemFolderChanged()
+		markItemDeleted() {
+			this.$emit('item-change-folder', this.item.id, 'wastebasket',
+				'Item moved to Wastebasket')
 		},
 		hasEllipsis(text) {
 			return text.includes('…') || text.includes('...')
@@ -436,8 +436,11 @@ export default {
 			this.attachmentRemoveId = null
 			await removeItemAttachment(attachmentId)
 			this.item.attachments = await fetchItemAttachments(this.item.id)
+			this.showToast('Attachment deleted')
+		},
+		showToast(message) {
 			Toastify({
-				text: 'Attachment deleted',
+				text: message,
 				duration: 1500,
 				close: false,
 				gravity: 'bottom',

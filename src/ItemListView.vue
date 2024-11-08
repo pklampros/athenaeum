@@ -13,11 +13,13 @@
 				:show-details="true">
 				<ItemListItem v-for="item in items"
 					:key="item.id"
-					:item="item" />
+					:item="item"
+					@item-change-folder="itemSendToFolder" />
 			</NcAppContentList>
 		</div>
 		<ItemDetails slot="default"
-			:item-id="currentItemId" />
+			:item-id.sync="currentItemId"
+			@item-change-folder="itemSendToFolder" />
 	</NcAppContent>
 </template>
 
@@ -28,10 +30,18 @@ import { NcAppContent, NcAppContentList } from '@nextcloud/vue'
 import ItemListItem from './ItemListItem.vue'
 import ItemDetails from './ItemDetails.vue'
 
-import { fetchItems, fetchItemSummary } from './service/ItemService.js'
+import {
+	fetchItems,
+	fetchItemSummary,
+	itemChangeFolder,
+} from './service/ItemService.js'
 import { showError } from '@nextcloud/dialogs'
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
+
+import 'toastify-js/src/toastify.css'
+
+import Toastify from 'toastify-js'
 
 export default {
 	name: 'ItemListView',
@@ -125,19 +135,6 @@ export default {
 			}
 			this.updating = false
 		},
-		async deleteItem(item) {
-			try {
-				await axios.delete(generateUrl(`/apps/athenaeum/res/items/${item.id}`))
-				this.items.splice(this.items.indexOf(item), 1)
-				if (this.currentItemId === item.id) {
-					this.currentItemId = null
-				}
-				// showSuccess(t('athenaeum', 'Scholar Item deleted'))
-			} catch (e) {
-				console.error(e)
-				showError(t('athenaeum', 'Could not delete the item'))
-			}
-		},
 		async fetchData() {
 			try {
 				const itemData = await fetchItems(this.currentFolder)
@@ -165,8 +162,46 @@ export default {
 						throw convertAxiosError(error)
 					})
 				}
-				if (!this.currentItemId && this.items.length > 0) {
-					// go directly to the first item
+				this.goToNextAvailableItem()
+			} catch (e) {
+				console.error(e)
+				showError(t('athenaeum', 'Could not fetch items (route mounting failed)'))
+			}
+			this.loading = false
+		},
+		goToNextAvailableItem() {
+			if (!this.currentItemId && this.items.length > 0) {
+				// go directly to the first item
+				this.$router.push({
+					name: 'items_details',
+					params: {
+						folder: this.currentFolder,
+						itemId: this.items[0].id,
+					},
+				})
+			}
+		},
+		itemFolderChanged(itemId) {
+			let removedIdx = null
+			for (const idx in this.items) {
+				if (this.items[idx].id === itemId) {
+					this.items.splice(idx, 1)
+					removedIdx = idx
+					break
+				}
+			}
+			if (this.currentItemId === itemId) {
+				if (removedIdx > 0 && this.items.length >= removedIdx) {
+					// go directly to the next item
+					this.$router.push({
+						name: 'items_details',
+						params: {
+							folder: this.currentFolder,
+							itemId: this.items[removedIdx].id,
+						},
+					})
+				} else if (this.items.length > 0) {
+					// go directly to the next item
 					this.$router.push({
 						name: 'items_details',
 						params: {
@@ -174,12 +209,35 @@ export default {
 							itemId: this.items[0].id,
 						},
 					})
+				} else {
+					this.currentItemId = -1
+					this.$router.push({
+						name: 'items',
+						params: {
+							folder: this.currentFolder,
+						},
+					})
 				}
-			} catch (e) {
-				console.error(e)
-				showError(t('athenaeum', 'Could not fetch items (route mounting failed)'))
 			}
-			this.loading = false
+		},
+		async itemSendToFolder(itemId, newFolder, message) {
+			await itemChangeFolder(itemId, newFolder)
+			this.itemFolderChanged(itemId)
+			this.showToast(message)
+		},
+		showToast(message) {
+			Toastify({
+				text: message,
+				duration: 1500,
+				close: false,
+				gravity: 'bottom',
+				position: 'center',
+				stopOnFocus: true,
+				style: {
+					background: '#00000066',
+					text: 'white',
+				},
+			}).showToast()
 		},
 	},
 }
