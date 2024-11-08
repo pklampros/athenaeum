@@ -117,10 +117,10 @@ class InboxItemService {
 		}
 	}
 
-	public function toLibrary(int $id, array $itemData, \DateTime $dateAdded,
+	public function scholarToFull(int $id, array $itemData, \DateTime $dateAdded,
 		\DateTime $dateModified, string $userId): Item {
 		try {
-			return $this->mapper->inboxToLibrary(
+			return $this->mapper->scholarToFull(
 				$id, $itemData, $dateAdded,
 				$dateModified, $userId
 			);

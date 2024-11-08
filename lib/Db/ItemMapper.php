@@ -514,7 +514,7 @@ class ItemMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function inboxToLibrary(int $id, array $itemData, \DateTime $dateAdded,
+	public function scholarToFull(int $id, array $itemData, \DateTime $dateAdded,
 		\DateTime $dateModified, string $userId): Item {
 		return $this->atomic(function () use (&$id, &$itemData, &$dateAdded,
 			&$dateModified, &$userId) {

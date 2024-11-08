@@ -186,7 +186,7 @@ import AuthorEditList from './AuthorEditList.vue'
 import { showError } from '@nextcloud/dialogs'
 import {
 	fetchItemDetails,
-	convertToLibraryItemDetailed,
+	scholarToFull,
 	fetchItemAttachments,
 	removeItemAttachment,
 } from './service/ItemService.js'
@@ -298,9 +298,9 @@ export default {
 		async addToLibrary() {
 			const detailedItem = this.item
 			detailedItem.authorList = this.item.contributorData.contributors
-			await convertToLibraryItemDetailed(detailedItem)
-			this.itemFolderChanged()
-			this.showToast('Item moved to Library')
+			await scholarToFull(detailedItem)
+			this.$emit('item-change-folder', this.item.id, 'library',
+				'Item moved to Library')
 		},
 		decideLater() {
 			this.$emit('item-change-folder', this.item.id, 'inbox:decide_later',

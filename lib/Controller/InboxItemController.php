@@ -300,11 +300,11 @@ class InboxItemController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 */
-	public function toLibrary(): DataResponse {
+	public function scholarToFull(): DataResponse {
 		$currentTime = new \DateTime;
 		$itemData = $this->request->post['itemData'];
 		$id = $itemData['id'];
-		$response = $this->inboxItemService->toLibrary(
+		$response = $this->inboxItemService->scholarToFull(
 			$id, $itemData, $currentTime, $currentTime,
 			$this->userId);
 		return new DataResponse($response);

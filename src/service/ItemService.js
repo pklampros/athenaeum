@@ -147,8 +147,8 @@ export function itemChangeFolder(id, newFolder) {
  *
  * @param {object} itemData Detailed item information to save
  */
-export function convertToLibraryItemDetailed(itemData) {
-	const url = generateUrl('/apps/athenaeum/inbox_items/toLibrary')
+export function scholarToFull(itemData) {
+	const url = generateUrl('/apps/athenaeum/inbox_items/scholar_to_full')
 	return axios
 		.post(url, {
 			itemData,
