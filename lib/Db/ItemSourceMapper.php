@@ -23,13 +23,15 @@ class ItemSourceMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function find(int $id): ItemSource {
+	public function find(int $id, string $userId): ItemSource {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
 			->from('athm_item_sources')
 			->where($qb->expr()
-				->eq('id', $qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)));
+				->eq('id', $qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()->eq('user_id',
+				$qb->createNamedParameter($userId, IQueryBuilder::PARAM_STR)));
 		return $this->findEntity($qb);
 	}
 
@@ -37,7 +39,7 @@ class ItemSourceMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function findByItemSource(int $itemId, int $sourceId): ItemSource {
+	public function findByItemSource(int $itemId, int $sourceId, string $userId): ItemSource {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
 			->from('athm_item_sources')
@@ -48,16 +50,18 @@ class ItemSourceMapper extends QBMapper {
 			->andWhere($qb->expr()
 				->eq('source_id',
 					$qb->createNamedParameter($sourceId,
-						IQueryBuilder::PARAM_INT)));
+						IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()->eq('user_id',
+				$qb->createNamedParameter($userId, IQueryBuilder::PARAM_STR)));
 		return $this->findEntity($qb);
 	}
 
 	/**
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 */
-	public function itemSourceExists(int $itemId, int $sourceId): bool {
+	public function itemSourceExists(int $itemId, int $sourceId, string $userId): bool {
 		try {
-			$this->findByItemSource($itemId, $sourceId);
+			$this->findByItemSource($itemId, $sourceId, $userId);
 		} catch (DoesNotExistException $ie) {
 			return false;
 		}

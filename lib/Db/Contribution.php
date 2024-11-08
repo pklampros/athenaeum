@@ -15,8 +15,8 @@ use OCP\AppFramework\Db\Entity;
  *
  * @method getItemId(): int
  * @method setItemId(int $itemId): void
- * @method getContributionId(): int
- * @method setContributionId(int $contributorId): void
+ * @method getContributorId(): int
+ * @method setContributorId(int $contributorId): void
  * @method getContributorNameDisplay(): string
  * @method setContributorNameDisplay(string $contributorNameDisplay): void
  * @method getContributionTypeId(): int

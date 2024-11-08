@@ -19,18 +19,22 @@ use OCP\AppFramework\Db\Entity;
  * @method setSourceId(int $sourceId): void
  * @method getExtra(): string
  * @method setExtra(string $extra): void
+ * @method getUserId(): string
+ * @method setUserId(string $userId): void
  */
 class ItemSource extends Entity implements JsonSerializable {
 	protected int $itemId = 0;
 	protected int $sourceId = 0;
 	protected ?string $extra = '';
+	protected string $userId = '';
 
 	public function jsonSerialize(): array {
 		return [
 			'id' => $this->id,
 			'itemId' => $this->itemId,
 			'sourceId' => $this->sourceId,
-			'extra' => $this->extra
+			'extra' => $this->extra,
+			'userId' => $this->userId
 		];
 	}
 }

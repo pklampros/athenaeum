@@ -409,34 +409,6 @@ class ItemMapper extends QBMapper {
 	/**
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
-	 */
-	private function insertContribution(int $itemId, int $contributorId,
-		string $contributorDisplayName, int $contributionTypeId,
-		int $contributionOrder): int {
-		$qb = $this->db->getQueryBuilder();
-		$qb->insert('athm_contributions')
-			->setValue(
-				'item_id',
-				$qb->createNamedParameter($itemId, IQueryBuilder::PARAM_INT))
-			->setValue(
-				'contributor_id',
-				$qb->createNamedParameter($contributorId, IQueryBuilder::PARAM_INT))
-			->setValue(
-				'contributor_name_display',
-				$qb->createNamedParameter($contributorDisplayName))
-			->setValue(
-				'contribution_type_id',
-				$qb->createNamedParameter($contributionTypeId))
-			->setValue(
-				'contribution_order',
-				$qb->createNamedParameter($contributionOrder));
-		$qb->executeStatement();
-		return $qb->getLastInsertId();
-	}
-
-	/**
-	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
-	 * @throws DoesNotExistException
 	 *                               This function should be called within an atomic
 	 */
 	public function insertWithData(string $title, int $itemTypeId, int $folderId,
@@ -478,15 +450,15 @@ class ItemMapper extends QBMapper {
 	/**
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
-	 *                               This function should be called within an atomic
+	 * 
+	 * This function should be called within an atomic
 	 */
-	public function updateWithData(int $itemId, string $title, int $itemTypeId, int $folder,
+	public function updateWithData(int $itemId, string $title, int $itemTypeId,
 		\DateTime $dateModified,
 		array $itemData, string $userId): Item {
 		$item = $this->find($itemId, $userId);
 		$item->setTitle($title);
 		$item->setItemTypeId($itemTypeId);
-		$item->setFolderId($folder);
 		$item->setDateModified($dateModified);
 		$item->setUserId($userId);
 
@@ -523,10 +495,10 @@ class ItemMapper extends QBMapper {
 				$itemData['url'] = $itemData['url'];
 			}
 			$itemTypeId = $this->findItemTypeId('paper');
-			$folderId = $this->findFolderId('library');
 			if (array_key_exists('authorList', $itemData)) {
 				$contributorMapper = new ContributorMapper($this->db, $this->storage,
 					$this->config, $this->appName);
+				$contributionMapper = new ContributionMapper($this->db);
 				foreach ($itemData['authorList'] as $index => $author) {
 					$contributor = new Contributor();
 					$contributor->setFirstName($author['firstName']);
@@ -538,12 +510,17 @@ class ItemMapper extends QBMapper {
 					$contributor->setDateModified($currentDate);
 					$newContributor = $contributorMapper->insertContributor($contributor);
 					
-					$this->insertContribution($id, $newContributor->id,
-						$author['displayName'], 1, $index + 1);
+					$contribution = new Contribution();
+					$contribution->setItemId($id);
+					$contribution->setContributorId($newContributor->id);
+					$contribution->setContributorNameDisplay($author['displayName']);
+					$contribution->setContributionTypeId(1);
+					$contribution->setContributionOrder($index + 1);
+					$newContribution = $contributionMapper->insert($contribution);
 				}
 			}
 			return $this->updateWithData(
-				$id, $itemData['title'], $itemTypeId, $folderId,
+				$id, $itemData['title'], $itemTypeId,
 				$dateModified, $newItemData, $userId
 			);
 			;
@@ -641,7 +618,7 @@ class ItemMapper extends QBMapper {
 				$itemSourceMapper = new ItemSourceMapper($this->db);
 				if (!$itemIsNew) {
 					$itemSourceIsNew = !$itemSourceMapper->itemSourceExists(
-						$item->getId(), $source->getId()
+						$item->getId(), $source->getId(), $userId
 					);
 				}
 				if ($itemSourceIsNew) {
@@ -649,6 +626,7 @@ class ItemMapper extends QBMapper {
 					$itemSource->setItemId($item->getId());
 					$itemSource->setSourceId($source->getId());
 					$itemSource->setExtra($extra);
+					$itemSource->setUserId($userId);
 					$itemSourceMapper->insert($itemSource);
 				}
 				$itemResultData[] = [

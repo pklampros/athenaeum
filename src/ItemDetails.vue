@@ -286,15 +286,6 @@ export default {
 			this.item.contributorData.contributors = newAuthorList
 			this.item.contributorData.type = 'list'
 		},
-		itemFolderChanged() {
-			this.item = null
-			this.$router.push({
-				name: 'items',
-				params: {
-					folder: this.$route.params.folder,
-				},
-			})
-		},
 		async addToLibrary() {
 			const detailedItem = this.item
 			detailedItem.authorList = this.item.contributorData.contributors
