@@ -501,9 +501,14 @@ class ItemMapper extends QBMapper {
 				$contributionMapper = new ContributionMapper($this->db);
 				foreach ($itemData['authorList'] as $index => $author) {
 					$contributor = new Contributor();
-					$contributor->setFirstName($author['firstName']);
-					$contributor->setLastName($author['name']);
-					$contributor->setLastNameIsFullName($author['onlyLastName']);
+					if ($author['onlyLastName']) {
+						$contributor->setLastName($author['name']);
+						$contributor->setLastNameIsFullName($author['onlyLastName']);
+					} else {
+						$contributor->setFirstName($author['firstName']);
+						$contributor->setLastName($author['name']);
+						$contributor->setLastNameIsFullName($author['onlyLastName']);
+					}
 					$contributor->setUserId($userId);
 					$currentDate = new \DateTime;
 					$contributor->setDateAdded($currentDate);
