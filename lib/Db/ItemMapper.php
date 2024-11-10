@@ -292,6 +292,7 @@ class ItemMapper extends QBMapper {
 			->innerJoin('its', 'athm_sources', 's', 's.id = its.source_id')
 			->groupBy('it.id')
 			->orderBy('source_importance', 'DESC')
+			->addOrderBy('date_added', 'DESC')
 			->setFirstResult($offset)
 			->setMaxResults($limit);
 		return [
