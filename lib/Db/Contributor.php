@@ -27,9 +27,9 @@ use OCP\AppFramework\Db\Entity;
  * @method setUserId(string $userId): void
  */
 class Contributor extends Entity implements JsonSerializable {
-	protected string $firstName = '';
+	protected ?string $firstName = '';
 	protected bool $lastNameIsFullName = false;
-	protected ?string $lastName = '';
+	protected string $lastName = '';
 	protected $dateAdded;
 	protected $dateModified;
 	protected string $userId = '';
