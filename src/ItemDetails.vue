@@ -81,8 +81,17 @@
 				<div class="field-label">
 					<h3>URL</h3>
 				</div>
-				<NcRichContenteditable placeholder="URL"
-					:value.sync="item.url" />
+				<div style="display:flex">
+					<NcRichContenteditable style="flex-grow:1"
+						placeholder="URL"
+						:value.sync="item.url" />
+					<NcButton aria-label="Add"
+						@click="attachFromUrl">
+						<template #icon>
+							<PlusCircle :size="25" />
+						</template>
+					</NcButton>
+				</div>
 				<div class="field-label">
 					<h3>Journal</h3>
 				</div>
@@ -107,15 +116,34 @@
 				</div>
 				<ul v-if="item.attachments.length">
 					<NcListItem v-for="attachment in item.attachments"
-						:key="attachment.id"
-						:name="attachment.path"
+						:key="attachment.itemAttachment.id"
+						:name="attachment.itemAttachment.path"
 						:compact="true"
 						:force-display-actions="true">
 						<template #extra-actions>
+							<NcButton v-if="canOpenAttachment(attachment)"
+								v-tooltip="'Open attachment'"
+								aria-label="Open attachment"
+								type="tertiary"
+								:href="attachment.openPath"
+								target="_blank">
+								<template #icon>
+									<OpenInApp :size="20" />
+								</template>
+							</NcButton>
+							<NcButton v-tooltip="'Download attachment'"
+								aria-label="Download attachment"
+								type="tertiary"
+								:href="attachment.downloadPath"
+								download>
+								<template #icon>
+									<DownloadCircle :size="20" />
+								</template>
+							</NcButton>
 							<NcButton v-tooltip="'Remove attachment'"
 								aria-label="Remove attachment"
 								type="tertiary"
-								@click="removeAttachment(attachment.id)">
+								@click="removeAttachment(attachment.itemAttachment.id)">
 								<template #icon>
 									<MinusCircle :size="20" />
 								</template>
@@ -180,6 +208,8 @@ import OpenInNew from 'vue-material-design-icons/OpenInNew.vue'
 import Pencil from 'vue-material-design-icons/Pencil.vue'
 import PlusCircle from 'vue-material-design-icons/PlusCircle.vue'
 import MinusCircle from 'vue-material-design-icons/MinusCircle.vue'
+import DownloadCircle from 'vue-material-design-icons/DownloadCircle.vue'
+import OpenInApp from 'vue-material-design-icons/OpenInApp.vue'
 
 import AuthorEditList from './AuthorEditList.vue'
 
@@ -189,6 +219,7 @@ import {
 	scholarToFull,
 	fetchItemAttachments,
 	removeItemAttachment,
+	attachFromUrl,
 } from './service/ItemService.js'
 
 import AttachmentUploadModal from './AttachmentUploadModal.vue'
@@ -216,6 +247,8 @@ export default {
 		Pencil,
 		PlusCircle,
 		MinusCircle,
+		DownloadCircle,
+		OpenInApp,
 
 		// project components
 		AuthorEditList,
@@ -411,12 +444,19 @@ export default {
 			if (!itemId) return
 			this.item = await this.getItem(itemId)
 		},
+		async attachFromUrl() {
+			await attachFromUrl(this.item.id, this.item.url)
+		},
 		showAttachmentModal() {
 			this.attachmentModalVisible = true
 		},
 		async hideAttachmentModal() {
 			this.attachmentModalVisible = false
 			this.item.attachments = await fetchItemAttachments(this.item.id)
+		},
+		canOpenAttachment(attachment) {
+			return true
+			// return attachment.itemAttachment.mimeType === 'application/pdf'
 		},
 		removeAttachment(attachmentId) {
 			this.attachmentRemoveId = attachmentId

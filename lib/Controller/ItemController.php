@@ -145,6 +145,16 @@ class ItemController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 */
+	public function attachFromUrl(): DataResponse {
+		$itemId = $this->request->post['item_id'];
+		$url = $this->request->post['url'];
+		return new DataResponse($this->itemService->attachFromUrl(
+			$this->userId, (int)$itemId, $url));
+	}
+
+	/**
+	 * @NoAdminRequired
+	 */
 	public function create(string $title, int $itemTypeId, int $folderId): DataResponse {
 		$currentTime = new \DateTime;
 		return new DataResponse($this->itemService->create($title, $itemTypeId, $folderId,

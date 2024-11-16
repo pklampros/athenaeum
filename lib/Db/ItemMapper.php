@@ -13,6 +13,7 @@ use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\Files\IRootFolder;
 use OCP\IConfig;
 use OCP\IDBConnection;
+use Shanept\MimeReader;
 
 /**
  * @template-extends QBMapper<Item>
@@ -110,8 +111,16 @@ class ItemMapper extends QBMapper {
 
 	public function getAttachments($itemId, $userId): array {
 		$itemAttachmentMapper = new ItemAttachmentMapper($this->db, $this->storage);
+		
+		$itemFileAttachments = [];
 
-		return $itemAttachmentMapper->findAllByItem($itemId, $userId);
+		$itemAttachments = $itemAttachmentMapper->findAllByItem(
+			$itemId, $userId);
+		foreach ($itemAttachments as $itemAttachment) {
+			array_push($itemFileAttachments,
+				$this->wrapInItemFileAttachment($itemAttachment));
+		}
+		return $itemFileAttachments;
 	}
 
 	public function removeAttachment($attachmentId, $userId): bool {
@@ -451,7 +460,7 @@ class ItemMapper extends QBMapper {
 	/**
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
-	 * 
+	 *
 	 * This function should be called within an atomic
 	 */
 	public function updateWithData(int $itemId, string $title, int $itemTypeId,
@@ -699,11 +708,63 @@ class ItemMapper extends QBMapper {
 	}
 
 	/**
+	 * @throws DoesNotExistException
+	 */
+	public function attachFromUrl(string $userId, int $itemId, string $url): ItemFileAttachment {
+		$fileName = basename(strtok($url, '?'));
+
+		$fileData = file_get_contents($url);
+
+		$tempFile = tempnam(sys_get_temp_dir(), 'TMP_');
+		file_put_contents($tempFile, $fileData);
+
+		$fileMime = 'application/octet-stream';
+		$headers = implode("\n", $http_response_header);
+		if (preg_match_all("/^content-type\s*:\s*(.*)$/mi", $headers, $matches)) {
+			$fileMime = end($matches[1]);
+		}
+		if ($fileMime == 'application/octet-stream') {
+			$mime = new MimeReader($tempFile);
+			$fileMime = $mime->getType();
+		}
+
+		$pathInfo = pathinfo($fileName);
+		if (!array_key_exists('extension', $pathInfo) &&
+			$fileMime == 'application/pdf') {
+			$fileName = $fileName . '.' . 'pdf';
+		}
+
+		return $this->attachFile($itemId, $fileName, $fileMime,
+			strlen($fileData), $fileData, $userId);
+	}
+
+	private function wrapInItemFileAttachment(ItemAttachment $itemAttachment): ItemFileAttachment {
+		$itemFileAttachment = new ItemFileAttachment();
+		$itemFileAttachment->setItemAttachment($itemAttachment);
+		$itemFileAttachment->setDownloadPath(
+			'/remote.php/dav/files/' . $itemAttachment->getUserId() .
+			'/Athenaeum' . $itemAttachment->getPath());
+
+		$itemFileName = basename($itemAttachment->getPath());
+
+		$fsh = new FilesystemHandler($this->storage);
+		$itemAttachmentsfolder = $fsh->getItemAttachmentsFolder(
+			$itemAttachment->getUserId(), $itemAttachment->getItemId());
+		
+		$fileId = $itemAttachmentsfolder->get($itemFileName)->getId(); 
+
+		$itemFileAttachment->setOpenPath(
+			'/apps/files/files/' . $fileId .
+			'?dir=/Athenaeum' . $itemAttachmentsfolder->getPath());
+		return $itemFileAttachment;
+	}
+
+	/**
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
 	public function attachFile(int $itemId, string $fileName, string $fileMime,
-		int $fileSize, $fileData, string $userId): ItemAttachment {
+		int $fileSize, $fileData, string $userId): ItemFileAttachment {
 		return $this->atomic(function () use (&$itemId, &$fileName, &$fileMime,
 			&$fileSize, &$fileData, &$userId) {
 
@@ -727,9 +788,14 @@ class ItemMapper extends QBMapper {
 						// file already exists, keep trying names
 					}
 				}
-				$path_info = pathinfo($fileName);
-				$givenFileName = $path_info['filename'] . '_' . $dupeCount .
-								 '.' . $path_info['extension'];
+				$pathInfo = pathinfo($fileName);
+
+				if (array_key_exists('extension', $pathInfo)) {
+					$givenFileName = $pathInfo['filename'] . '_' . $dupeCount .
+									 '.' . $pathInfo['extension'];
+				} else {
+					$givenFileName = $pathInfo['filename'] . '_' . $dupeCount;
+				}
 			}
 
 			$itemAttachment = new ItemAttachment();
@@ -746,12 +812,9 @@ class ItemMapper extends QBMapper {
 				throw new AttachmentNotAddedError();
 			}
 
-			// $rqst = json_encode($itemAttachment);
-			// throw new \Exception( "\$rqst = $rqst" );
-
-			return $newItemAttachment;
+			return $this->wrapInItemFileAttachment($newItemAttachment);
+			$this->saveToJSONOnModify($itemId, $userId);
 		}, $this->db);
-		$this->saveToJSONOnModify($itemId, $userId);
 		return null;
 	}
 }

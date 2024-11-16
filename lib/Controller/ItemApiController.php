@@ -95,6 +95,16 @@ class ItemApiController extends ApiController {
 	 * @NoCSRFRequired
 	 * @NoAdminRequired
 	 */
+	public function attachFromUrl(string $itemId, string $url): DataResponse {
+		$decodedURL = urldecode(urldecode($url));
+		return new DataResponse($this->userId, $itemId, $decodedURL);
+	}
+
+	/**
+	 * @CORS
+	 * @NoCSRFRequired
+	 * @NoAdminRequired
+	 */
 	public function update(int $id, string $title, int $itemTypeId, int $folderId, \DateTime $dateAdded,
 		\DateTime $dateModified): DataResponse {
 		return $this->handleNotFound(function () use ($id, $title, $itemTypeId, $folderId,

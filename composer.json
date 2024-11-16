@@ -41,7 +41,8 @@
 	},
 	"require": {
 		"ext-mailparse": "*",
-		"php-mime-mail-parser/php-mime-mail-parser": "^8.0"
+		"php-mime-mail-parser/php-mime-mail-parser": "^8.0",
+		"shanept/mime-sniffer": "^2.0"
 	},
 	"autoload-dev": {
 		"psr-4": {

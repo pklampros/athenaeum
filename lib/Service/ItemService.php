@@ -157,6 +157,15 @@ class ItemService {
 		}
 	}
 
+	public function attachFromUrl(string $userId, int $itemId, string $url): ItemAttachment {
+		try {
+			return $this->mapper->attachFromUrl($userId, $itemId, $url);
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
+	}
+
+
 	public function createInboxItem(string $url, string $title, string $authors,
 		string $journal, string $published,
 		bool $read, int $importance, bool $needsReview,

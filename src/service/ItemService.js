@@ -239,3 +239,27 @@ export async function attachFiles(files, itemId) {
 	}
 	return files
 }
+
+/**
+ *
+ * @param {number} itemId The item to attach the file to
+ * @param {string} fileURL The url to download and attach
+ */
+export function attachFromUrl(itemId, fileURL) {
+	const url = generateUrl('/apps/athenaeum/item/attachFromUrl')
+
+	const formData = new FormData()
+	formData.append('item_id', itemId)
+	formData.append('url', fileURL)
+	return axios
+		.post(url, formData,
+			{
+				headers: {
+					'Content-Type': 'multipart/form-data',
+				},
+			})
+		.then((resp) => resp.data)
+		.catch((error) => {
+			throw convertAxiosError(error)
+		})
+}

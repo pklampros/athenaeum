@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c50c0e9d18fa436708d7405cedb7c0b6",
+    "content-hash": "dce547a30b205a96b4772b5bd16d87ac",
     "packages": [
         {
             "name": "php-mime-mail-parser/php-mime-mail-parser",
@@ -90,6 +90,48 @@
                 "source": "https://github.com/php-mime-mail-parser/php-mime-mail-parser/tree/8.0.4"
             },
             "time": "2024-09-11T12:19:09+00:00"
+        },
+        {
+            "name": "shanept/mime-sniffer",
+            "version": "2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/shanept/MimeSniffer.git",
+                "reference": "0bccae6e8e7f4d047d6482bc523347e21086dd7b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/shanept/MimeSniffer/zipball/0bccae6e8e7f4d047d6482bc523347e21086dd7b",
+                "reference": "0bccae6e8e7f4d047d6482bc523347e21086dd7b",
+                "shasum": ""
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.1",
+                "mikey179/vfsstream": "^1.6",
+                "phpunit/phpunit": "<=4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Shanept\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Shane Thompson",
+                    "email": "shanept@iinet.net.au"
+                }
+            ],
+            "description": "Sniffs the MIME type of many common types of files.",
+            "support": {
+                "issues": "https://github.com/shanept/MimeSniffer/issues",
+                "source": "https://github.com/shanept/MimeSniffer/tree/2.0.1"
+            },
+            "time": "2023-06-12T17:37:43+00:00"
         }
     ],
     "packages-dev": [

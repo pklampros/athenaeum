@@ -66,6 +66,9 @@ return [
 		['name' => 'item#attachFiles',
 			'url' => '/item/attachFiles',
 			'verb' => 'POST'],
+		['name' => 'item#attachFromUrl',
+			'url' => '/item/attachFromUrl',
+			'verb' => 'POST'],
 
 		['name' => 'contributor_api#findByFullFirstName',
 			'url' => '/api/0.1/contributors/firstName/{firstName}',
@@ -78,8 +81,10 @@ return [
 			'url' => '/api/0.1/contributions/itemId/{itemId}/contributorId/{contributorId}',
 			'verb' => 'GET'],
 
-		['name' => 'item_api#preflighted_cors', 'url' => '/api/0.1/{path}',
-			'verb' => 'OPTIONS', 'requirements' => ['path' => '.+']],
+		['name' => 'item_api#preflighted_cors',
+			'url' => '/api/0.1/{path}',
+			'verb' => 'OPTIONS',
+			'requirements' => ['path' => '.+']],
 
 		['name' => 'contributor#findSimilar',
 			'url' => '/contributors/similar',
@@ -88,15 +93,29 @@ return [
 			'url' => '/contributors/search',
 			'verb' => 'POST'],
 		
-		['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
+		['name' => 'page#index',
+			'url' => '/',
+			'verb' => 'GET'],
 
-		['name' => 'page#items', 'url' => '/items/{folder}', 'verb' => 'GET'],
-		['name' => 'page#itemsDetails', 'url' => '/items/{folder}/{itemId}', 'verb' => 'GET'],
+		['name' => 'page#items',
+			'url' => '/items/{folder}',
+			'verb' => 'GET'],
+		['name' => 'page#itemsDetails',
+			'url' => '/items/{folder}/{itemId}',
+			'verb' => 'GET'],
 
-		['name' => 'page#sources', 'url' => '/sources', 'verb' => 'GET'],
-		['name' => 'page#sourcesDetails', 'url' => '/sources/{sourceId}', 'verb' => 'GET'],
+		['name' => 'page#sources',
+			'url' => '/sources',
+			'verb' => 'GET'],
+		['name' => 'page#sourcesDetails',
+			'url' => '/sources/{sourceId}',
+			'verb' => 'GET'],
 
-		['name' => 'app_info_api#maxFileUploads', 'url' => '/api/0.1/app_info/max_file_uploads', 'verb' => 'GET'],
-		['name' => 'user_info_api#userInit', 'url' => '/api/0.1/app_info/user_init', 'verb' => 'GET'],
+		['name' => 'app_info_api#maxFileUploads',
+			'url' => '/api/0.1/app_info/max_file_uploads',
+			'verb' => 'GET'],
+		['name' => 'user_info_api#userInit',
+			'url' => '/api/0.1/app_info/user_init',
+			'verb' => 'GET'],
 	]
 ];
