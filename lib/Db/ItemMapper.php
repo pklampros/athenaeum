@@ -707,19 +707,127 @@ class ItemMapper extends QBMapper {
 		$itemDatafolder->newFile($fileName, json_encode($itemData));
 	}
 
+	// https://stackoverflow.com/a/47618721
+	function getAbsoluteURL($to, $from = null) {
+		$arTarget = parse_url($to);
+		$arSource = parse_url($from);
+		$targetPath = isset($arTarget['path']) ? $arTarget['path'] : '';
+	
+		if (isset($arTarget['host'])) {
+			if (!isset($arTarget['scheme'])) {
+				$proto = isset($arSource['scheme']) ? "{$arSource['scheme']}://" : '//';
+			} else {
+				$proto = "{$arTarget['scheme']}://";
+			}
+			$baseUrl = "{$proto}{$arTarget['host']}" . (isset($arTarget['port']) ? ":{$arTarget['port']}" : '');
+		} else {
+			if (isset($arSource['host'])) {
+				$proto = isset($arSource['scheme']) ? "{$arSource['scheme']}://" : '//';
+				$baseUrl = "{$proto}{$arSource['host']}" . (isset($arSource['port']) ? ":{$arSource['port']}" : '');
+			} else {
+				$baseUrl = '';
+			}
+			$arPath = [];
+	
+			if ((empty($targetPath) || $targetPath[0] !== '/') && !empty($arSource['path'])) {
+				$arTargetPath = explode('/', $targetPath);
+				if (empty($arSource['path'])) {
+					$arPath = [];
+				} else {
+					$arPath = explode('/', $arSource['path']);
+					array_pop($arPath);
+				}
+				$len = count($arPath);
+				foreach ($arTargetPath as $idx => $component) {
+					if ($component === '..') {
+						if ($len > 1) {
+							$len--;
+							array_pop($arPath);
+						}
+					} elseif ($component !== '.') {
+						$len++;
+						array_push($arPath, $component);
+					}
+				}
+				$targetPath = implode('/', $arPath);
+			}
+		}
+	
+		return $baseUrl . $targetPath;
+	}
+
+	// https://stackoverflow.com/a/37588381
+	public function getUrlContentsAndFinalUrl(&$url, &$response_header, &$response_code) {
+		$maxDepth = 5;
+		$depth = 1;
+		$header = null;
+		do {
+			if ($header == null) {
+				$context = stream_context_create(
+					[
+						'http' => [
+							'follow_location' => false,
+						],
+					]
+				);
+			} else {
+				$context = stream_context_create(
+					[
+						'http' => [
+							'follow_location' => false,
+							'header' => $header,
+						],
+					]
+				);
+			}
+
+			$result = file_get_contents($url, false, $context);
+
+			$pattern = "/^Location:\s*(.*)$/i";
+			$location_headers = preg_grep($pattern, $http_response_header);
+			$response_header = $http_response_header;
+
+            if( preg_match( "#HTTP/[0-9\.]+\s+([0-9]+)#", $http_response_header[0], $out ) )
+				$response_code = intval($out[1]);
+
+			if ($response_code == 403 && $header == null) {
+				// Forbidden, try to set an agent
+				$header = "Accept-language: en\r\n" .
+				   "User-Agent: Mozilla/5.0 (X11; Linux x86_64) " .
+				   "AppleWebKit/537.36 (KHTML, like Gecko) " .
+				   "Chrome/130.0.0.0 Safari/537.36\r\n";
+				$repeat = true;
+			} else if (!empty($location_headers) &&
+				preg_match($pattern, array_values($location_headers)[0], $matches)) {
+				$url = $this->getAbsoluteURL($matches[1], $url);
+				$repeat = $depth < $maxDepth;
+				$depth = $depth + 1;
+			} else {
+				$repeat = false;
+			}
+		} while ($repeat);
+
+		return $result;
+	}
+
 	/**
 	 * @throws DoesNotExistException
 	 */
-	public function attachFromUrl(string $userId, int $itemId, string $url): ItemFileAttachment {
-		$fileName = basename(strtok($url, '?'));
-
-		$fileData = file_get_contents($url);
+	public function attachFromUrl(string $userId, int $itemId, string $url): ItemFileAttachment {		
+		$response_header = array();
+		$response_code = 0;
+		$fileData = $this->getUrlContentsAndFinalUrl($url, $response_header, $response_code);
+		
+		if ($response_code != 200) {
+			throw new DoesNotExistException("Error fetching file");
+		}
+		$fileName = basename(strtok(strtok($url, '?'), '#'));
 
 		$tempFile = tempnam(sys_get_temp_dir(), 'TMP_');
 		file_put_contents($tempFile, $fileData);
 
 		$fileMime = 'application/octet-stream';
-		$headers = implode("\n", $http_response_header);
+		$headers = implode("\n", $response_header);
 		if (preg_match_all("/^content-type\s*:\s*(.*)$/mi", $headers, $matches)) {
 			$fileMime = end($matches[1]);
 		}
@@ -730,12 +838,13 @@ class ItemMapper extends QBMapper {
 
 		$pathInfo = pathinfo($fileName);
 		if (!array_key_exists('extension', $pathInfo) &&
-			$fileMime == 'application/pdf') {
+			str_starts_with($fileMime, 'application/pdf')) {
 			$fileName = $fileName . '.' . 'pdf';
 		}
 
 		return $this->attachFile($itemId, $fileName, $fileMime,
 			strlen($fileData), $fileData, $userId);
+	
 	}
 
 	private function wrapInItemFileAttachment(ItemAttachment $itemAttachment): ItemFileAttachment {
@@ -746,16 +855,15 @@ class ItemMapper extends QBMapper {
 			'/Athenaeum' . $itemAttachment->getPath());
 
 		$itemFileName = basename($itemAttachment->getPath());
+		$itemDir = dirname($itemAttachment->getPath());
 
 		$fsh = new FilesystemHandler($this->storage);
 		$itemAttachmentsfolder = $fsh->getItemAttachmentsFolder(
 			$itemAttachment->getUserId(), $itemAttachment->getItemId());
 		
-		$fileId = $itemAttachmentsfolder->get($itemFileName)->getId(); 
+		$fileId = $itemAttachmentsfolder->get($itemFileName)->getId();
 
-		$itemFileAttachment->setOpenPath(
-			'/apps/files/files/' . $fileId .
-			'?dir=/Athenaeum' . $itemAttachmentsfolder->getPath());
+		$itemFileAttachment->setOpenPath('/f/' . $fileId);
 		return $itemFileAttachment;
 	}
 
@@ -812,8 +920,9 @@ class ItemMapper extends QBMapper {
 				throw new AttachmentNotAddedError();
 			}
 
-			return $this->wrapInItemFileAttachment($newItemAttachment);
 			$this->saveToJSONOnModify($itemId, $userId);
+			
+			return $this->wrapInItemFileAttachment($newItemAttachment);
 		}, $this->db);
 		return null;
 	}

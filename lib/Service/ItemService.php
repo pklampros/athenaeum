@@ -9,7 +9,7 @@ namespace OCA\Athenaeum\Service;
 use Exception;
 
 use OCA\Athenaeum\Db\Item;
-use OCA\Athenaeum\Db\ItemAttachment;
+use OCA\Athenaeum\Db\ItemFileAttachment;
 
 use OCA\Athenaeum\Db\ItemDetails;
 use OCA\Athenaeum\Db\ItemMapper;
@@ -92,7 +92,7 @@ class ItemService {
 	}
 
 	public function attachFile(int $itemId, string $fileName, string $fileMime,
-		int $fileSize, $fileData, string $userId): ItemAttachment {
+		int $fileSize, $fileData, string $userId): ItemFileAttachment {
 		try {
 			return $this->mapper->attachFile($itemId, $fileName, $fileMime, $fileSize,
 				$fileData, $userId);
@@ -157,7 +157,7 @@ class ItemService {
 		}
 	}
 
-	public function attachFromUrl(string $userId, int $itemId, string $url): ItemAttachment {
+	public function attachFromUrl(string $userId, int $itemId, string $url): ItemFileAttachment {
 		try {
 			return $this->mapper->attachFromUrl($userId, $itemId, $url);
 		} catch (Exception $e) {
