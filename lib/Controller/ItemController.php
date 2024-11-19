@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace OCA\Athenaeum\Controller;
 
 use OCA\Athenaeum\AppInfo\Application;
+use OCA\Athenaeum\Error\UrlFetchError;
 use OCA\Athenaeum\Service\ItemService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
@@ -148,8 +149,13 @@ class ItemController extends Controller {
 	public function attachFromUrl(): DataResponse {
 		$itemId = $this->request->post['item_id'];
 		$url = $this->request->post['url'];
-		return new DataResponse($this->itemService->attachFromUrl(
-			$this->userId, (int)$itemId, $url));
+		try {
+			return new DataResponse($this->itemService->attachFromUrl(
+				$this->userId, (int)$itemId, $url));
+		} catch (UrlFetchError $e) {
+			$message = ['message' => $e->getMessage()];
+			return new DataResponse($message, Http::STATUS_INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	/**

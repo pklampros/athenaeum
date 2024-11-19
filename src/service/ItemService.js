@@ -259,7 +259,4 @@ export function attachFromUrl(itemId, fileURL) {
 				},
 			})
 		.then((resp) => resp.data)
-		.catch((error) => {
-			throw convertAxiosError(error)
-		})
 }

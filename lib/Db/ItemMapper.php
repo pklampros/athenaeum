@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 namespace OCA\Athenaeum\Db;
 
+use OCA\Athenaeum\Error\UrlFetchError;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\QBMapper;
 use OCP\AppFramework\Db\TTransactional;
@@ -708,7 +709,7 @@ class ItemMapper extends QBMapper {
 	}
 
 	// https://stackoverflow.com/a/47618721
-	function getAbsoluteURL($to, $from = null) {
+	public function getAbsoluteURL($to, $from = null) {
 		$arTarget = parse_url($to);
 		$arSource = parse_url($from);
 		$targetPath = isset($arTarget['path']) ? $arTarget['path'] : '';
@@ -781,23 +782,24 @@ class ItemMapper extends QBMapper {
 				);
 			}
 
-			$result = file_get_contents($url, false, $context);
+			$result = @file_get_contents($url, false, $context);
 
 			$pattern = "/^Location:\s*(.*)$/i";
 			$location_headers = preg_grep($pattern, $http_response_header);
 			$response_header = $http_response_header;
 
-            if( preg_match( "#HTTP/[0-9\.]+\s+([0-9]+)#", $http_response_header[0], $out ) )
+			if (preg_match("#HTTP/[0-9\.]+\s+([0-9]+)#", $http_response_header[0], $out)) {
 				$response_code = intval($out[1]);
+			}
 
 			if ($response_code == 403 && $header == null) {
 				// Forbidden, try to set an agent
 				$header = "Accept-language: en\r\n" .
-				   "User-Agent: Mozilla/5.0 (X11; Linux x86_64) " .
-				   "AppleWebKit/537.36 (KHTML, like Gecko) " .
+				   'User-Agent: Mozilla/5.0 (X11; Linux x86_64) ' .
+				   'AppleWebKit/537.36 (KHTML, like Gecko) ' .
 				   "Chrome/130.0.0.0 Safari/537.36\r\n";
 				$repeat = true;
-			} else if (!empty($location_headers) &&
+			} elseif (!empty($location_headers) &&
 				preg_match($pattern, array_values($location_headers)[0], $matches)) {
 				$url = $this->getAbsoluteURL($matches[1], $url);
 				$repeat = $depth < $maxDepth;
@@ -811,15 +813,15 @@ class ItemMapper extends QBMapper {
 	}
 
 	/**
-	 * @throws DoesNotExistException
+	 * @throws UrlFetchError
 	 */
-	public function attachFromUrl(string $userId, int $itemId, string $url): ItemFileAttachment {		
-		$response_header = array();
+	public function attachFromUrl(string $userId, int $itemId, string $url): ItemFileAttachment {
+		$response_header = [];
 		$response_code = 0;
 		$fileData = $this->getUrlContentsAndFinalUrl($url, $response_header, $response_code);
 		
 		if ($response_code != 200) {
-			throw new DoesNotExistException("Error fetching file");
+			throw new UrlFetchError('Error fetching file (error: ' . $response_code . ')');
 		}
 		$fileName = basename(strtok(strtok($url, '?'), '#'));
 

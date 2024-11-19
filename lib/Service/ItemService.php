@@ -9,9 +9,9 @@ namespace OCA\Athenaeum\Service;
 use Exception;
 
 use OCA\Athenaeum\Db\Item;
-use OCA\Athenaeum\Db\ItemFileAttachment;
-
 use OCA\Athenaeum\Db\ItemDetails;
+
+use OCA\Athenaeum\Db\ItemFileAttachment;
 use OCA\Athenaeum\Db\ItemMapper;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
@@ -158,11 +158,7 @@ class ItemService {
 	}
 
 	public function attachFromUrl(string $userId, int $itemId, string $url): ItemFileAttachment {
-		try {
-			return $this->mapper->attachFromUrl($userId, $itemId, $url);
-		} catch (Exception $e) {
-			$this->handleException($e);
-		}
+		return $this->mapper->attachFromUrl($userId, $itemId, $url);
 	}
 
 

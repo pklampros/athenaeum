@@ -446,6 +446,12 @@ export default {
 		},
 		async attachFromUrl() {
 			await attachFromUrl(this.item.id, this.item.url)
+				.catch(error => {
+					this.showToast('Could not fetch URL: ' + error.message, 3000)
+				})
+				.then(async () => {
+					this.item.attachments = await fetchItemAttachments(this.item.id)
+				})
 		},
 		showAttachmentModal() {
 			this.attachmentModalVisible = true
@@ -469,10 +475,10 @@ export default {
 			this.item.attachments = await fetchItemAttachments(this.item.id)
 			this.showToast('Attachment deleted')
 		},
-		showToast(message) {
+		showToast(message, duration = 1500) {
 			Toastify({
 				text: message,
-				duration: 1500,
+				duration,
 				close: false,
 				gravity: 'bottom',
 				position: 'center',
