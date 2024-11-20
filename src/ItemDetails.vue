@@ -450,6 +450,7 @@ export default {
 					this.showToast('Could not fetch URL: ' + error.message, 3000)
 				})
 				.then(async () => {
+					this.showToast('New attachment created', 3000)
 					this.item.attachments = await fetchItemAttachments(this.item.id)
 				})
 		},
