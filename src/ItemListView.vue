@@ -7,7 +7,7 @@
 		<div slot="list"
 			class="header__button">
 			<div id="toptitle">
-				<h2>Item</h2>
+				<h2>Item ({{ itemOffset }} - {{ items.length }} / {{ totalItems }})</h2>
 			</div>
 			<NcAppContentList class="main-items-list"
 				:show-details="true">
@@ -57,6 +57,8 @@ export default {
 	data() {
 		return {
 			items: [],
+			totalItems: 0,
+			itemOffset: 0,
 			updating: false,
 			loading: true,
 		}
@@ -139,6 +141,8 @@ export default {
 			try {
 				const itemData = await fetchItems(this.currentFolder)
 				this.items = itemData.items
+				this.itemOffset = itemData.offset
+				this.totalItems = itemData.totalCount
 				for (const i in this.items) {
 					fetchItemSummary(this.items[i].id).then((resp) => {
 						const contributions = resp.data.contributions

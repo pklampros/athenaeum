@@ -307,6 +307,7 @@ class ItemMapper extends QBMapper {
 			->setMaxResults($limit);
 		return [
 			'items' => $this->findEntities($qb),
+			'offset' => $offset,
 			'totalCount' => $totalCount
 		];
 	}
