@@ -446,12 +446,12 @@ export default {
 		},
 		async attachFromUrl() {
 			await attachFromUrl(this.item.id, this.item.url)
-				.catch(error => {
-					this.showToast('Could not fetch URL: ' + error.message, 3000)
-				})
 				.then(async () => {
 					this.showToast('New attachment created', 3000)
 					this.item.attachments = await fetchItemAttachments(this.item.id)
+				})
+				.catch(error => {
+					this.showToast('Could not fetch URL: ' + error.message, 3000)
 				})
 		},
 		showAttachmentModal() {

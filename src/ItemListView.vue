@@ -7,7 +7,8 @@
 		<div slot="list"
 			class="header__button">
 			<div id="toptitle">
-				<h2>Item ({{ itemOffset }} - {{ items.length }} / {{ totalItems }})</h2>
+				<h2>Item ({{ itemOffset }} - {{ items.length }} /
+					{{ totalItems }})</h2>
 			</div>
 			<NcAppContentList class="main-items-list"
 				:show-details="true">
