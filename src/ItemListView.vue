@@ -5,10 +5,12 @@
 	-->
 	<NcAppContent>
 		<div slot="list"
-			class="header__button">
+			class="items-list">
 			<div id="toptitle">
-				<h2>Item ({{ itemOffset }} - {{ items.length }} /
-					{{ totalItems }})</h2>
+				<h2>
+					Item ({{ itemOffset }} - {{ items.length }} /
+					{{ totalItems }})
+				</h2>
 			</div>
 			<NcAppContentList class="main-items-list"
 				:show-details="true">
@@ -17,6 +19,22 @@
 					:item="item"
 					@item-change-folder="itemSendToFolder" />
 			</NcAppContentList>
+			<div class="items-footer">
+				<NcButton aria-label="Previous page"
+					style="flex:1"
+					@click="prevPage">
+					<template #icon>
+						<ChevronLeft :size="18" />
+					</template>
+				</NcButton>
+				<NcButton aria-label="Next page"
+					style="flex:1"
+					@click="nextPage">
+					<template #icon>
+						<ChevronRight :size="18" />
+					</template>
+				</NcButton>
+			</div>
 		</div>
 		<ItemDetails slot="default"
 			:item-id.sync="currentItemId"
@@ -26,7 +44,11 @@
 
 <script>
 
-import { NcAppContent, NcAppContentList } from '@nextcloud/vue'
+import {
+	NcAppContent,
+	NcAppContentList,
+	NcButton,
+} from '@nextcloud/vue'
 
 import ItemListItem from './ItemListItem.vue'
 import ItemDetails from './ItemDetails.vue'
@@ -40,6 +62,9 @@ import { showError } from '@nextcloud/dialogs'
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
 
+import ChevronLeft from 'vue-material-design-icons/ChevronLeft.vue'
+import ChevronRight from 'vue-material-design-icons/ChevronRight.vue'
+
 import 'toastify-js/src/toastify.css'
 
 import Toastify from 'toastify-js'
@@ -50,6 +75,11 @@ export default {
 		// components
 		NcAppContent,
 		NcAppContentList,
+		NcButton,
+
+		// icons
+		ChevronLeft,
+		ChevronRight,
 
 		// project components
 		ItemListItem,
@@ -244,6 +274,13 @@ export default {
 				},
 			}).showToast()
 		},
+		nextPage() {
+			console.log("next page!")
+		},
+		prevPage() {
+
+			console.log("prev page!")
+		}
 	},
 }
 </script>
@@ -264,10 +301,21 @@ input[type='text'] {
 	overflow: auto;
 }
 
-.header__button {
+.items-list {
 	display: flex;
-	flex: 1 0 0;
 	flex-direction: column;
-	height: calc(100vh - var(--header-height));
+	height: 100%;
+}
+
+.main-items-list {
+	min-height: inherit;
+	max-height: inherit;
+}
+
+.items-footer {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	padding: 0.5em;
 }
 </style>
