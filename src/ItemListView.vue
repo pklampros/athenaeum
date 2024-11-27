@@ -8,7 +8,7 @@
 			class="items-list">
 			<div id="toptitle">
 				<h2>
-					Item ({{ itemOffset }} - {{ items.length }} /
+					Item ({{ itemOffset }} - {{ itemOffset + items.length }} /
 					{{ totalItems }})
 				</h2>
 			</div>
@@ -22,6 +22,7 @@
 			<div class="items-footer">
 				<NcButton aria-label="Previous page"
 					style="flex:1"
+					:disabled="itemOffset == 0"
 					@click="prevPage">
 					<template #icon>
 						<ChevronLeft :size="18" />
@@ -29,6 +30,7 @@
 				</NcButton>
 				<NcButton aria-label="Next page"
 					style="flex:1"
+					:disabled="(itemOffset + items.length) >= totalItems"
 					@click="nextPage">
 					<template #icon>
 						<ChevronRight :size="18" />
@@ -90,6 +92,7 @@ export default {
 			items: [],
 			totalItems: 0,
 			itemOffset: 0,
+			itemLimit: 50,
 			updating: false,
 			loading: true,
 		}
@@ -170,7 +173,13 @@ export default {
 		},
 		async fetchData() {
 			try {
-				const itemData = await fetchItems(this.currentFolder)
+				const newOffset = this.$route.query.itemOffset
+					? this.$route.query.itemOffset
+					: 0
+				const itemData = await fetchItems(
+					this.currentFolder,
+					newOffset,
+				)
 				this.items = itemData.items
 				this.itemOffset = itemData.offset
 				this.totalItems = itemData.totalCount
@@ -207,12 +216,13 @@ export default {
 		goToNextAvailableItem() {
 			if (!this.currentItemId && this.items.length > 0) {
 				// go directly to the first item
-				this.$router.push({
+				this.$router.replace({
 					name: 'items_details',
 					params: {
 						folder: this.currentFolder,
 						itemId: this.items[0].id,
 					},
+					query: this.$route.query,
 				})
 			}
 		},
@@ -228,29 +238,32 @@ export default {
 			if (this.currentItemId === itemId) {
 				if (removedIdx > 0 && this.items.length >= removedIdx) {
 					// go directly to the next item
-					this.$router.push({
+					this.$router.replace({
 						name: 'items_details',
 						params: {
 							folder: this.currentFolder,
 							itemId: this.items[removedIdx].id,
 						},
+						query: this.$route.query,
 					})
 				} else if (this.items.length > 0) {
 					// go directly to the next item
-					this.$router.push({
+					this.$router.replace({
 						name: 'items_details',
 						params: {
 							folder: this.currentFolder,
 							itemId: this.items[0].id,
 						},
+						query: this.$route.query,
 					})
 				} else {
 					this.currentItemId = -1
-					this.$router.push({
+					this.$router.replace({
 						name: 'items',
 						params: {
 							folder: this.currentFolder,
 						},
+						query: this.$route.query,
 					})
 				}
 			}
@@ -274,13 +287,20 @@ export default {
 				},
 			}).showToast()
 		},
-		nextPage() {
-			console.log("next page!")
-		},
 		prevPage() {
-
-			console.log("prev page!")
-		}
+			const newOffset = this.itemOffset - this.itemLimit < 0
+				? 0
+				: this.itemOffset - this.itemLimit
+			this.$router.replace({ query: { itemOffset: newOffset } })
+			this.fetchData()
+		},
+		nextPage() {
+			const newOffset = this.itemOffset + this.itemLimit > this.totalItems
+				? this.itemOffset
+				: this.itemOffset + this.itemLimit
+			this.$router.replace({ query: { itemOffset: newOffset } })
+			this.fetchData()
+		},
 	},
 }
 </script>
