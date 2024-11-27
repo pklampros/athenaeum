@@ -70,6 +70,7 @@ export default {
 				params: {
 					itemId: this.item.id,
 				},
+				query: this.$route.query,
 			}
 		},
 	},
