@@ -5,16 +5,67 @@
 	-->
 	<NcAppContent>
 		<div slot="list"
-			class="header__button">
+			class="sources-list">
 			<div id="toptitle">
 				<h2>Source</h2>
 			</div>
-			<NcAppContentList class="main-items-list"
+			<NcAppContentList class="main-sources-list"
 				:show-details="true">
 				<SourceListItem v-for="source in sources"
 					:key="source.id"
 					:source="source" />
 			</NcAppContentList>
+
+			<div class="sources-footer">
+				<NcButton aria-label="First page"
+					style="flex:1"
+					:disabled="sourceOffset == 0"
+					@click="firstPage">
+					<template #icon>
+						<PageFirst :size="18" />
+					</template>
+				</NcButton>
+				<NcButton aria-label="Back multiple pages"
+					style="flex:1"
+					:disabled="sourceOffset == 0"
+					@click="backMultiplePages">
+					<template #icon>
+						<ChevronDoubleLeft :size="18" />
+					</template>
+				</NcButton>
+				<NcButton aria-label="Previous page"
+					style="flex:1"
+					:disabled="sourceOffset == 0"
+					@click="prevPage">
+					<template #icon>
+						<ChevronLeft :size="18" />
+					</template>
+				</NcButton>
+				<NcButton aria-label="Next page"
+					style="flex:1"
+					:disabled="(sourceOffset + sources.length) >= totalSources"
+					@click="nextPage">
+					<template #icon>
+						<ChevronRight :size="18" />
+					</template>
+				</NcButton>
+				<NcButton aria-label="Forward multiple pages"
+					style="flex:1"
+					:disabled="(sourceOffset + sources.length) >= totalSources"
+					@click="forwardMultiplePages">
+					<template #icon>
+						<ChevronDoubleRight :size="18" />
+					</template>
+				</NcButton>
+				<NcButton aria-label="Last page"
+					style="flex:1"
+					:disabled="(sourceOffset + sources.length) >= totalSources"
+					@click="lastPage">
+					<template #icon>
+						<PageLast :size="18" />
+					</template>
+				</NcButton>
+			</div>
 		</div>
 		<SourceDetails slot="default"
 			:source-id="currentSourceId" />
@@ -23,7 +74,11 @@
 
 <script>
 
-import { NcAppContent, NcAppContentList } from '@nextcloud/vue'
+import {
+	NcAppContent,
+	NcAppContentList,
+	NcButton,
+} from '@nextcloud/vue'
 
 import SourceListItem from './SourceListItem.vue'
 import SourceDetails from './SourceDetails.vue'
@@ -33,12 +88,28 @@ import { showError } from '@nextcloud/dialogs'
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
 
+import ChevronLeft from 'vue-material-design-icons/ChevronLeft.vue'
+import ChevronRight from 'vue-material-design-icons/ChevronRight.vue'
+import ChevronDoubleLeft from 'vue-material-design-icons/ChevronDoubleLeft.vue'
+import ChevronDoubleRight from 'vue-material-design-icons/ChevronDoubleRight.vue'
+import PageFirst from 'vue-material-design-icons/PageFirst.vue'
+import PageLast from 'vue-material-design-icons/PageLast.vue'
+
 export default {
 	name: 'SourceListView',
 	components: {
 		// components
 		NcAppContent,
 		NcAppContentList,
+		NcButton,
+
+		// icons
+		ChevronLeft,
+		ChevronRight,
+		ChevronDoubleLeft,
+		ChevronDoubleRight,
+		PageFirst,
+		PageLast,
 
 		// project components
 		SourceListItem,
@@ -47,6 +118,9 @@ export default {
 	data() {
 		return {
 			sources: [],
+			totalSources: 0,
+			sourceOffset: 0,
+			sourceLimit: 50,
 			// currentSourceId: null,
 			updating: false,
 			loading: true,
@@ -146,6 +220,40 @@ export default {
 				showError(t('athenaeum', 'Could not delete the source'))
 			}
 		},
+		setNewSourceOffset(newOffset) {
+			if (newOffset < 0) {
+				newOffset = 0
+			}
+			if (newOffset >= this.totalSources) {
+				newOffset = this.sourceLimit
+					* Math.floor(this.totalSources / this.sourceLimit)
+			}
+			this.$router.replace({ query: { sourceOffset: newOffset } })
+			this.fetchData()
+		},
+		firstPage() {
+			this.setNewSourceOffset(0)
+		},
+		backMultiplePages() {
+			this.setNewSourceOffset(Math.floor((Math.floor(
+				this.sourceOffset / this.sourceLimit) - 1)
+				* 0.5) * this.sourceLimit)
+		},
+		prevPage() {
+			this.setNewSourceOffset(this.sourceOffset - this.sourceLimit)
+		},
+		nextPage() {
+			this.setNewSourceOffset(this.sourceOffset + this.sourceLimit)
+		},
+		forwardMultiplePages() {
+			this.setNewSourceOffset(Math.floor((Math.floor(
+				this.sourceOffset / this.sourceLimit) + 1
+				+ Math.floor(this.totalSources / this.sourceLimit))
+				* 0.5) * this.sourceLimit)
+		},
+		lastPage() {
+			this.setNewSourceOffset(this.totalSources)
+		},
 	},
 }
 </script>
@@ -166,10 +274,21 @@ input[type='text'] {
 	overflow: auto;
 }
 
-.header__button {
+.sources-list {
 	display: flex;
-	flex: 1 0 0;
 	flex-direction: column;
-	height: calc(100vh - var(--header-height));
+	height: 100%;
+}
+
+.main-sources-list {
+	min-height: inherit;
+	max-height: inherit;
+}
+
+.sources-footer {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	padding: 0.5em;
 }
 </style>
