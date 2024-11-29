@@ -20,6 +20,22 @@
 					@item-change-folder="itemSendToFolder" />
 			</NcAppContentList>
 			<div class="items-footer">
+				<NcButton aria-label="First page"
+					style="flex:1"
+					:disabled="itemOffset == 0"
+					@click="firstPage">
+					<template #icon>
+						<PageFirst :size="18" />
+					</template>
+				</NcButton>
+				<NcButton aria-label="Back multiple pages"
+					style="flex:1"
+					:disabled="itemOffset == 0"
+					@click="backMultiplePages">
+					<template #icon>
+						<ChevronDoubleLeft :size="18" />
+					</template>
+				</NcButton>
 				<NcButton aria-label="Previous page"
 					style="flex:1"
 					:disabled="itemOffset == 0"
@@ -34,6 +50,22 @@
 					@click="nextPage">
 					<template #icon>
 						<ChevronRight :size="18" />
+					</template>
+				</NcButton>
+				<NcButton aria-label="Forward multiple pages"
+					style="flex:1"
+					:disabled="(itemOffset + items.length) >= totalItems"
+					@click="forwardMultiplePages">
+					<template #icon>
+						<ChevronDoubleRight :size="18" />
+					</template>
+				</NcButton>
+				<NcButton aria-label="Last page"
+					style="flex:1"
+					:disabled="(itemOffset + items.length) >= totalItems"
+					@click="lastPage">
+					<template #icon>
+						<PageLast :size="18" />
 					</template>
 				</NcButton>
 			</div>
@@ -66,6 +98,10 @@ import axios from '@nextcloud/axios'
 
 import ChevronLeft from 'vue-material-design-icons/ChevronLeft.vue'
 import ChevronRight from 'vue-material-design-icons/ChevronRight.vue'
+import ChevronDoubleLeft from 'vue-material-design-icons/ChevronDoubleLeft.vue'
+import ChevronDoubleRight from 'vue-material-design-icons/ChevronDoubleRight.vue'
+import PageFirst from 'vue-material-design-icons/PageFirst.vue'
+import PageLast from 'vue-material-design-icons/PageLast.vue'
 
 import 'toastify-js/src/toastify.css'
 
@@ -82,6 +118,10 @@ export default {
 		// icons
 		ChevronLeft,
 		ChevronRight,
+		ChevronDoubleLeft,
+		ChevronDoubleRight,
+		PageFirst,
+		PageLast,
 
 		// project components
 		ItemListItem,
@@ -287,19 +327,39 @@ export default {
 				},
 			}).showToast()
 		},
-		prevPage() {
-			const newOffset = this.itemOffset - this.itemLimit < 0
-				? 0
-				: this.itemOffset - this.itemLimit
+		setNewItemOffset(newOffset) {
+			if (newOffset < 0) {
+				newOffset = 0
+			}
+			if (newOffset >= this.totalItems) {
+				newOffset = this.itemLimit
+					* Math.floor(this.totalItems / this.itemLimit)
+			}
 			this.$router.replace({ query: { itemOffset: newOffset } })
 			this.fetchData()
 		},
+		firstPage() {
+			this.setNewItemOffset(0)
+		},
+		backMultiplePages() {
+			this.setNewItemOffset(Math.floor((Math.floor(
+				this.itemOffset / this.itemLimit) - 1)
+				* 0.5) * this.itemLimit)
+		},
+		prevPage() {
+			this.setNewItemOffset(this.itemOffset - this.itemLimit)
+		},
 		nextPage() {
-			const newOffset = this.itemOffset + this.itemLimit > this.totalItems
-				? this.itemOffset
-				: this.itemOffset + this.itemLimit
-			this.$router.replace({ query: { itemOffset: newOffset } })
-			this.fetchData()
+			this.setNewItemOffset(this.itemOffset + this.itemLimit)
+		},
+		forwardMultiplePages() {
+			this.setNewItemOffset(Math.floor((Math.floor(
+				this.itemOffset / this.itemLimit) + 1
+				+ Math.floor(this.totalItems / this.itemLimit))
+				* 0.5) * this.itemLimit)
+		},
+		lastPage() {
+			this.setNewItemOffset(this.totalItems)
 		},
 	},
 }
