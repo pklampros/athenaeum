@@ -167,7 +167,6 @@ export default {
 				console.error(e)
 				showError(t('athenaeum', 'Could not fetch contributors (route mounting failed)'))
 			}
-			console.log(this.contributors)
 			this.loading = false
 		},
 		newContributor() {
