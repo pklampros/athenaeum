@@ -19,7 +19,7 @@
 			<div class="sources-footer">
 				<NcButton aria-label="First page"
 					style="flex:1"
-					:disabled="sourceOffset == 0"
+					:disabled="listOffset == 0"
 					@click="firstPage">
 					<template #icon>
 						<PageFirst :size="18" />
@@ -27,7 +27,7 @@
 				</NcButton>
 				<NcButton aria-label="Back multiple pages"
 					style="flex:1"
-					:disabled="sourceOffset == 0"
+					:disabled="listOffset == 0"
 					@click="backMultiplePages">
 					<template #icon>
 						<ChevronDoubleLeft :size="18" />
@@ -35,7 +35,7 @@
 				</NcButton>
 				<NcButton aria-label="Previous page"
 					style="flex:1"
-					:disabled="sourceOffset == 0"
+					:disabled="listOffset == 0"
 					@click="prevPage">
 					<template #icon>
 						<ChevronLeft :size="18" />
@@ -43,7 +43,7 @@
 				</NcButton>
 				<NcButton aria-label="Next page"
 					style="flex:1"
-					:disabled="(sourceOffset + sources.length) >= totalSources"
+					:disabled="(listOffset + sources.length) >= totalCount"
 					@click="nextPage">
 					<template #icon>
 						<ChevronRight :size="18" />
@@ -51,7 +51,7 @@
 				</NcButton>
 				<NcButton aria-label="Forward multiple pages"
 					style="flex:1"
-					:disabled="(sourceOffset + sources.length) >= totalSources"
+					:disabled="(listOffset + sources.length) >= totalCount"
 					@click="forwardMultiplePages">
 					<template #icon>
 						<ChevronDoubleRight :size="18" />
@@ -59,7 +59,7 @@
 				</NcButton>
 				<NcButton aria-label="Last page"
 					style="flex:1"
-					:disabled="(sourceOffset + sources.length) >= totalSources"
+					:disabled="(listOffset + sources.length) >= totalCount"
 					@click="lastPage">
 					<template #icon>
 						<PageLast :size="18" />
@@ -118,9 +118,9 @@ export default {
 	data() {
 		return {
 			sources: [],
-			totalSources: 0,
-			sourceOffset: 0,
-			sourceLimit: 50,
+			totalCount: 0,
+			listOffset: 0,
+			listLimit: 50,
 			// currentSourceId: null,
 			updating: false,
 			loading: true,
@@ -224,11 +224,11 @@ export default {
 			if (newOffset < 0) {
 				newOffset = 0
 			}
-			if (newOffset >= this.totalSources) {
-				newOffset = this.sourceLimit
-					* Math.floor(this.totalSources / this.sourceLimit)
+			if (newOffset >= this.totalCount) {
+				newOffset = this.listLimit
+					* Math.floor(this.totalCount / this.listLimit)
 			}
-			this.$router.replace({ query: { sourceOffset: newOffset } })
+			this.$router.replace({ query: { listOffset: newOffset } })
 			this.fetchData()
 		},
 		firstPage() {
@@ -236,23 +236,23 @@ export default {
 		},
 		backMultiplePages() {
 			this.setNewSourceOffset(Math.floor((Math.floor(
-				this.sourceOffset / this.sourceLimit) - 1)
-				* 0.5) * this.sourceLimit)
+				this.listOffset / this.listLimit) - 1)
+				* 0.5) * this.listLimit)
 		},
 		prevPage() {
-			this.setNewSourceOffset(this.sourceOffset - this.sourceLimit)
+			this.setNewSourceOffset(this.listOffset - this.listLimit)
 		},
 		nextPage() {
-			this.setNewSourceOffset(this.sourceOffset + this.sourceLimit)
+			this.setNewSourceOffset(this.listOffset + this.listLimit)
 		},
 		forwardMultiplePages() {
 			this.setNewSourceOffset(Math.floor((Math.floor(
-				this.sourceOffset / this.sourceLimit) + 1
-				+ Math.floor(this.totalSources / this.sourceLimit))
-				* 0.5) * this.sourceLimit)
+				this.listOffset / this.listLimit) + 1
+				+ Math.floor(this.totalCount / this.listLimit))
+				* 0.5) * this.listLimit)
 		},
 		lastPage() {
-			this.setNewSourceOffset(this.totalSources)
+			this.setNewSourceOffset(this.totalCount)
 		},
 	},
 }
