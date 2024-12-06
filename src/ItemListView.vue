@@ -133,6 +133,7 @@ export default {
 			totalCount: 0,
 			listOffset: 0,
 			listLimit: 50,
+			listReplenish: 5,
 			updating: false,
 			loading: true,
 		}
@@ -221,6 +222,29 @@ export default {
 			}
 			this.updating = false
 		},
+		fetchUpdateItemSummary(itemIdx) {
+			fetchItemSummary(this.items[itemIdx].id).then((resp) => {
+				const contributions = resp.data.contributions
+				const sourceInfoExtra = resp.data.sourceInfo.length > 0
+					&& 'extra' in resp.data.sourceInfo[0]
+					? resp.data.sourceInfo[0].extra
+					: {}
+				if (contributions.length !== 0) {
+					// item.authors = contributions.map(c => c.contributor_name_display).join(',')
+					this.$set(this.items[itemIdx], 'authors', contributions.map(c => c.contributor_name_display).join(','))
+				} else if ('authors' in sourceInfoExtra) {
+					this.$set(this.items[itemIdx], 'authors', sourceInfoExtra.authors)
+				}
+				if ('journal' in sourceInfoExtra) {
+					this.$set(this.items[itemIdx], 'journal', sourceInfoExtra.journal)
+				}
+				if ('published' in sourceInfoExtra) {
+					this.$set(this.items[itemIdx], 'published', sourceInfoExtra.published)
+				}
+			}).catch((error) => {
+				showError(t('athenaeum', 'Could not fetch items (' + error + ')'))
+			})
+		},
 		async fetchData() {
 			try {
 				const newOffset = this.$route.query.listOffset
@@ -234,27 +258,7 @@ export default {
 				this.listOffset = itemData.offset
 				this.totalCount = itemData.totalCount
 				for (const i in this.items) {
-					fetchItemSummary(this.items[i].id).then((resp) => {
-						const contributions = resp.data.contributions
-						const sourceInfoExtra = resp.data.sourceInfo.length > 0
-							&& 'extra' in resp.data.sourceInfo[0]
-							? resp.data.sourceInfo[0].extra
-							: {}
-						if (contributions.length !== 0) {
-							// item.authors = contributions.map(c => c.contributor_name_display).join(',')
-							this.$set(this.items[i], 'authors', contributions.map(c => c.contributor_name_display).join(','))
-						} else if ('authors' in sourceInfoExtra) {
-							this.$set(this.items[i], 'authors', sourceInfoExtra.authors)
-						}
-						if ('journal' in sourceInfoExtra) {
-							this.$set(this.items[i], 'journal', sourceInfoExtra.journal)
-						}
-						if ('published' in sourceInfoExtra) {
-							this.$set(this.items[i], 'published', sourceInfoExtra.published)
-						}
-					}).catch((error) => {
-						throw convertAxiosError(error)
-					})
+					this.fetchUpdateItemSummary(i)
 				}
 				this.goToNextAvailableItem()
 			} catch (e) {
@@ -276,6 +280,27 @@ export default {
 				})
 			}
 		},
+		replenishItems() {
+			const newOffset = this.listOffset + this.items.length
+			const replenish = Math.min(this.listReplenish,
+				this.totalCount - newOffset)
+			if ((this.listLimit - this.items.length) >= replenish
+				&& (newOffset + replenish) < this.totalCount) {
+				fetchItems(
+					this.currentFolder,
+					newOffset,
+					replenish,
+				).then((itemData) => {
+					this.items.push(...itemData.items)
+
+					this.totalCount = itemData.totalCount
+					for (let i = this.listLimit - replenish;
+						i < this.listLimit; i++) {
+						this.fetchUpdateItemSummary(i)
+					}
+				})
+			}
+		},
 		itemFolderChanged(itemId) {
 			let removedIdx = null
 			for (const idx in this.items) {
@@ -285,6 +310,7 @@ export default {
 					break
 				}
 			}
+			this.replenishItems()
 			if (this.currentItemId === itemId) {
 				if (removedIdx > 0 && this.items.length >= removedIdx) {
 					// go directly to the next item
