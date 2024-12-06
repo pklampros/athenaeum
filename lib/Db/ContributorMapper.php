@@ -129,12 +129,36 @@ class ContributorMapper extends QBMapper {
 	/**
 	 * @return array
 	 */
-	public function findAll(): array {
+	public function findAll(
+		string $userId,
+		int $limit = 50,
+		int $offset = 0,
+		?bool $showAll = false,
+		string $search = '',
+	): array {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
+		$qb->selectAlias($qb->createFunction('COUNT(*)'), 'count')
+			->from('athm_contributors')
+			->where($qb->expr()->eq('user_id', $qb->createNamedParameter($userId)));
+		$cursor = $qb->execute();
+		$row = $cursor->fetch();
+		$cursor->closeCursor();
+		$totalCount = $row['count'];
+
+		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
-			->from('athm_contributors');
-		return $this->findEntities($qb);
+			->from('athm_contributors')
+			->orderBy('last_name')
+			->addOrderBy('first_name')
+			->setFirstResult($offset)
+			->setMaxResults($limit);
+		;
+		return [
+			'contributors' => $this->findEntities($qb),
+			'offset' => $offset,
+			'totalCount' => $totalCount
+		];
 	}
 
 	public function insertContributor(Contributor $entity): Contributor {

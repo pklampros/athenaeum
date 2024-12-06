@@ -24,8 +24,16 @@ class ContributorService {
 	/**
 	 * @return list<Contributor>
 	 */
-	public function findAll(): array {
-		return $this->mapper->findAll();
+	public function findAll(
+		string $userId,
+		int $limit = 50,
+		int $offset = 0,
+		?bool $showAll = false,
+		string $search = '',
+	): array {
+		return $this->mapper->findAll(
+			$userId, $limit, $offset, $showAll, $search
+		);
 	}
 
 	/**

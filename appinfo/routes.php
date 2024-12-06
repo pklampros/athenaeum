@@ -19,6 +19,7 @@ return [
 		'source' => ['url' => '/res/sources'],
 		'source_api' => ['url' => '/api/0.1/sources'],
 		'folder' => ['url' => '/res/folders'],
+		'contributor' => ['url' => '/res/contributors'],
 		'contributor_api' => ['url' => '/api/0.1/contributors'],
 		'contribution_api' => ['url' => '/api/0.1/contributions'],
 	],
@@ -109,6 +110,13 @@ return [
 			'verb' => 'GET'],
 		['name' => 'page#sourcesDetails',
 			'url' => '/sources/{sourceId}',
+			'verb' => 'GET'],
+
+		['name' => 'page#contributors',
+			'url' => '/contributors',
+			'verb' => 'GET'],
+		['name' => 'page#contributorsDetails',
+			'url' => '/contributors/{contributorId}',
 			'verb' => 'GET'],
 
 		['name' => 'app_info_api#maxFileUploads',

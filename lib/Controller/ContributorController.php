@@ -29,8 +29,18 @@ class ContributorController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 */
-	public function index(): DataResponse {
-		return new DataResponse($this->service->findAll($this->userId));
+	public function index(
+		string $folder = 'library',
+		int $limit = 50,
+		int $offset = 0,
+		?bool $showAll = false,
+		string $search = '',
+	): DataResponse {
+		return new DataResponse(
+			$this->service->findAll(
+				$this->userId, $limit, $offset, $showAll, $search
+			)
+		);
 	}
 
 	/**

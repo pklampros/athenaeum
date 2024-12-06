@@ -15,6 +15,13 @@
 						<Earth :size="20" />
 					</template>
 				</NcAppNavigationItem>
+				<NcAppNavigationItem :name="t('athenaeum', 'Contributors')"
+					:disabled="false"
+					:to="'/contributors'">
+					<template #icon>
+						<AccountGroup :size="20" />
+					</template>
+				</NcAppNavigationItem>
 				<NcAppNavigationItem v-for="folder in folders"
 					:key="folder.id"
 					:name="t('athenaeum', folder.name)"
@@ -54,6 +61,7 @@
 		<ItemListView v-if="isItemListView()"
 			:key="$route.params.folder" />
 		<SourceListView v-if="isSourceListView()" />
+		<ContributorListView v-if="isContributorListView()" />
 
 		<EmlImportModal :visible.sync="emlImportModalVisible"
 			@modal-closed="hideSubmitEMLModal" />
@@ -72,9 +80,11 @@ import Inbox from 'vue-material-design-icons/Inbox.vue'
 import InboxMultiple from 'vue-material-design-icons/InboxMultiple.vue'
 import Earth from 'vue-material-design-icons/Earth.vue'
 import Delete from 'vue-material-design-icons/Delete.vue'
+import AccountGroup from 'vue-material-design-icons/AccountGroup.vue'
 
 import ItemListView from './ItemListView.vue'
 import SourceListView from './SourceListView.vue'
+import ContributorListView from './ContributorListView.vue'
 import EmlImportModal from './EmlImportModal.vue'
 
 import { fetchFolders } from './service/FolderService.js'
@@ -97,10 +107,12 @@ export default {
 		InboxMultiple,
 		Earth,
 		Delete,
+		AccountGroup,
 
 		// project components
 		ItemListView,
 		SourceListView,
+		ContributorListView,
 		EmlImportModal,
 	},
 	data() {
@@ -139,6 +151,12 @@ export default {
 			return (
 				this.$route.name === ViewMode.SOURCES
 				|| this.$route.name === ViewMode.SOURCES_DETAILS
+			)
+		},
+		isContributorListView() {
+			return (
+				this.$route.name === ViewMode.CONTRIBUTORS
+				|| this.$route.name === ViewMode.CONTRIBUTORS_DETAILS
 			)
 		},
 		showSubmitEMLModal() {

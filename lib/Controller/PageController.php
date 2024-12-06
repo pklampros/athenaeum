@@ -83,4 +83,24 @@ class PageController extends Controller {
 	public function sourcesDetails(): TemplateResponse {
 		return $this->index();
 	}
+
+	/**
+	 * @NoAdminRequired
+	 * @NoCSRFRequired
+	 *
+	 * @return TemplateResponse
+	 */
+	public function contributors(): TemplateResponse {
+		return $this->index();
+	}
+
+	/**
+	 * @NoAdminRequired
+	 * @NoCSRFRequired
+	 *
+	 * @return TemplateResponse
+	 */
+	public function contributorsDetails(): TemplateResponse {
+		return $this->index();
+	}
 }

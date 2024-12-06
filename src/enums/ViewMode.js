@@ -8,6 +8,8 @@ const ViewMode = Object.freeze({
 	ITEMS_DETAILS: 'items_details',
 	SOURCES: 'sources',
 	SOURCES_DETAILS: 'sources_details',
+	CONTRIBUTORS: 'contributors',
+	CONTRIBUTORS_DETAILS: 'contributors_details',
 })
 
 export default ViewMode

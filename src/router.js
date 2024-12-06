@@ -41,5 +41,15 @@ export default new Router({
 			name: 'sources_details',
 			component: App,
 		},
+		{
+			path: '/contributors',
+			name: 'contributors',
+			component: App,
+		},
+		{
+			path: '/contributors/:contributorId',
+			name: 'contributors_details',
+			component: App,
+		},
 	],
 })
