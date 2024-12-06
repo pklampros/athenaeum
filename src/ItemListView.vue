@@ -312,7 +312,7 @@ export default {
 			}
 			this.replenishItems()
 			if (this.currentItemId === itemId) {
-				if (removedIdx > 0 && this.items.length >= removedIdx) {
+				if (removedIdx > 0 && this.items.length > removedIdx) {
 					// go directly to the next item
 					this.$router.replace({
 						name: 'items_details',
@@ -322,8 +322,18 @@ export default {
 						},
 						query: this.$route.query,
 					})
-				} else if (this.items.length > 0) {
+				} else if (removedIdx > 0 && removedIdx >= this.items.length) {
 					// go directly to the next item
+					this.$router.replace({
+						name: 'items_details',
+						params: {
+							folder: this.currentFolder,
+							itemId: this.items[this.items.length - 1].id,
+						},
+						query: this.$route.query,
+					})
+				} else if (this.items.length > 0) {
+					// go directly to the first item
 					this.$router.replace({
 						name: 'items_details',
 						params: {
