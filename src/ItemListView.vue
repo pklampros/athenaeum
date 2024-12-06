@@ -8,8 +8,8 @@
 			class="items-list">
 			<div id="toptitle">
 				<h2>
-					Item ({{ itemOffset }} - {{ itemOffset + items.length }} /
-					{{ totalItems }})
+					Item ({{ listOffset }} - {{ listOffset + items.length }} /
+					{{ totalCount }})
 				</h2>
 			</div>
 			<NcAppContentList class="main-items-list"
@@ -22,7 +22,7 @@
 			<div class="items-footer">
 				<NcButton aria-label="First page"
 					style="flex:1"
-					:disabled="itemOffset == 0"
+					:disabled="listOffset == 0"
 					@click="firstPage">
 					<template #icon>
 						<PageFirst :size="18" />
@@ -30,7 +30,7 @@
 				</NcButton>
 				<NcButton aria-label="Back multiple pages"
 					style="flex:1"
-					:disabled="itemOffset == 0"
+					:disabled="listOffset == 0"
 					@click="backMultiplePages">
 					<template #icon>
 						<ChevronDoubleLeft :size="18" />
@@ -38,7 +38,7 @@
 				</NcButton>
 				<NcButton aria-label="Previous page"
 					style="flex:1"
-					:disabled="itemOffset == 0"
+					:disabled="listOffset == 0"
 					@click="prevPage">
 					<template #icon>
 						<ChevronLeft :size="18" />
@@ -46,7 +46,7 @@
 				</NcButton>
 				<NcButton aria-label="Next page"
 					style="flex:1"
-					:disabled="(itemOffset + items.length) >= totalItems"
+					:disabled="(listOffset + items.length) >= totalCount"
 					@click="nextPage">
 					<template #icon>
 						<ChevronRight :size="18" />
@@ -54,7 +54,7 @@
 				</NcButton>
 				<NcButton aria-label="Forward multiple pages"
 					style="flex:1"
-					:disabled="(itemOffset + items.length) >= totalItems"
+					:disabled="(listOffset + items.length) >= totalCount"
 					@click="forwardMultiplePages">
 					<template #icon>
 						<ChevronDoubleRight :size="18" />
@@ -62,7 +62,7 @@
 				</NcButton>
 				<NcButton aria-label="Last page"
 					style="flex:1"
-					:disabled="(itemOffset + items.length) >= totalItems"
+					:disabled="(listOffset + items.length) >= totalCount"
 					@click="lastPage">
 					<template #icon>
 						<PageLast :size="18" />
@@ -71,7 +71,7 @@
 			</div>
 		</div>
 		<ItemDetails slot="default"
-			:item-id.sync="currentItemId"
+			:item-summary.sync="currentItemSummary"
 			@item-change-folder="itemSendToFolder" />
 	</NcAppContent>
 </template>
@@ -130,9 +130,9 @@ export default {
 	data() {
 		return {
 			items: [],
-			totalItems: 0,
-			itemOffset: 0,
-			itemLimit: 50,
+			totalCount: 0,
+			listOffset: 0,
+			listLimit: 50,
 			updating: false,
 			loading: true,
 		}
@@ -149,6 +149,16 @@ export default {
 				return null
 			}
 			return this.items.find((item) => item.id === this.currentItemId)
+		},
+		currentItemSummary() {
+			if (!this.currentItemId) {
+				return null
+			}
+			const itemSummary = this.items.find((item) => item.id === this.currentItemId)
+			if (!itemSummary) {
+				return { id: this.currentItemId }
+			}
+			return itemSummary
 		},
 		saveItemPossible() {
 			return this.currentItem && this.currentItem.title !== ''
@@ -213,16 +223,16 @@ export default {
 		},
 		async fetchData() {
 			try {
-				const newOffset = this.$route.query.itemOffset
-					? this.$route.query.itemOffset
+				const newOffset = this.$route.query.listOffset
+					? this.$route.query.listOffset
 					: 0
 				const itemData = await fetchItems(
 					this.currentFolder,
 					newOffset,
 				)
 				this.items = itemData.items
-				this.itemOffset = itemData.offset
-				this.totalItems = itemData.totalCount
+				this.listOffset = itemData.offset
+				this.totalCount = itemData.totalCount
 				for (const i in this.items) {
 					fetchItemSummary(this.items[i].id).then((resp) => {
 						const contributions = resp.data.contributions
@@ -331,11 +341,11 @@ export default {
 			if (newOffset < 0) {
 				newOffset = 0
 			}
-			if (newOffset >= this.totalItems) {
-				newOffset = this.itemLimit
-					* Math.floor(this.totalItems / this.itemLimit)
+			if (newOffset >= this.totalCount) {
+				newOffset = this.listLimit
+					* Math.floor(this.totalCount / this.listLimit)
 			}
-			this.$router.replace({ query: { itemOffset: newOffset } })
+			this.$router.replace({ query: { listOffset: newOffset } })
 			this.fetchData()
 		},
 		firstPage() {
@@ -343,23 +353,23 @@ export default {
 		},
 		backMultiplePages() {
 			this.setNewItemOffset(Math.floor((Math.floor(
-				this.itemOffset / this.itemLimit) - 1)
-				* 0.5) * this.itemLimit)
+				this.listOffset / this.listLimit) - 1)
+				* 0.5) * this.listLimit)
 		},
 		prevPage() {
-			this.setNewItemOffset(this.itemOffset - this.itemLimit)
+			this.setNewItemOffset(this.listOffset - this.listLimit)
 		},
 		nextPage() {
-			this.setNewItemOffset(this.itemOffset + this.itemLimit)
+			this.setNewItemOffset(this.listOffset + this.listLimit)
 		},
 		forwardMultiplePages() {
 			this.setNewItemOffset(Math.floor((Math.floor(
-				this.itemOffset / this.itemLimit) + 1
-				+ Math.floor(this.totalItems / this.itemLimit))
-				* 0.5) * this.itemLimit)
+				this.listOffset / this.listLimit) + 1
+				+ Math.floor(this.totalCount / this.listLimit))
+				* 0.5) * this.listLimit)
 		},
 		lastPage() {
-			this.setNewItemOffset(this.totalItems)
+			this.setNewItemOffset(this.totalCount)
 		},
 	},
 }

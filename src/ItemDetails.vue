@@ -3,7 +3,7 @@
 	SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
-	<NcAppContentDetails v-if="item && itemId >= 0">
+	<NcAppContentDetails v-if="item && !itemSummary.id >= 0">
 		<div style="max-width: 900px; margin: 0 auto;">
 			<div style="position: sticky; padding: 30px 18px;">
 				<h2 :title="item.title"
@@ -15,10 +15,10 @@
 					</a>
 				</h2>
 				<h3> {{ item.journal }} </h3>
-				<h3 v-if="item.contributorData.type === 'text'">
+				<h3 v-if="item.contributorData && item.contributorData.type === 'text'">
 					{{ item.contributorData.text }}
 				</h3>
-				<div v-else-if="item.contributorData.contributors"
+				<div v-else-if="item.contributorData && item.contributorData.contributors"
 					style="display: flex; height: 44px; align-items: center;"
 					@mouseenter="visible.cbButton = true"
 					@mouseleave="visible.cbButton = false">
@@ -75,7 +75,8 @@
 				<div class="field-label">
 					<h3>Title</h3>
 				</div>
-				<NcRichContenteditable placeholder="Title"
+				<NcRichContenteditable v-if="item && item.title"
+					placeholder="Title"
 					:error="hasEllipsis(item.title)"
 					:value.sync="item.title" />
 				<div class="field-label">
@@ -95,7 +96,8 @@
 				<div class="field-label">
 					<h3>Journal</h3>
 				</div>
-				<NcRichContenteditable placeholder="Journal"
+				<NcRichContenteditable v-if="item && item.journal"
+					placeholder="Journal"
 					:error="hasEllipsis(item.journal)"
 					:value.sync="item.journal" />
 				&nbsp;
@@ -103,7 +105,7 @@
 			<div class="details-group"
 				style="margin-top: 10px;">
 				<div class="field-label">
-					<h3>Attachments ({{ item.attachments.length }})</h3>
+					<h3>Attachments ({{ (item && item.attachements) ? item.attachments.length : 0 }})</h3>
 					<div class="list-plus-button-wrap">
 						<NcButton aria-label="Add"
 							type="tertiary"
@@ -114,7 +116,7 @@
 						</NcButton>
 					</div>
 				</div>
-				<ul v-if="item.attachments.length">
+				<ul v-if="item && item.attachments && item.attachments.length">
 					<NcListItem v-for="attachment in item.attachments"
 						:key="attachment.itemAttachment.id"
 						:name="attachment.itemAttachment.path"
@@ -256,7 +258,7 @@ export default {
 		ApproveDialog,
 	},
 	props: {
-		itemId: {
+		itemSummary: {
 			type: Number,
 			required: true,
 		},
@@ -281,27 +283,29 @@ export default {
 		},
 	},
 	watch: {
-		async itemId(itemId) {
+		async itemSummary(itemSummary) {
 			// this is required to trigger the update of the various details when
-			// itemId is updated (does not work the first time i.e. through the route)
-			this.updateDetails(itemId)
+			// itemSummary is updated (does not work the first time i.e. through the route)
+			this.updateDetails(itemSummary)
 		},
 		async item(item) {
 			if (!item || !this.$options || !this.$options.authorListInterface) return
 
-			if (item.contributorData.type === 'text') {
-				this.$options.authorListInterface.setAuthorListFromText(item.contributorData.text)
-			} else {
-				this.$options.authorListInterface.setAuthorList(item.contributorData.contributors)
+			if (item.contributorData) {
+				if (item.contributorData.type === 'text') {
+					this.$options.authorListInterface.setAuthorListFromText(item.contributorData.text)
+				} else {
+					this.$options.authorListInterface.setAuthorList(item.contributorData.contributors)
+				}
 			}
 		},
 	},
 	async mounted() {
 		this.loading = true
-		if (this.itemId) {
+		if (this.itemSummary) {
 			// this is required to trigger the update the various details when
-			// the itemId is first given (for example though the route)
-			this.updateDetails(this.itemId)
+			// the itemSummary is first given (for example though the route)
+			this.updateDetails(this.itemSummary)
 		}
 		this.loading = false
 	},
@@ -309,10 +313,12 @@ export default {
 		// Setting the interface when emitted from child
 		setAuthorListInterface(authorListInterface) {
 			this.$options.authorListInterface = authorListInterface
-			if (this.item.contributorData.type === 'text') {
-				this.$options.authorListInterface.setAuthorListFromText(this.item.contributorData.text)
-			} else {
-				this.$options.authorListInterface.setAuthorList(this.item.contributorData.contributors)
+			if (this.item.contributorData) {
+				if (this.item.contributorData.type === 'text') {
+					this.$options.authorListInterface.setAuthorListFromText(this.item.contributorData.text)
+				} else {
+					this.$options.authorListInterface.setAuthorList(this.item.contributorData.contributors)
+				}
 			}
 		},
 		authorListUpdated(newAuthorList) {
@@ -440,9 +446,25 @@ export default {
 			}
 			return null
 		},
-		async updateDetails(itemId) {
-			if (!itemId) return
-			this.item = await this.getItem(itemId)
+		async updateDetails(itemSummary) {
+			if (!itemSummary || !itemSummary.id) return
+			if (this.item && itemSummary.id === this.item.id) return
+			if (itemSummary.title) {
+				this.item = {
+					id: itemSummary.id,
+					title: itemSummary.title,
+					url: '',
+					journal: '',
+					contributorData: {
+						type: 'text',
+						text: '',
+					},
+				}
+			} else {
+				this.item = null
+			}
+			this.getItem(itemSummary.id)
+				.then((itemFull) => { this.item = itemFull })
 		},
 		async attachFromUrl() {
 			await attachFromUrl(this.item.id, this.item.url)
