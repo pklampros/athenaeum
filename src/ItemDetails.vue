@@ -286,7 +286,7 @@ export default {
 		async itemSummary(itemSummary) {
 			// this is required to trigger the update of the various details when
 			// itemSummary is updated (does not work the first time i.e. through the route)
-			this.updateDetails(itemSummary)
+			this.fetchDetails(itemSummary)
 		},
 		async item(item) {
 			if (!item || !this.$options || !this.$options.authorListInterface) return
@@ -305,7 +305,7 @@ export default {
 		if (this.itemSummary) {
 			// this is required to trigger the update the various details when
 			// the itemSummary is first given (for example though the route)
-			this.updateDetails(this.itemSummary)
+			this.fetchDetails(this.itemSummary)
 		}
 		this.loading = false
 	},
@@ -446,7 +446,7 @@ export default {
 			}
 			return null
 		},
-		async updateDetails(itemSummary) {
+		async fetchDetails(itemSummary) {
 			if (!itemSummary || !itemSummary.id) return
 			if (this.item && itemSummary.id === this.item.id) return
 			if (itemSummary.title) {
