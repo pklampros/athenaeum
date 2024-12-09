@@ -150,6 +150,7 @@ export default {
 			this.uploading = false
 		},
 		closeModal() {
+			this.files = []
 			this.$emit('modal-closed')
 		},
 	},

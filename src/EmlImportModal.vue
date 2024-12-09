@@ -241,6 +241,7 @@ export default {
 			})
 		},
 		closeModal() {
+			this.files = []
 			this.$emit('modal-closed')
 		},
 	},
