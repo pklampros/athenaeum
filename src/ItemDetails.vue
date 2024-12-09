@@ -144,7 +144,7 @@
 			<div class="details-group"
 				style="margin-top: 10px;">
 				<div class="field-label">
-					<h3>Attachments ({{ (item && item.attachements) ? item.attachments.length : 0 }})</h3>
+					<h3>Attachments ({{ (item && item.attachments) ? item.attachments.length : 0 }})</h3>
 					<div class="list-plus-button-wrap">
 						<NcButton aria-label="Add"
 							type="tertiary"
@@ -512,7 +512,7 @@ export default {
 			}
 			return null
 		},
-		async fetchDetails(itemSummary) {
+		fetchDetails(itemSummary) {
 			if (!itemSummary || !itemSummary.id) return
 			if (this.item && itemSummary.id === this.item.id) return
 			if (itemSummary.title) {
@@ -525,6 +525,7 @@ export default {
 						type: 'text',
 						text: '',
 					},
+					attachments: [],
 				}
 			} else {
 				this.item = null
@@ -536,7 +537,9 @@ export default {
 			await attachFromUrl(this.item.id, this.item.url)
 				.then(async () => {
 					this.showToast('New attachment created', 3000)
-					this.item.attachments = await fetchItemAttachments(this.item.id)
+					fetchItemAttachments(this.item.id).then((attachments) => {
+						this.item.attachments = attachments
+					})
 				})
 				.catch(error => {
 					this.showToast('Could not fetch URL: ' + error.message, 3000)
@@ -545,9 +548,11 @@ export default {
 		showAttachmentModal() {
 			this.attachmentModalVisible = true
 		},
-		async hideAttachmentModal() {
+		hideAttachmentModal() {
 			this.attachmentModalVisible = false
-			this.item.attachments = await fetchItemAttachments(this.item.id)
+			fetchItemAttachments(this.item.id).then((attachments) => {
+				this.item.attachments = attachments
+			})
 		},
 		canOpenAttachment(attachment) {
 			return true
@@ -556,13 +561,16 @@ export default {
 		removeAttachment(attachmentId) {
 			this.attachmentRemoveId = attachmentId
 		},
-		async okToRemoveAttachment() {
+		okToRemoveAttachment() {
 			if (!this.hasAttachmentRemoveId) return
 			const attachmentId = this.attachmentRemoveId
 			this.attachmentRemoveId = null
-			await removeItemAttachment(attachmentId)
-			this.item.attachments = await fetchItemAttachments(this.item.id)
-			this.showToast('Attachment deleted')
+			removeItemAttachment(attachmentId).then(() => {
+				fetchItemAttachments(this.item.id).then((attachments) => {
+					this.item.attachments = attachments
+					this.showToast('Attachment deleted')
+				})
+			})
 		},
 		showToast(message, duration = 1500) {
 			Toastify({
