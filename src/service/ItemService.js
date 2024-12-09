@@ -260,3 +260,26 @@ export function attachFromUrl(itemId, fileURL) {
 			})
 		.then((resp) => resp.data)
 }
+
+/**
+ *
+ * @param {number} id Item id
+ * @param {number} title Item title
+ * @param {string} url Item url
+ * @param {string} journal Item journal
+ */
+export function updateItem(id, title, url,
+	journal) {
+	const submitUrl = generateUrl('/apps/athenaeum/res/items/' + id)
+
+	return axios
+		.put(submitUrl, {
+			title,
+			url,
+			journal,
+		})
+		.then((resp) => resp.data)
+		.catch((error) => {
+			throw convertAxiosError(error)
+		})
+}

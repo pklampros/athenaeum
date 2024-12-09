@@ -6,22 +6,85 @@
 	<NcAppContentDetails v-if="item && !itemSummary.id >= 0">
 		<div style="max-width: 900px; margin: 0 auto;">
 			<div style="position: sticky; padding: 30px 18px;">
-				<h2 :title="item.title"
-					style="display: flex; align-items: center; justify-content: space-between;">
-					{{ item.title }}
-					<a :href="item.url"
-						target="_blank">
-						<OpenInNew />
-					</a>
-				</h2>
-				<h3> {{ item.journal }} </h3>
+				<div style="display:flex; flex-direction: column">
+					<h2 :title="item.title"
+						:class="{ toedit: visible.itemEditButton }"
+						style="display: flex; align-items: center; justify-content: space-between;">
+						{{ item.title }}
+						<a :href="item.url"
+							target="_blank">
+							<OpenInNew />
+						</a>
+					</h2>
+					<div style="display:flex; flex-direction: row;">
+						<h3 :class="{ toedit: visible.itemEditButton }"
+							style="flex-grow: 1;">
+							{{ item.journal }}
+						</h3>
+						<div style="align-content: center;">
+							<NcButton aria-label="Edit item data"
+								size="small"
+								:type="editButtonType(visible.itemEditButton)"
+								:disabled="!visible.itemEditButton"
+								@click="editing.item = !editing.item"
+								@mouseover="visible.itemEditButton = true"
+								@mouseleave="visible.itemEditButton = false">
+								<template #icon>
+									<Pencil :size="18" />
+								</template>
+							</NcButton>
+						</div>
+					</div>
+
+					<div v-show="editing.item"
+						class="details-group">
+						<div class="field-label">
+							<h3>Title</h3>
+						</div>
+						<NcRichContenteditable v-if="item && item.title"
+							placeholder="Title"
+							:error="hasEllipsis(item.title)"
+							:value.sync="item.title"
+							@update:value="setItemDataModified()" />
+						<div class="field-label">
+							<h3>URL</h3>
+						</div>
+						<div style="display:flex">
+							<NcRichContenteditable style="flex-grow:1"
+								placeholder="URL"
+								:value.sync="item.url"
+								@update:value="setItemDataModified()" />
+							<NcButton aria-label="Add"
+								@click="attachFromUrl">
+								<template #icon>
+									<PlusCircle :size="25" />
+								</template>
+							</NcButton>
+						</div>
+						<div class="field-label">
+							<h3>Journal</h3>
+						</div>
+						<NcRichContenteditable v-if="item && item.journal"
+							placeholder="Journal"
+							:error="hasEllipsis(item.journal)"
+							:value.sync="item.journal"
+							@update:value="setItemDataModified()" />
+						&nbsp;
+						<div style="display:flex; flex-direction: row-reverse">
+							<NcButton :disabled="!itemDataModified"
+								type="primary"
+								@click="saveChanges">
+								Save
+							</NcButton>
+						</div>
+					</div>
+				</div>
+
 				<h3 v-if="item.contributorData && item.contributorData.type === 'text'">
 					{{ item.contributorData.text }}
 				</h3>
 				<div v-else-if="item.contributorData && item.contributorData.contributors"
-					style="display: flex; height: 44px; align-items: center;"
-					@mouseenter="visible.cbButton = true"
-					@mouseleave="visible.cbButton = false">
+					style="display: flex; height: 44px; align-items: center;">
 					<span v-for="(contributor, index) in item.contributorData.contributors"
 						:key="contributor"
 						style="display: flex;">
@@ -30,17 +93,23 @@
 						<NcUserBubble v-else
 							:margin="4"
 							:size="30"
+							:primary="visible.cbButton"
 							:display-name="contributor.displayName">
 							<span style="padding: 4px 10px; border-radius: 5px;">
 								{{ contributor.firstName + contributor.name }}
 							</span>
 						</NcUserBubble>
 					</span>
-					<div v-show="visible.cbButton">
+					<div style="margin-left:auto">
 						<NcButton aria-label="Edit authors"
-							@click="editing.contributors = !editing.contributors">
+							size="small"
+							:type="editButtonType(visible.cbButton)"
+							:disabled="!visible.cbButton"
+							@click="editing.contributors = !editing.contributors"
+							@mouseover="visible.cbButton = true"
+							@mouseleave="visible.cbButton = false">
 							<template #icon>
-								<Pencil :size="18" />
+								<Pencil />
 							</template>
 						</NcButton>
 					</div>
@@ -51,7 +120,7 @@
 					<AuthorEditList @interface="setAuthorListInterface"
 						@authorListUpdated="authorListUpdated" />
 				</div>
-				&nbsp;
+
 				<h3 style="font-weight: bold;">
 					Excerpts:
 				</h3>
@@ -71,37 +140,7 @@
 					</li>
 				</ul>
 			</div>
-			<div class="details-group">
-				<div class="field-label">
-					<h3>Title</h3>
-				</div>
-				<NcRichContenteditable v-if="item && item.title"
-					placeholder="Title"
-					:error="hasEllipsis(item.title)"
-					:value.sync="item.title" />
-				<div class="field-label">
-					<h3>URL</h3>
-				</div>
-				<div style="display:flex">
-					<NcRichContenteditable style="flex-grow:1"
-						placeholder="URL"
-						:value.sync="item.url" />
-					<NcButton aria-label="Add"
-						@click="attachFromUrl">
-						<template #icon>
-							<PlusCircle :size="25" />
-						</template>
-					</NcButton>
-				</div>
-				<div class="field-label">
-					<h3>Journal</h3>
-				</div>
-				<NcRichContenteditable v-if="item && item.journal"
-					placeholder="Journal"
-					:error="hasEllipsis(item.journal)"
-					:value.sync="item.journal" />
-				&nbsp;
-			</div>
+
 			<div class="details-group"
 				style="margin-top: 10px;">
 				<div class="field-label">
@@ -222,6 +261,7 @@ import {
 	fetchItemAttachments,
 	removeItemAttachment,
 	attachFromUrl,
+	updateItem,
 } from './service/ItemService.js'
 
 import AttachmentUploadModal from './AttachmentUploadModal.vue'
@@ -269,9 +309,12 @@ export default {
 			fixes: [],
 			visible: {
 				cbButton: false,
+				itemEditButton: false,
 			},
+			dataModified: false,
 			editing: {
 				contributors: false,
+				item: false,
 			},
 			attachmentModalVisible: false,
 			attachmentRemoveId: null,
@@ -310,6 +353,28 @@ export default {
 		this.loading = false
 	},
 	methods: {
+		setItemDataModified() {
+			this.itemDataModified = true
+		},
+		setAuthorDataModified() {
+			this.authorDataModified = true
+		},
+		async saveChanges() {
+			try {
+				const response = await updateItem(
+					this.item.id, this.item.title,
+					this.item.url, this.item.journal,
+				)
+				return response
+			} catch (e) {
+				console.error(e)
+				showError(t('athenaeum', 'Could not fetch source details (route mounting failed)'))
+			}
+			return null
+		},
+		editButtonType(changeOn) {
+			return changeOn ? 'primary' : 'tertiary-no-background'
+		},
 		// Setting the interface when emitted from child
 		setAuthorListInterface(authorListInterface) {
 			this.$options.authorListInterface = authorListInterface
@@ -324,6 +389,7 @@ export default {
 		authorListUpdated(newAuthorList) {
 			this.item.contributorData.contributors = newAuthorList
 			this.item.contributorData.type = 'list'
+			this.setAuthorDataModified()
 		},
 		async addToLibrary() {
 			const detailedItem = this.item
@@ -569,5 +635,9 @@ export default {
 	// actions (1xbaseline) minus the padding of the .field-label.
 	// Assumes that #extra-actions are used for the buttons.
 	padding: 0 calc(4px + 3 * var(--default-grid-baseline) - 1px) 0 0;
+}
+
+.toedit {
+	color: var(--color-primary-element-hover);
 }
 </style>

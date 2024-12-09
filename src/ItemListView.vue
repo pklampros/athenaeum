@@ -342,6 +342,11 @@ export default {
 						},
 						query: this.$route.query,
 					})
+				} else if (this.items.length === 0) {
+					// go to the previous page
+					if (this.listOffset > 0) {
+						this.setNewItemOffset(this.listOffset - this.listLimit)
+					}
 				} else {
 					this.currentItemId = -1
 					this.$router.replace({
