@@ -36,7 +36,7 @@ export function fetchItems(folder, offset, limit, orderBy, query) {
 		params.orderBy = orderBy
 	}
 	if (query) {
-		params.query = query
+		params.search = query
 	}
 
 	return axios

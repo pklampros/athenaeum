@@ -10,7 +10,31 @@
 				<h2>
 					Item ({{ listOffset }} - {{ listOffset + items.length }} /
 					{{ totalCount }})
+					<NcButton aria-label="Tune"
+						style="flex:1"
+						@click="tuning = !tuning">
+						<template #icon>
+							<Tune :size="18" />
+						</template>
+					</NcButton>
 				</h2>
+			</div>
+			<div v-if="tuning"
+				class="list-controls tuner">
+				<NcSelect v-bind="orderOptions"
+					v-model="orderOptions.value" />
+				<NcTextField label="Search in title"
+					:value.sync="listQuery" />
+				<div class="button-row-right">
+					<NcButton aria-label="Apply filters"
+						@click="applyFilters">
+						Apply
+					</NcButton>
+					<NcButton aria-label="Cancel filter selection"
+						@click="cancelFilters">
+						Cancel
+					</NcButton>
+				</div>
 			</div>
 			<NcAppContentList class="main-items-list"
 				:show-details="true">
@@ -19,7 +43,7 @@
 					:item="item"
 					@item-change-folder="itemSendToFolder" />
 			</NcAppContentList>
-			<div class="items-footer">
+			<div class="list-controls items-footer">
 				<NcButton aria-label="First page"
 					style="flex:1"
 					:disabled="listOffset == 0"
@@ -82,6 +106,8 @@ import {
 	NcAppContent,
 	NcAppContentList,
 	NcButton,
+	NcSelect,
+	NcTextField,
 } from '@nextcloud/vue'
 
 import ItemListItem from './ItemListItem.vue'
@@ -102,10 +128,53 @@ import ChevronDoubleLeft from 'vue-material-design-icons/ChevronDoubleLeft.vue'
 import ChevronDoubleRight from 'vue-material-design-icons/ChevronDoubleRight.vue'
 import PageFirst from 'vue-material-design-icons/PageFirst.vue'
 import PageLast from 'vue-material-design-icons/PageLast.vue'
+import Tune from 'vue-material-design-icons/Tune.vue'
 
 import 'toastify-js/src/toastify.css'
 
 import Toastify from 'toastify-js'
+
+const orderOptions = {
+	inputLabel: 'Sort order',
+	multiple: true,
+	closeOnSelect: false,
+	options: [
+		{
+			id: 'date_added',
+			label: 'Date added (ascending)',
+		},
+		{
+			id: '-date_added',
+			label: 'Date added (descending)',
+		},
+		{
+			id: 'date_modified',
+			label: 'Date modified (ascending)',
+		},
+		{
+			id: '-date_modified',
+			label: 'Date modified (descending)',
+		},
+		{
+			id: 'source_importance',
+			label: 'Source importance (ascending)',
+		},
+		{
+			id: '-source_importance',
+			label: 'Source importance (descending)',
+		},
+	],
+	value: [
+		{
+			id: 'date_added',
+			label: 'Date added (ascending)',
+		},
+		{
+			id: '-source_importance',
+			label: 'Source importance (descending)',
+		},
+	],
+}
 
 export default {
 	name: 'ItemListView',
@@ -114,6 +183,8 @@ export default {
 		NcAppContent,
 		NcAppContentList,
 		NcButton,
+		NcSelect,
+		NcTextField,
 
 		// icons
 		ChevronLeft,
@@ -122,6 +193,7 @@ export default {
 		ChevronDoubleRight,
 		PageFirst,
 		PageLast,
+		Tune,
 
 		// project components
 		ItemListItem,
@@ -134,9 +206,16 @@ export default {
 			listOffset: 0,
 			listLimit: 50,
 			listReplenish: 5,
-			listOrderBy: ['date_added', '-source_importance'],
+			listOrderBy: this.$route.query.listOrderBy
+				? this.$route.query.listOrderBy
+				: ['date_added', '-source_importance'],
 			updating: false,
 			loading: true,
+			tuning: false,
+			orderOptions,
+			listQuery: this.$route.query.listQuery
+				? this.$route.query.listQuery
+				: '',
 		}
 	},
 	computed: {
@@ -186,6 +265,27 @@ export default {
 					this.$refs.title.focus()
 				})
 			}
+		},
+		applyFilters() {
+			let modified = false
+			let newRouteQuery = { ...this.$route.query }
+			if (this.listQuery !== this.$route.query.listQuery) {
+				newRouteQuery = { ...newRouteQuery, listQuery: this.listQuery }
+				modified = true
+			}
+			this.listOrderBy = orderOptions.value.map(v => v.id)
+			if (this.listOrderBy.join(',') !== this.$route.query.listOrderBy.join(',')) {
+				newRouteQuery = { ...newRouteQuery, listOrderBy: this.listOrderBy }
+				modified = true
+			}
+			if (modified) {
+				this.$router.push({ query: { ...newRouteQuery } })
+				this.fetchData()
+			}
+		},
+		cancelFilters() {
+			this.listQuery = ''
+			this.tuning = false
 		},
 		getSubtitle(item) {
 			const authors = item.authors ? item.authors : ''
@@ -251,11 +351,19 @@ export default {
 				const newOffset = this.$route.query.listOffset
 					? this.$route.query.listOffset
 					: 0
+				this.listOrderBy = this.$route.query.listOrderBy
+					? this.$route.query.listOrderBy
+					: ['date_added', '-source_importance']
+				this.listQuery = this.$route.query.listQuery
+					? this.$route.query.listQuery
+					: ''
+
 				const itemData = await fetchItems(
 					this.currentFolder,
 					newOffset,
 					this.listLimit,
 					this.listOrderBy,
+					this.listQuery,
 				)
 				this.items = itemData.items
 				this.listOffset = itemData.offset
@@ -447,10 +555,23 @@ input[type='text'] {
 	max-height: inherit;
 }
 
+.list-controls {
+	padding: 0.5em;
+	width: 100%;
+}
+
+.tuner {
+	display: flex;
+	flex-direction: column;
+}
+
+.button-row-right {
+	display: flex;
+	flex-direction: row-reverse;
+}
+
 .items-footer {
 	display: flex;
 	flex-direction: row;
-	width: 100%;
-	padding: 0.5em;
 }
 </style>

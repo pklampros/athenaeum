@@ -294,6 +294,15 @@ class ItemMapper extends QBMapper {
 				$qb->createNamedParameter($userId)))
 			->andWhere($qb->expr()->eq('folder_id',
 				$qb->createNamedParameter($folderId)));
+
+		if (isset($search) && $search != '') {
+			$qb->addSelect('title')
+				->andWhere($qb->expr()->iLike(
+					'title',
+					$qb->createNamedParameter('%' . $search . '%'),
+					IQueryBuilder::PARAM_STR));
+		}
+
 		$cursor = $qb->execute();
 		$row = $cursor->fetch();
 		$cursor->closeCursor();
@@ -357,6 +366,13 @@ class ItemMapper extends QBMapper {
 			$qb->selectAlias('a.count', 'num_attachments')
 				->leftJoin('it', $qb->createFunction('(' . $sqb->getSQL() . ')'),
 					'a', 'it.id = a.item_id');
+		}
+
+		if (isset($search) && $search != '') {
+			$qb->andWhere($qb->expr()->iLike(
+				'it.title',
+				$qb->createNamedParameter('%' . $search . '%'),
+				IQueryBuilder::PARAM_STR));
 		}
 
 		return [
