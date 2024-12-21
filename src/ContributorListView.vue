@@ -242,7 +242,7 @@ export default {
 				newOffset = this.listLimit
 					* Math.floor(this.totalCount / this.listLimit)
 			}
-			this.$router.replace({ query: { listOffset: newOffset } })
+			this.$router.push({ query: { listOffset: newOffset } })
 			this.fetchData()
 		},
 		firstPage() {

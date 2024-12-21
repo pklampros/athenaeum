@@ -318,7 +318,7 @@ export default {
 			if (this.currentItemId === itemId) {
 				if (removedIdx > 0 && this.items.length > removedIdx) {
 					// go directly to the next item
-					this.$router.replace({
+					this.$router.push({
 						name: 'items_details',
 						params: {
 							folder: this.currentFolder,
@@ -328,7 +328,7 @@ export default {
 					})
 				} else if (removedIdx > 0 && removedIdx >= this.items.length) {
 					// go directly to the next item
-					this.$router.replace({
+					this.$router.push({
 						name: 'items_details',
 						params: {
 							folder: this.currentFolder,
@@ -338,7 +338,7 @@ export default {
 					})
 				} else if (this.items.length > 0) {
 					// go directly to the first item
-					this.$router.replace({
+					this.$router.push({
 						name: 'items_details',
 						params: {
 							folder: this.currentFolder,
@@ -353,7 +353,7 @@ export default {
 					}
 				} else {
 					this.currentItemId = -1
-					this.$router.replace({
+					this.$router.push({
 						name: 'items',
 						params: {
 							folder: this.currentFolder,
@@ -390,7 +390,7 @@ export default {
 				newOffset = this.listLimit
 					* Math.floor(this.totalCount / this.listLimit)
 			}
-			this.$router.replace({ query: { listOffset: newOffset } })
+			this.$router.push({ query: { listOffset: newOffset } })
 			this.fetchData()
 		},
 		firstPage() {
