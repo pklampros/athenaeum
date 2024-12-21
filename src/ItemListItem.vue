@@ -10,6 +10,10 @@
 		<template #icon>
 			<GoogleScholarIcon size="20" />
 		</template>
+		<template #details>
+			<Attachment v-if="item.numAttachments > 0"
+				size="16" />
+		</template>
 		<template #subname>
 			<span v-if="item.published">
 				{{ item.published }}
@@ -47,6 +51,8 @@ import { NcListItem, NcActionButton } from '@nextcloud/vue'
 
 import { GoogleScholarIcon } from 'vue-simple-icons'
 
+import Attachment from 'vue-material-design-icons/Attachment.vue'
+
 export default {
 	name: 'ItemListItem',
 	components: {
@@ -55,6 +61,7 @@ export default {
 		NcActionButton,
 
 		// icons
+		Attachment,
 		GoogleScholarIcon,
 	},
 	props: {

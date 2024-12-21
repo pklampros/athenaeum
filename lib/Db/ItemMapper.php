@@ -337,6 +337,23 @@ class ItemMapper extends QBMapper {
 		// Always oder by id last to maintain the order of items
 		$qb->addOrderBy('it.id', 'DESC');
 
+		$includeAttachments = true;
+
+		if ($includeAttachments) {
+			$sqb = $this->db->getQueryBuilder();
+			$sqb->select('item_id')
+				->selectAlias($qb->createFunction('COUNT(id)'), 'count')
+				->from('athm_item_attchm')
+				->groupBy('item_id');
+				
+			// We can't use athm_item_attchm directly because there might be more
+			// than one attachments and that would duplicate the rows, causing the
+			// source importance to be counted as many times
+			$qb->selectAlias('a.count', 'num_attachments')
+				->leftJoin('it', $qb->createFunction('(' . $sqb->getSQL() . ')'),
+					'a', 'it.id = a.item_id');
+		}
+
 		return [
 			'items' => $this->findEntities($qb),
 			'offset' => $offset,
