@@ -136,6 +136,20 @@
 									Search term: {{ sourceInfoPoint.extra.searchTerm }}
 								</span>
 							</div>
+							<div style="padding: 5px 0px;">
+								<span style="color: var(--color-text-maxcontrast);">
+									Received: {{
+										new Date(Date.parse(
+											sourceInfoPoint.extra.emailReceived.date
+										)).toLocaleDateString('en-uk',
+											{
+												year: "numeric",
+												month: "short",
+												day: "numeric"
+											})
+									}}
+								</span>
+							</div>
 						</div>
 					</li>
 				</ul>
