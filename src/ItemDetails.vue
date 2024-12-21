@@ -341,6 +341,7 @@ export default {
 	},
 	watch: {
 		async itemSummary(itemSummary) {
+			this.reset()
 			// this is required to trigger the update of the various details when
 			// itemSummary is updated (does not work the first time i.e. through the route)
 			this.fetchDetails(itemSummary)
@@ -367,6 +368,10 @@ export default {
 		this.loading = false
 	},
 	methods: {
+		reset() {
+			this.editing.contributors = false
+			this.editing.item = false
+		},
 		setItemDataModified() {
 			this.itemDataModified = true
 		},
