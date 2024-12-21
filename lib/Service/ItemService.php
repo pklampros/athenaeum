@@ -28,14 +28,16 @@ class ItemService {
 	 */
 	public function findAll(
 		string $userId,
-		string $folder = 'library',
-		int $limit = 50,
-		int $offset = 0,
+		string $folder,
+		int $limit,
+		int $offset,
+		array $orderBy,
+		string $search,
 		?bool $showAll = false,
-		string $search = '',
 	): array {
 		return $this->mapper->findAll(
-			$userId, $this->mapper->findFolderId($folder), $limit, $offset, $showAll, $search
+			$userId, $this->mapper->findFolderId($folder), $limit, $offset,
+			$orderBy, $search, $showAll
 		);
 	}
 

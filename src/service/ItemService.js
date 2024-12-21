@@ -15,9 +15,10 @@ import { getMaxFileUploads } from './ServerService.js'
  * @param {string} folder Filter items by this folder
  * @param {object} offset Number of items to skip
  * @param {number} limit Limit to a particular number of items
+ * @param {string} orderBy Order results by
  * @param {string} query Search query
  */
-export function fetchItems(folder, offset, limit, query) {
+export function fetchItems(folder, offset, limit, orderBy, query) {
 	const url = generateUrl('/apps/athenaeum/res/items')
 	const params = {
 	}
@@ -31,8 +32,11 @@ export function fetchItems(folder, offset, limit, query) {
 	if (offset) {
 		params.offset = offset
 	}
+	if (orderBy) {
+		params.orderBy = orderBy
+	}
 	if (query) {
-		params.filter = query
+		params.query = query
 	}
 
 	return axios

@@ -276,10 +276,11 @@ class ItemMapper extends QBMapper {
 	public function findAll(
 		string $userId,
 		int $folderId,
-		int $limit = 50,
-		int $offset = 0,
+		int $limit,
+		int $offset,
+		array $orderBy,
+		string $search,
 		?bool $showAll = false,
-		string $search = '',
 	): array {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
@@ -293,18 +294,49 @@ class ItemMapper extends QBMapper {
 		$totalCount = $row['count'];
 
 		$qb = $this->db->getQueryBuilder();
-		$qb->selectAlias($qb->createFunction('SUM(s.importance)'), 'source_importance')
+		$qb->selectAlias($qb->createFunction('SUM(`s`.`importance`)'), 'source_importance')
 			->addSelect('it.*')
 			->from('athm_items', 'it')
 			->where($qb->expr()->eq('it.user_id', $qb->createNamedParameter($userId)))
 			->andWhere($qb->expr()->eq('it.folder_id', $qb->createNamedParameter($folderId)))
-			->innerJoin('it', 'athm_item_sources', 'its', 'it.id = its.item_id')
-			->innerJoin('its', 'athm_sources', 's', 's.id = its.source_id')
+			->leftJoin('it', 'athm_item_sources', 'its', 'it.id = its.item_id')
+			->leftJoin('its', 'athm_sources', 's', 's.id = its.source_id')
 			->groupBy('it.id')
-			->orderBy('source_importance', 'DESC')
-			->addOrderBy('it.id', 'DESC')
 			->setFirstResult($offset)
 			->setMaxResults($limit);
+
+		$firstOrderValue = true;
+		foreach ($orderBy as &$orderByValue) {
+			$direction = 'asc';
+			if(str_starts_with($orderByValue, '-')) {
+				$direction = 'desc';
+				$orderByValue = substr($orderByValue, 1);
+			}
+			switch ($orderByValue) {
+				case 'date_added':
+					$colName = 'it.date_added';
+					if ($firstOrderValue) {
+						$qb->orderBy($colName, $direction);
+						$firstOrderValue = false;
+					} else {
+						$qb->addOrderBy($colName, $direction);
+					}
+					break;
+				case 'source_importance':
+					$colName = 'source_importance';
+					if ($firstOrderValue) {
+						$qb->orderBy($colName, $direction);
+						$firstOrderValue = false;
+					} else {
+						$qb->addOrderBy($colName, $direction);
+					}
+					break;
+			}
+		}
+
+		// Always oder by id last to maintain the order of items
+		$qb->addOrderBy('it.id', 'DESC');
+
 		return [
 			'items' => $this->findEntities($qb),
 			'offset' => $offset,

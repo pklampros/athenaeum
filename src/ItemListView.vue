@@ -134,6 +134,7 @@ export default {
 			listOffset: 0,
 			listLimit: 50,
 			listReplenish: 5,
+			listOrderBy: ['date_added', '-source_importance'],
 			updating: false,
 			loading: true,
 		}
@@ -253,6 +254,8 @@ export default {
 				const itemData = await fetchItems(
 					this.currentFolder,
 					newOffset,
+					this.listLimit,
+					this.listOrderBy,
 				)
 				this.items = itemData.items
 				this.listOffset = itemData.offset
@@ -290,6 +293,7 @@ export default {
 					this.currentFolder,
 					newOffset,
 					replenish,
+					this.listOrderBy,
 				).then((itemData) => {
 					this.items.push(...itemData.items)
 

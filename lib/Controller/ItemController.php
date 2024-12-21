@@ -35,11 +35,12 @@ class ItemController extends Controller {
 		string $folder = 'library',
 		int $limit = 50,
 		int $offset = 0,
-		?bool $showAll = false,
+		array $orderBy = [],
 		string $search = '',
+		?bool $showAll = false,
 	): DataResponse {
 		return new DataResponse($this->itemService->findAll(
-			$this->userId, $folder, $limit, $offset, $showAll, $search
+			$this->userId, $folder, $limit, $offset, $orderBy, $search, $showAll
 		));
 	}
 	
