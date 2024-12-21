@@ -308,7 +308,7 @@ class ItemMapper extends QBMapper {
 		$firstOrderValue = true;
 		foreach ($orderBy as &$orderByValue) {
 			$direction = 'asc';
-			if(str_starts_with($orderByValue, '-')) {
+			if (str_starts_with($orderByValue, '-')) {
 				$direction = 'desc';
 				$orderByValue = substr($orderByValue, 1);
 			}
