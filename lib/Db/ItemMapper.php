@@ -470,11 +470,11 @@ class ItemMapper extends QBMapper {
 				->where($qb->expr()
 					->eq('item_id',
 						$qb->createNamedParameter($itemId,
-						IQueryBuilder::PARAM_INT)))
+							IQueryBuilder::PARAM_INT)))
 				->andWhere($qb->expr()
 					->eq('field_id',
 						$qb->createNamedParameter($fieldId,
-						IQueryBuilder::PARAM_INT)));
+							IQueryBuilder::PARAM_INT)));
 			$cursor = $qb->execute();
 			$row = $cursor->fetch();
 			$cursor->closeCursor();
