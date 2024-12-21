@@ -256,16 +256,20 @@ class ItemMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function findByFieldValue(string $fieldName, string $fieldValue, string $userId): Item {
+	public function findByFieldValue(string $fieldName, string $fieldValue,
+		string $userId): Item {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('i.*')
 			->from('athm_items', 'i')
-			->where($qb->expr()->eq('i.user_id', $qb->createNamedParameter($userId)))
+			->where($qb->expr()->eq('i.user_id',
+				$qb->createNamedParameter($userId)))
 			->innerJoin('i', 'athm_item_field_values', 'ifv', 'i.id = ifv.item_id')
 			->innerJoin('i', 'athm_fields', 'f', 'f.id = ifv.field_id')
-			->where($qb->expr()->eq('f.name', $qb->createNamedParameter($fieldName)))
-			->andWhere($qb->expr()->eq('ifv.value', $qb->createNamedParameter($fieldValue)));
+			->where($qb->expr()->eq('f.name',
+				$qb->createNamedParameter($fieldName)))
+			->andWhere($qb->expr()->eq('ifv.value',
+				$qb->createNamedParameter($fieldValue)));
 		return $this->findEntity($qb);
 	}
 
@@ -286,19 +290,24 @@ class ItemMapper extends QBMapper {
 		$qb = $this->db->getQueryBuilder();
 		$qb->selectAlias($qb->createFunction('COUNT(*)'), 'count')
 			->from('athm_items')
-			->where($qb->expr()->eq('user_id', $qb->createNamedParameter($userId)))
-			->andWhere($qb->expr()->eq('folder_id', $qb->createNamedParameter($folderId)));
+			->where($qb->expr()->eq('user_id',
+				$qb->createNamedParameter($userId)))
+			->andWhere($qb->expr()->eq('folder_id',
+				$qb->createNamedParameter($folderId)));
 		$cursor = $qb->execute();
 		$row = $cursor->fetch();
 		$cursor->closeCursor();
 		$totalCount = $row['count'];
 
 		$qb = $this->db->getQueryBuilder();
-		$qb->selectAlias($qb->createFunction('SUM(`s`.`importance`)'), 'source_importance')
+		$qb->selectAlias($qb->createFunction('SUM(`s`.`importance`)'),
+			'source_importance')
 			->addSelect('it.*')
 			->from('athm_items', 'it')
-			->where($qb->expr()->eq('it.user_id', $qb->createNamedParameter($userId)))
-			->andWhere($qb->expr()->eq('it.folder_id', $qb->createNamedParameter($folderId)))
+			->where($qb->expr()->eq('it.user_id',
+				$qb->createNamedParameter($userId)))
+			->andWhere($qb->expr()->eq('it.folder_id',
+				$qb->createNamedParameter($folderId)))
 			->leftJoin('it', 'athm_item_sources', 'its', 'it.id = its.item_id')
 			->leftJoin('its', 'athm_sources', 's', 's.id = its.source_id')
 			->groupBy('it.id')
@@ -416,11 +425,14 @@ class ItemMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	private function insertItemFieldOrderedValue(int $itemId, int $fieldId, int $order, $value) {
+	private function insertItemFieldOrderedValue(int $itemId, int $fieldId,
+		int $order, $value) {
 		$qb = $this->db->getQueryBuilder();
 		$qb->insert('athm_item_field_values')
-			->setValue('item_id', $qb->createNamedParameter($itemId, IQueryBuilder::PARAM_INT))
-			->setValue('field_id', $qb->createNamedParameter($fieldId, IQueryBuilder::PARAM_INT))
+			->setValue('item_id',
+				$qb->createNamedParameter($itemId, IQueryBuilder::PARAM_INT))
+			->setValue('field_id',
+				$qb->createNamedParameter($fieldId, IQueryBuilder::PARAM_INT))
 			->setValue('order', $order)
 			->setValue('value', $qb->createNamedParameter($value));
 		$qb->executeStatement();
@@ -441,10 +453,12 @@ class ItemMapper extends QBMapper {
 				->from('athm_item_field_values')
 				->where($qb->expr()
 					->eq('item_id',
-						$qb->createNamedParameter($itemId, IQueryBuilder::PARAM_INT)))
+						$qb->createNamedParameter($itemId,
+						IQueryBuilder::PARAM_INT)))
 				->andWhere($qb->expr()
 					->eq('field_id',
-						$qb->createNamedParameter($fieldId, IQueryBuilder::PARAM_INT)));
+						$qb->createNamedParameter($fieldId,
+						IQueryBuilder::PARAM_INT)));
 			$cursor = $qb->execute();
 			$row = $cursor->fetch();
 			$cursor->closeCursor();
@@ -492,7 +506,8 @@ class ItemMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException
 	 */
-	public function changeFolder(int $itemId, int $folderId, string $userId): Item {
+	public function changeFolder(int $itemId, int $folderId, string $userId)
+	: Item {
 		$item = $this->find($itemId, $userId);
 		$item->setFolderId($folderId);
 		$item->setDateModified(new \DateTime);
@@ -524,7 +539,8 @@ class ItemMapper extends QBMapper {
 		foreach ($itemData as $field => $value) {
 			$fieldId = $this->findFieldId($field);
 			$nextOrder = $this->getNextOrder($itemId, $fieldId);
-			$this->insertItemFieldOrderedValue($itemId, $fieldId, $nextOrder, $value);
+			$this->insertItemFieldOrderedValue($itemId, $fieldId, $nextOrder,
+				$value);
 		}
 		$this->saveToJSONOnModify($itemId, $userId);
 		return $item;
@@ -570,7 +586,9 @@ class ItemMapper extends QBMapper {
 					$currentDate = new \DateTime;
 					$contributor->setDateAdded($currentDate);
 					$contributor->setDateModified($currentDate);
-					$newContributor = $contributorMapper->insertContributor($contributor);
+					$newContributor = $contributorMapper->insertContributor(
+						$contributor
+					);
 					
 					$contribution = new Contribution();
 					$contribution->setItemId($id);
@@ -602,8 +620,12 @@ class ItemMapper extends QBMapper {
 				->where($qb->expr()->eq('name', $qb->createNamedParameter('url')));
 			$fieldID = $this->findEntity($qb)->id;
 			$qb->insert('athm_item_field_values')
-				->setValue('item_id', $qb->createNamedParameter($newItem->id, IQueryBuilder::PARAM_INT))
-				->setValue('field_id', $qb->createNamedParameter($fieldID, IQueryBuilder::PARAM_INT))
+				->setValue('item_id',
+					$qb->createNamedParameter($newItem->id,
+						IQueryBuilder::PARAM_INT))
+				->setValue('field_id',
+					$qb->createNamedParameter($fieldID,
+						IQueryBuilder::PARAM_INT))
 				->setValue('order', 0)
 				->setValue('value', $qb->createNamedParameter($url));
 			$qb->executeStatement();
@@ -618,7 +640,8 @@ class ItemMapper extends QBMapper {
 	 */
 	public function createFromEML(array $emlData, \DateTime $dateAdded,
 		\DateTime $dateModified, string $userId): array {
-		return $this->atomic(function () use (&$emlData, &$dateAdded, &$dateModified, &$userId) {
+		return $this->atomic(function () use (&$emlData, &$dateAdded,
+			&$dateModified, &$userId) {
 			$sourceMapper = new SourceMapper($this->db, $this->storage,
 				$this->config, $this->appName);
 
@@ -762,21 +785,30 @@ class ItemMapper extends QBMapper {
 	
 		if (isset($arTarget['host'])) {
 			if (!isset($arTarget['scheme'])) {
-				$proto = isset($arSource['scheme']) ? "{$arSource['scheme']}://" : '//';
+				$proto = isset($arSource['scheme'])
+				? "{$arSource['scheme']}://"
+				: '//';
 			} else {
 				$proto = "{$arTarget['scheme']}://";
 			}
-			$baseUrl = "{$proto}{$arTarget['host']}" . (isset($arTarget['port']) ? ":{$arTarget['port']}" : '');
+			$baseUrl = "{$proto}{$arTarget['host']}" . (isset($arTarget['port'])
+				? ":{$arTarget['port']}"
+				: '');
 		} else {
 			if (isset($arSource['host'])) {
-				$proto = isset($arSource['scheme']) ? "{$arSource['scheme']}://" : '//';
-				$baseUrl = "{$proto}{$arSource['host']}" . (isset($arSource['port']) ? ":{$arSource['port']}" : '');
+				$proto = isset($arSource['scheme'])
+					? "{$arSource['scheme']}://"
+					: '//';
+				$baseUrl = "{$proto}{$arSource['host']}" . (isset($arSource['port'])
+					? ":{$arSource['port']}"
+					: '');
 			} else {
 				$baseUrl = '';
 			}
 			$arPath = [];
 	
-			if ((empty($targetPath) || $targetPath[0] !== '/') && !empty($arSource['path'])) {
+			if ((empty($targetPath) || $targetPath[0] !== '/')
+				&& !empty($arSource['path'])) {
 				$arTargetPath = explode('/', $targetPath);
 				if (empty($arSource['path'])) {
 					$arPath = [];
@@ -804,7 +836,8 @@ class ItemMapper extends QBMapper {
 	}
 
 	// https://stackoverflow.com/a/37588381
-	public function getUrlContentsAndFinalUrl(&$url, &$response_header, &$response_code) {
+	public function getUrlContentsAndFinalUrl(&$url, &$response_header,
+		&$response_code) {
 		$maxDepth = 5;
 		$depth = 1;
 		$header = null;
@@ -834,7 +867,8 @@ class ItemMapper extends QBMapper {
 			$location_headers = preg_grep($pattern, $http_response_header);
 			$response_header = $http_response_header;
 
-			if (preg_match("#HTTP/[0-9\.]+\s+([0-9]+)#", $http_response_header[0], $out)) {
+			if (preg_match("#HTTP/[0-9\.]+\s+([0-9]+)#",
+				$http_response_header[0], $out)) {
 				$response_code = intval($out[1]);
 			}
 
@@ -846,7 +880,8 @@ class ItemMapper extends QBMapper {
 				   "Chrome/130.0.0.0 Safari/537.36\r\n";
 				$repeat = true;
 			} elseif (!empty($location_headers) &&
-				preg_match($pattern, array_values($location_headers)[0], $matches)) {
+				preg_match($pattern, array_values($location_headers)[0],
+					$matches)) {
 				$url = $this->getAbsoluteURL($matches[1], $url);
 				$repeat = $depth < $maxDepth;
 				$depth = $depth + 1;
@@ -861,13 +896,17 @@ class ItemMapper extends QBMapper {
 	/**
 	 * @throws UrlFetchError
 	 */
-	public function attachFromUrl(string $userId, int $itemId, string $url): ItemFileAttachment {
+	public function attachFromUrl(string $userId, int $itemId, string $url)
+	: ItemFileAttachment {
 		$response_header = [];
 		$response_code = 0;
-		$fileData = $this->getUrlContentsAndFinalUrl($url, $response_header, $response_code);
+		$fileData = $this->getUrlContentsAndFinalUrl($url, $response_header,
+			$response_code);
 		
 		if ($response_code != 200) {
-			throw new UrlFetchError('Error fetching file (error: ' . $response_code . ')');
+			throw new UrlFetchError(
+				'Error fetching file (error: ' . $response_code . ')'
+			);
 		}
 		$fileName = basename(strtok(strtok($url, '?'), '#'));
 
@@ -895,7 +934,8 @@ class ItemMapper extends QBMapper {
 	
 	}
 
-	private function wrapInItemFileAttachment(ItemAttachment $itemAttachment): ItemFileAttachment {
+	private function wrapInItemFileAttachment(ItemAttachment $itemAttachment)
+	: ItemFileAttachment {
 		$itemFileAttachment = new ItemFileAttachment();
 		$itemFileAttachment->setItemAttachment($itemAttachment);
 		$itemFileAttachment->setDownloadPath(
@@ -927,7 +967,8 @@ class ItemMapper extends QBMapper {
 			// try to find the item, excepts if none/many found
 			$this->find($itemId, $userId);
 
-			$itemAttachmentMapper = new ItemAttachmentMapper($this->db, $this->storage);
+			$itemAttachmentMapper = new ItemAttachmentMapper($this->db,
+				$this->storage);
 
 			// increment dupeCount (up to 1000) until we find
 			// a filename that doesn't exist
