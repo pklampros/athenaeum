@@ -306,35 +306,31 @@ class ItemMapper extends QBMapper {
 			->setMaxResults($limit);
 
 		$firstOrderValue = true;
+		$keyColumn = [
+			'date_added' => 'it.date_added',
+			'date_modified' => 'it.date_modified',
+			'source_importance' => 'source_importance',
+		];
 		foreach ($orderBy as &$orderByValue) {
 			$direction = 'asc';
 			if (str_starts_with($orderByValue, '-')) {
 				$direction = 'desc';
 				$orderByValue = substr($orderByValue, 1);
 			}
-			switch ($orderByValue) {
-				case 'date_added':
-					$colName = 'it.date_added';
-					if ($firstOrderValue) {
-						$qb->orderBy($colName, $direction);
-						$firstOrderValue = false;
-					} else {
-						$qb->addOrderBy($colName, $direction);
-					}
-					break;
-				case 'source_importance':
-					$colName = 'source_importance';
-					if ($firstOrderValue) {
-						$qb->orderBy($colName, $direction);
-						$firstOrderValue = false;
-					} else {
-						$qb->addOrderBy($colName, $direction);
-					}
-					break;
+
+			$colName = $keyColumn[$orderByValue];
+			if (isset($colName)) {
+				if ($firstOrderValue) {
+					$qb->orderBy($colName, $direction);
+					$firstOrderValue = false;
+				} else {
+					$qb->addOrderBy($colName, $direction);
+				}
 			}
 		}
 
-		// Always oder by id last to maintain the order of items
+		// Always order by id last to maintain the ultimate order of
+		// items across page refreshes
 		$qb->addOrderBy('it.id', 'DESC');
 
 		$includeAttachments = true;
