@@ -7,17 +7,17 @@
 		<div slot="list"
 			class="items-list">
 			<div id="toptitle">
-				<h2>
+				<h2 style="flex-grow:1">
 					Item ({{ listOffset }} - {{ listOffset + items.length }} /
 					{{ totalCount }})
-					<NcButton aria-label="Tune"
-						style="flex:1"
-						@click="tuning = !tuning">
-						<template #icon>
-							<Tune :size="18" />
-						</template>
-					</NcButton>
 				</h2>
+				<NcButton aria-label="Tune"
+					style="flex:1"
+					@click="tuning = !tuning">
+					<template #icon>
+						<Tune :size="18" />
+					</template>
+				</NcButton>
 			</div>
 			<div v-if="tuning"
 				class="list-controls tuner">
