@@ -401,6 +401,7 @@ export default {
 					newOffset,
 					replenish,
 					this.listOrderBy,
+					this.listQuery,
 				).then((itemData) => {
 					this.items.push(...itemData.items)
 
