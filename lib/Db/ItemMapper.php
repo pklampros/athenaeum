@@ -325,9 +325,9 @@ class ItemMapper extends QBMapper {
 
 		$firstOrderValue = true;
 		$keyColumn = [
-			'date_added' => 'it.date_added',
-			'date_modified' => 'it.date_modified',
-			'source_importance' => 'source_importance',
+			'da' => 'it.date_added',
+			'dm' => 'it.date_modified',
+			'si' => 'source_importance',
 		];
 		
 		foreach (explode(',', $orderBy) as &$orderByValue) {

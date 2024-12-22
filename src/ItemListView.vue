@@ -140,27 +140,27 @@ const orderOptions = {
 	closeOnSelect: false,
 	options: [
 		{
-			id: 'date_added',
+			id: 'da',
 			label: 'Date added (old to new)',
 		},
 		{
-			id: '-date_added',
+			id: '-da',
 			label: 'Date added (new to old)',
 		},
 		{
-			id: 'date_modified',
+			id: 'dm',
 			label: 'Date modified (old to new)',
 		},
 		{
-			id: '-date_modified',
+			id: '-dm',
 			label: 'Date modified (new to old)',
 		},
 		{
-			id: 'source_importance',
+			id: 'si',
 			label: 'Source importance (low to high)',
 		},
 		{
-			id: '-source_importance',
+			id: '-si',
 			label: 'Source importance (high to low)',
 		},
 	],
@@ -197,15 +197,15 @@ export default {
 			listOffset: 0,
 			listLimit: 50,
 			listReplenish: 5,
-			listOrderBy: this.$route.query.listOrderBy
-				? this.$route.query.listOrderBy
+			listOrderBy: this.$route.query.lob
+				? this.$route.query.lob
 				: 'date_added,-source_importance',
 			updating: false,
 			loading: true,
 			tuning: false,
 			orderOptions,
-			listQuery: this.$route.query.listQuery
-				? this.$route.query.listQuery
+			listQuery: this.$route.query.lq
+				? this.$route.query.lq
 				: '',
 		}
 	},
@@ -267,13 +267,13 @@ export default {
 		applyFilters() {
 			let modified = false
 			let newRouteQuery = { ...this.$route.query }
-			if (this.listQuery !== this.$route.query.listQuery) {
-				newRouteQuery = { ...newRouteQuery, listQuery: this.listQuery }
+			if (this.listQuery !== this.$route.query.lq) {
+				newRouteQuery = { ...newRouteQuery, lq: this.listQuery }
 				modified = true
 			}
 			this.listOrderBy = orderOptions.value.map(v => v.id).join(',')
-			if (this.listOrderBy !== this.$route.query.listOrderBy) {
-				newRouteQuery = { ...newRouteQuery, listOrderBy: this.listOrderBy }
+			if (this.listOrderBy !== this.$route.query.lob) {
+				newRouteQuery = { ...newRouteQuery, lob: this.listOrderBy }
 				modified = true
 			}
 			if (modified) {
@@ -282,8 +282,8 @@ export default {
 			}
 		},
 		cancelFilters() {
-			this.listQuery = this.$route.query.listQuery
-			this.listOrderBy = this.$route.query.listOrderBy
+			this.listQuery = this.$route.query.lq
+			this.listOrderBy = this.$route.query.lob
 			this.tuning = false
 		},
 		getSubtitle(item) {
@@ -347,14 +347,14 @@ export default {
 		},
 		async fetchData() {
 			try {
-				const newOffset = this.$route.query.listOffset
-					? this.$route.query.listOffset
+				const newOffset = this.$route.query.lof
+					? this.$route.query.lof
 					: 0
-				this.listOrderBy = this.$route.query.listOrderBy
-					? this.$route.query.listOrderBy
+				this.listOrderBy = this.$route.query.lob
+					? this.$route.query.lob
 					: 'date_added,-source_importance'
-				this.listQuery = this.$route.query.listQuery
-					? this.$route.query.listQuery
+				this.listQuery = this.$route.query.lq
+					? this.$route.query.lq
 					: ''
 
 				const itemData = await fetchItems(
@@ -498,7 +498,7 @@ export default {
 				newOffset = this.listLimit
 					* Math.floor(this.totalCount / this.listLimit)
 			}
-			this.$router.push({ query: { listOffset: newOffset } })
+			this.$router.push({ query: { ...this.$route.query, lof: newOffset } })
 			this.fetchData()
 		},
 		firstPage() {
