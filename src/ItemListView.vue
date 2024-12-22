@@ -141,39 +141,30 @@ const orderOptions = {
 	options: [
 		{
 			id: 'date_added',
-			label: 'Date added (ascending)',
+			label: 'Date added (old to new)',
 		},
 		{
 			id: '-date_added',
-			label: 'Date added (descending)',
+			label: 'Date added (new to old)',
 		},
 		{
 			id: 'date_modified',
-			label: 'Date modified (ascending)',
+			label: 'Date modified (old to new)',
 		},
 		{
 			id: '-date_modified',
-			label: 'Date modified (descending)',
+			label: 'Date modified (new to old)',
 		},
 		{
 			id: 'source_importance',
-			label: 'Source importance (ascending)',
+			label: 'Source importance (low to high)',
 		},
 		{
 			id: '-source_importance',
-			label: 'Source importance (descending)',
+			label: 'Source importance (hight to low)',
 		},
 	],
-	value: [
-		{
-			id: 'date_added',
-			label: 'Date added (ascending)',
-		},
-		{
-			id: '-source_importance',
-			label: 'Source importance (descending)',
-		},
-	],
+	value: [],
 }
 
 export default {
@@ -208,7 +199,7 @@ export default {
 			listReplenish: 5,
 			listOrderBy: this.$route.query.listOrderBy
 				? this.$route.query.listOrderBy
-				: ['date_added', '-source_importance'],
+				: 'date_added,-source_importance',
 			updating: false,
 			loading: true,
 			tuning: false,
@@ -246,6 +237,13 @@ export default {
 		},
 	},
 	async mounted() {
+		const listOrderByArray = this.listOrderBy.split(',')
+		for (const listOrderByValue of listOrderByArray) {
+			const found = orderOptions.options.find(x => x.id === listOrderByValue)
+			if (found) {
+				orderOptions.value.push(found)
+			}
+		}
 		await this.fetchData()
 	},
 
@@ -273,8 +271,8 @@ export default {
 				newRouteQuery = { ...newRouteQuery, listQuery: this.listQuery }
 				modified = true
 			}
-			this.listOrderBy = orderOptions.value.map(v => v.id)
-			if (this.listOrderBy.join(',') !== this.$route.query.listOrderBy.join(',')) {
+			this.listOrderBy = orderOptions.value.map(v => v.id).join(',')
+			if (this.listOrderBy !== this.$route.query.listOrderBy) {
 				newRouteQuery = { ...newRouteQuery, listOrderBy: this.listOrderBy }
 				modified = true
 			}
@@ -284,7 +282,8 @@ export default {
 			}
 		},
 		cancelFilters() {
-			this.listQuery = ''
+			this.listQuery = this.$route.query.listQuery
+			this.listOrderBy = this.$route.query.listOrderBy
 			this.tuning = false
 		},
 		getSubtitle(item) {
@@ -353,7 +352,7 @@ export default {
 					: 0
 				this.listOrderBy = this.$route.query.listOrderBy
 					? this.$route.query.listOrderBy
-					: ['date_added', '-source_importance']
+					: 'date_added,-source_importance'
 				this.listQuery = this.$route.query.listQuery
 					? this.$route.query.listQuery
 					: ''

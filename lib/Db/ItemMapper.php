@@ -282,7 +282,7 @@ class ItemMapper extends QBMapper {
 		int $folderId,
 		int $limit,
 		int $offset,
-		array $orderBy,
+		string $orderBy,
 		string $search,
 		?bool $showAll = false,
 	): array {
@@ -329,7 +329,8 @@ class ItemMapper extends QBMapper {
 			'date_modified' => 'it.date_modified',
 			'source_importance' => 'source_importance',
 		];
-		foreach ($orderBy as &$orderByValue) {
+		
+		foreach (explode(',', $orderBy) as &$orderByValue) {
 			$direction = 'asc';
 			if (str_starts_with($orderByValue, '-')) {
 				$direction = 'desc';

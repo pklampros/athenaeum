@@ -35,7 +35,7 @@ class ItemController extends Controller {
 		string $folder = 'library',
 		int $limit = 50,
 		int $offset = 0,
-		array $orderBy = [],
+		string $orderBy = '',
 		string $search = '',
 		?bool $showAll = false,
 	): DataResponse {

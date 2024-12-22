@@ -31,7 +31,7 @@ class ItemService {
 		string $folder,
 		int $limit,
 		int $offset,
-		array $orderBy,
+		string $orderBy,
 		string $search,
 		?bool $showAll = false,
 	): array {
