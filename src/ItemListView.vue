@@ -161,7 +161,7 @@ const orderOptions = {
 		},
 		{
 			id: '-source_importance',
-			label: 'Source importance (hight to low)',
+			label: 'Source importance (high to low)',
 		},
 	],
 	value: [],
