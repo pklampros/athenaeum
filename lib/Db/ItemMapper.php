@@ -133,7 +133,8 @@ class ItemMapper extends QBMapper {
 	private function getSourceInfo($id) {
 
 		$qb = $this->db->getQueryBuilder();
-		$qb->select('its.extra')
+		$qb->select('its.extra_item_data')
+			->addSelect('its.extra_source_data')
 			->addSelect('s.importance')
 			->addSelect('s.source_type')
 			->from('athm_item_sources', 'its')
@@ -145,7 +146,8 @@ class ItemMapper extends QBMapper {
 		$sourceInfo = [];
 		try {
 			while ($fieldData = $result->fetch()) {
-				$fieldData['extra'] = json_decode($fieldData['extra'], true);
+				$fieldData['extra_item_data'] = json_decode($fieldData['extra_item_data'], true);
+				$fieldData['extra_source_data'] = json_decode($fieldData['extra_source_data'], true);
 				$sourceInfo[] = $fieldData;
 				// $sourceData = json_decode($fieldData["extra"], true);
 				// unset($sourceData['sourceId']);
@@ -288,25 +290,57 @@ class ItemMapper extends QBMapper {
 	): array {
 		/* @var $qb IQueryBuilder */
 		$qb = $this->db->getQueryBuilder();
-		$qb->selectAlias($qb->createFunction('COUNT(*)'), 'count')
-			->from('athm_items')
-			->where($qb->expr()->eq('user_id',
-				$qb->createNamedParameter($userId)))
-			->andWhere($qb->expr()->eq('folder_id',
-				$qb->createNamedParameter($folderId)));
+
+		$titleonly = false;
 
 		if (isset($search) && $search != '') {
-			$qb->addSelect('title')
-				->andWhere($qb->expr()->iLike(
-					'title',
-					$qb->createNamedParameter('%' . $search . '%'),
-					IQueryBuilder::PARAM_STR));
+			$qb->select('it.title')
+				->from('athm_items', 'it')
+				->where($qb->expr()->eq('it.user_id',
+					$qb->createNamedParameter($userId)))
+				->andWhere($qb->expr()->eq('it.folder_id',
+					$qb->createNamedParameter($folderId)));
+			if ($titleonly) {
+				$qb->addSelect('it.title')
+					->having($qb->expr()->iLike(
+						'it.title',
+						$qb->createNamedParameter('%' . $search . '%'),
+						IQueryBuilder::PARAM_STR));
+			} else {
+				$or = $qb->expr()->orx(
+					$qb->expr()->iLike(
+						'it.title',
+						$qb->createNamedParameter('%' . $search . '%'),
+						IQueryBuilder::PARAM_STR),
+					$qb->expr()->iLike(
+						'source_extra',
+						$qb->createNamedParameter('%' . $search . '%'),
+						IQueryBuilder::PARAM_STR),
+				);
+	
+				$qb->selectAlias($qb->func()->groupConcat('its.extra_item_data'),
+					'source_extra')
+					->leftJoin('it', 'athm_item_sources', 'its', 'it.id = its.item_id')
+					->groupBy('it.id')
+					->having($or);
+			}
+			$cursor = $qb->executeQuery();
+			$totalCount = count($cursor->fetchAll());
+			$cursor->closeCursor();
+		} else {
+			$qb->selectAlias($qb->createFunction('COUNT(it.id)'),
+				'count')
+				->from('athm_items', 'it')
+				->where($qb->expr()->eq('it.user_id',
+					$qb->createNamedParameter($userId)))
+				->andWhere($qb->expr()->eq('it.folder_id',
+					$qb->createNamedParameter($folderId)));
+			$cursor = $qb->execute();
+			$row = $cursor->fetch();
+			$cursor->closeCursor();
+			$totalCount = $row['count'];
 		}
 
-		$cursor = $qb->execute();
-		$row = $cursor->fetch();
-		$cursor->closeCursor();
-		$totalCount = $row['count'];
 
 		$qb = $this->db->getQueryBuilder();
 		$qb->selectAlias($qb->createFunction('SUM(`s`.`importance`)'),
@@ -370,10 +404,29 @@ class ItemMapper extends QBMapper {
 		}
 
 		if (isset($search) && $search != '') {
-			$qb->andWhere($qb->expr()->iLike(
-				'it.title',
-				$qb->createNamedParameter('%' . $search . '%'),
-				IQueryBuilder::PARAM_STR));
+
+			if ($titleonly) {
+				$qb->addSelect('it.title')
+					->having($qb->expr()->iLike(
+						'it.title',
+						$qb->createNamedParameter('%' . $search . '%'),
+						IQueryBuilder::PARAM_STR));
+			} else {
+				$or = $qb->expr()->orx(
+					$qb->expr()->iLike(
+						'it.title',
+						$qb->createNamedParameter('%' . $search . '%'),
+						IQueryBuilder::PARAM_STR),
+					$qb->expr()->iLike(
+						'source_extra',
+						$qb->createNamedParameter('%' . $search . '%'),
+						IQueryBuilder::PARAM_STR),
+				);
+	
+				$qb->selectAlias($qb->func()->groupConcat('its.extra_item_data'),
+					'source_extra')
+					->having($or);
+			}
 		}
 
 		return [

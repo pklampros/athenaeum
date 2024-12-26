@@ -199,7 +199,7 @@ export default {
 			listReplenish: 5,
 			listOrderBy: this.$route.query.lob
 				? this.$route.query.lob
-				: 'date_added,-source_importance',
+				: 'da,-si',
 			updating: false,
 			loading: true,
 			tuning: false,
@@ -352,7 +352,7 @@ export default {
 					: 0
 				this.listOrderBy = this.$route.query.lob
 					? this.$route.query.lob
-					: 'date_added,-source_importance'
+					: 'da,-si'
 				this.listQuery = this.$route.query.lq
 					? this.$route.query.lq
 					: ''

@@ -129,18 +129,18 @@
 						:key="sourceInfoPoint">
 						<div>
 							<span style="color: var(--color-main-text);font-weight: bold;">
-								{{ sourceInfoPoint.extra.excerpt }}
+								{{ sourceInfoPoint.extra_item_data.excerpt }}
 							</span>
 							<div style="padding: 5px 0px;">
 								<span style="color: var(--color-text-maxcontrast);">
-									Search term: {{ sourceInfoPoint.extra.searchTerm }}
+									Search term: {{ sourceInfoPoint.extra_source_data.searchTerm }}
 								</span>
 							</div>
 							<div style="padding: 5px 0px;">
 								<span style="color: var(--color-text-maxcontrast);">
 									Received: {{
 										new Date(Date.parse(
-											sourceInfoPoint.extra.emailReceived.date
+											sourceInfoPoint.extra_source_data.emailReceived.date
 										)).toLocaleDateString('en-uk',
 											{
 												year: "numeric",
@@ -432,7 +432,7 @@ export default {
 			const sourceData = []
 			for (const sourceInfo of unmappedSourceData) {
 				const newSource = {}
-				for (const [key, value] of Object.entries(sourceInfo.extra)) {
+				for (const [key, value] of Object.entries(sourceInfo.extra_item_data)) {
 					if (key === 'journal') {
 						newSource.journal = value
 					} else if (key === 'authors') {
