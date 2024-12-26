@@ -326,8 +326,8 @@ export default {
 			fetchItemSummary(this.items[itemIdx].id).then((resp) => {
 				const contributions = resp.data.contributions
 				const sourceInfoExtra = resp.data.sourceInfo.length > 0
-					&& 'extra' in resp.data.sourceInfo[0]
-					? resp.data.sourceInfo[0].extra
+					&& 'extra_item_data' in resp.data.sourceInfo[0]
+					? resp.data.sourceInfo[0].extra_item_data
 					: {}
 				if (contributions.length !== 0) {
 					// item.authors = contributions.map(c => c.contributor_name_display).join(',')

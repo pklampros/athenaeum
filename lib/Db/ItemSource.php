@@ -17,8 +17,6 @@ use OCP\AppFramework\Db\Entity;
  * @method setItemId(int $itemId): void
  * @method getSourceId(): int
  * @method setSourceId(int $sourceId): void
- * @method getExtra(): string
- * @method setExtra(string $extra): void
  * @method getExtraItemData(): string
  * @method setExtraItemData(string $extraItemData): void
  * @method getExtraSourceData(): string
@@ -29,7 +27,6 @@ use OCP\AppFramework\Db\Entity;
 class ItemSource extends Entity implements JsonSerializable {
 	protected int $itemId = 0;
 	protected int $sourceId = 0;
-	protected ?string $extra = '';
 	protected ?string $extraItemData = '';
 	protected ?string $extraSourceData = '';
 	protected string $userId = '';
@@ -39,7 +36,6 @@ class ItemSource extends Entity implements JsonSerializable {
 			'id' => $this->id,
 			'itemId' => $this->itemId,
 			'sourceId' => $this->sourceId,
-			'extra' => $this->extra,
 			'extraItemData' => $this->extraItemData,
 			'extraSourceData' => $this->extraSourceData,
 			'userId' => $this->userId
