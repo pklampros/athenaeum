@@ -6,7 +6,14 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd $SCRIPT_DIR
 
-podman run -it --volume=../:/src/ \
-    --workdir=/src \
-     athenaeum-builder:latest \
-     /bin/bash
+if [ "$1" == "clean" ]; then
+    podman rm athenaeum-builder
+    podman run -it --volume=../:/src/ \
+        --workdir=/src \
+        --name=athenaeum-builder \
+        athenaeum-builder:latest \
+        /bin/bash
+else
+    podman start athenaeum-builder
+    podman exec -it athenaeum-builder /bin/bash
+fi
