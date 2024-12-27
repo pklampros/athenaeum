@@ -10,7 +10,8 @@
 					<h2 :title="item.title"
 						:class="{ toedit: visible.itemEditButton }"
 						style="display: flex; align-items: center; justify-content: space-between;">
-						{{ item.title }}
+						<NcHighlight :text="item.title"
+							:search="queryText" />
 						<a :href="item.url"
 							target="_blank">
 							<OpenInNew />
@@ -129,7 +130,8 @@
 						:key="sourceInfoPoint">
 						<div>
 							<span style="color: var(--color-main-text);font-weight: bold;">
-								{{ sourceInfoPoint.extra_item_data.excerpt }}
+								<NcHighlight :text="sourceInfoPoint.extra_item_data.excerpt"
+									:search="queryText" />
 							</span>
 							<div style="padding: 5px 0px;">
 								<span style="color: var(--color-text-maxcontrast);">
@@ -255,6 +257,7 @@ import {
 	NcButton,
 	NcUserBubble,
 	NcListItem,
+	NcHighlight,
 } from '@nextcloud/vue'
 
 import Delete from 'vue-material-design-icons/Delete.vue'
@@ -295,6 +298,7 @@ export default {
 		NcButton,
 		NcUserBubble,
 		NcListItem,
+		NcHighlight,
 
 		// icons
 		Delete,
@@ -337,6 +341,11 @@ export default {
 	computed: {
 		hasAttachmentRemoveId() {
 			return this.attachmentRemoveId !== null
+		},
+		queryText() {
+			return this.$route.query.lq
+				? this.$route.query.lq
+				: ''
 		},
 	},
 	watch: {
