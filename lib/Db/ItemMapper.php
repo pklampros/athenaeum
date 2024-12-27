@@ -726,24 +726,24 @@ class ItemMapper extends QBMapper {
 				'Scholar alert for the search term: ' . $emlData['searchTerm'],
 				$userId
 			);
-			$emailData = [
+			$extraSourceData = json_encode([
 				'emailSubject' => $emlData['subject'],
 				'alertId' => $source->getUid(),
 				'searchTerm' => $emlData['searchTerm'],
 				'emailReceived' => $emlData['received']
-			];
+			], JSON_FORCE_OBJECT);
 			$itemTypeId = $this->findItemTypeId('paper');
 			$defaultFolder = 'inbox';
 			$folderId = $this->findFolderId($defaultFolder);
 
 
 			foreach ($emlData['items'] as $emlItem) {
-				$emailItemData = $emailData;
+				$emailItemData = [];
 				$emailItemData['excerpt'] = $emlItem['excerpt'];
 				$emailItemData['authors'] = $emlItem['authors'];
 				$emailItemData['journal'] = $emlItem['journal'];
 				$emailItemData['published'] = $emlItem['published'];
-				$extra = json_encode($emailItemData, JSON_FORCE_OBJECT);
+				$extraItemData = json_encode($emailItemData, JSON_FORCE_OBJECT);
 
 				$itemUrl = $emlItem['url'];
 				$item = null;
@@ -780,7 +780,8 @@ class ItemMapper extends QBMapper {
 					$itemSource = new ItemSource();
 					$itemSource->setItemId($item->getId());
 					$itemSource->setSourceId($source->getId());
-					$itemSource->setExtra($extra);
+					$itemSource->setExtraItemData($extraItemData);
+					$itemSource->setExtraSourceData($extraSourceData);
 					$itemSource->setUserId($userId);
 					$itemSourceMapper->insert($itemSource);
 				}
