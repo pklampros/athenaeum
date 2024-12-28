@@ -8,7 +8,7 @@
 			class="items-list">
 			<div id="toptitle">
 				<h2 style="flex-grow:1">
-					Item ({{ listOffset }} - {{ listOffset + items.size }} /
+					Item ({{ listOffset }} - {{ listOffset + items.length }} /
 					{{ totalCount }})
 				</h2>
 				<NcButton aria-label="Tune"
@@ -38,7 +38,7 @@
 			</div>
 			<NcAppContentList class="main-items-list"
 				:show-details="true">
-				<ItemListItem v-for="item in items.values()"
+				<ItemListItem v-for="item in items"
 					:key="item.id"
 					:item="item"
 					@item-change-folder="itemSendToFolder" />
@@ -70,7 +70,7 @@
 				</NcButton>
 				<NcButton aria-label="Next page"
 					style="flex:1"
-					:disabled="(listOffset + items.size) >= totalCount"
+					:disabled="(listOffset + items.length) >= totalCount"
 					@click="nextPage">
 					<template #icon>
 						<ChevronRight :size="18" />
@@ -78,7 +78,7 @@
 				</NcButton>
 				<NcButton aria-label="Forward multiple pages"
 					style="flex:1"
-					:disabled="(listOffset + items.size) >= totalCount"
+					:disabled="(listOffset + items.length) >= totalCount"
 					@click="forwardMultiplePages">
 					<template #icon>
 						<ChevronDoubleRight :size="18" />
@@ -86,7 +86,7 @@
 				</NcButton>
 				<NcButton aria-label="Last page"
 					style="flex:1"
-					:disabled="(listOffset + items.size) >= totalCount"
+					:disabled="(listOffset + items.length) >= totalCount"
 					@click="lastPage">
 					<template #icon>
 						<PageLast :size="18" />
@@ -192,7 +192,7 @@ export default {
 	},
 	data() {
 		return {
-			items: new Map(),
+			items: [],
 			totalCount: 0,
 			listOffset: 0,
 			listLimit: 50,
@@ -223,13 +223,13 @@ export default {
 			if (!this.currentItemId) {
 				return null
 			}
-			return this.items.get(this.currentItemId)
+			return this.items.find((item) => item.id === this.currentItemId)
 		},
 		currentItemSummary() {
 			if (!this.currentItemId) {
 				return null
 			}
-			const itemSummary = this.items.get(this.currentItemId)
+			const itemSummary = this.items.find((item) => item.id === this.currentItemId)
 			if (!itemSummary) {
 				return { id: this.currentItemId }
 			}
@@ -254,7 +254,7 @@ export default {
 		newItem() {
 			if (this.currentItemId !== -1) {
 				this.currentItemId = -1
-				this.items.set(-1, {
+				this.items.push({
 					id: -1,
 					url: '',
 					title: '',
@@ -299,14 +299,15 @@ export default {
 
 		},
 		cancelNewItem() {
-			this.items.splice(this.items.findIndex((item) => item === -1), 1)
+			this.items.splice(this.items.findIndex((item) => item.id === -1), 1)
 			this.currentItemId = null
 		},
 		async createItem(item) {
 			this.updating = true
 			try {
 				const response = await axios.post(generateUrl('/apps/athenaeum/res/items'), item)
-				this.$set(this.items, this.currentItemId, response.data)
+				const index = this.items.findIndex((match) => match.id === this.currentItemId)
+				this.$set(this.items, index, response.data)
 				this.currentItemId = response.data.id
 			} catch (e) {
 				console.error(e)
@@ -331,21 +332,19 @@ export default {
 					&& 'extra_item_data' in resp.data.sourceInfo[0]
 					? resp.data.sourceInfo[0].extra_item_data
 					: {}
+				const itemIdx = this.items.findIndex((match) => match.id === itemId)
+				if (itemIdx === -1) return
 				if (contributions.length !== 0) {
-					this.$set(this.items.get(itemId), 'authors', contributions.map(c => c.contributor_name_display).join(','))
+					this.$set(this.items[itemIdx], 'authors', contributions.map(c => c.contributor_name_display).join(','))
 				} else if ('authors' in sourceInfoExtra) {
-					this.$set(this.items.get(itemId), 'authors', sourceInfoExtra.authors)
+					this.$set(this.items[itemIdx], 'authors', sourceInfoExtra.authors)
 				}
 				if ('journal' in sourceInfoExtra) {
-					this.$set(this.items.get(itemId), 'journal', sourceInfoExtra.journal)
+					this.$set(this.items[itemIdx], 'journal', sourceInfoExtra.journal)
 				}
 				if ('published' in sourceInfoExtra) {
-					this.$set(this.items.get(itemId), 'published', sourceInfoExtra.published)
+					this.$set(this.items[itemIdx], 'published', sourceInfoExtra.published)
 				}
-				// force update the html
-				// const idx = this.items.findIndex((item) => item === -1)
-				// this.$set(this.itemIds, idx, this.itemIds[idx])
-
 			}).catch((error) => {
 				showError(t('athenaeum', 'Could not fetch items (' + error + ')'))
 			})
@@ -369,11 +368,10 @@ export default {
 					this.listOrderBy,
 					this.listQuery,
 				)
+				this.items = itemData.items
 				this.listOffset = itemData.offset
 				this.totalCount = itemData.totalCount
-				this.items = new Map()
-				for (const item of itemData.items) {
-					this.items.set(item.id, item)
+				for (const item of this.items) {
 					this.fetchUpdateItemSummary(item.id)
 				}
 				this.goToNextAvailableItem()
@@ -384,23 +382,23 @@ export default {
 			this.loading = false
 		},
 		goToNextAvailableItem() {
-			if (!this.currentItemId && this.items.size > 0) {
+			if (!this.currentItemId && this.items.length > 0) {
 				// go directly to the first item
 				this.$router.replace({
 					name: 'items_details',
 					params: {
 						folder: this.currentFolder,
-						itemId: this.keys().next().value,
+						itemId: this.items[0].id,
 					},
 					query: this.$route.query,
 				})
 			}
 		},
 		replenishItems() {
-			const newOffset = this.listOffset + this.items.size
+			const newOffset = this.listOffset + this.items.length
 			const replenish = Math.min(this.listReplenish,
 				this.totalCount - newOffset)
-			if ((this.listLimit - this.items.size) >= replenish
+			if ((this.listLimit - this.items.length) >= replenish
 				&& (newOffset + replenish) < this.totalCount
 				&& !this.currently.replenishing) {
 				this.currently.replenishing = true
@@ -411,12 +409,12 @@ export default {
 					this.listOrderBy,
 					this.listQuery,
 				).then((itemData) => {
-					for (const item of itemData.items) {
-						this.items.set(item.id, item)
-						this.fetchUpdateItemSummary(item.id)
-					}
+					this.items.push(...itemData.items)
 
 					this.totalCount = itemData.totalCount
+					for (const item of itemData.items) {
+						this.fetchUpdateItemSummary(item.id)
+					}
 					this.currently.replenishing = false
 				})
 			}
@@ -424,7 +422,7 @@ export default {
 		itemFolderChanged(itemId) {
 			let removedIdx = null
 			for (const idx in this.items) {
-				if (this.items.keys()[idx] === itemId) {
+				if (this.items[idx].id === itemId) {
 					this.items.splice(idx, 1)
 					removedIdx = idx
 					break
@@ -432,37 +430,37 @@ export default {
 			}
 			this.replenishItems()
 			if (this.currentItemId === itemId) {
-				if (removedIdx > 0 && this.items.size > removedIdx) {
+				if (removedIdx > 0 && this.items.length > removedIdx) {
 					// go directly to the next item
 					this.$router.push({
 						name: 'items_details',
 						params: {
 							folder: this.currentFolder,
-							itemId: this.items.keys()[removedIdx],
+							itemId: this.items[removedIdx].id,
 						},
 						query: this.$route.query,
 					})
-				} else if (removedIdx > 0 && removedIdx >= this.items.size) {
+				} else if (removedIdx > 0 && removedIdx >= this.items.length) {
 					// go directly to the next item
 					this.$router.push({
 						name: 'items_details',
 						params: {
 							folder: this.currentFolder,
-							itemId: this.items.keys()[this.items.size - 1],
+							itemId: this.items[this.items.length - 1].id,
 						},
 						query: this.$route.query,
 					})
-				} else if (this.items.size > 0) {
+				} else if (this.items.length > 0) {
 					// go directly to the first item
 					this.$router.push({
 						name: 'items_details',
 						params: {
 							folder: this.currentFolder,
-							itemId: this.items.keys()[0],
+							itemId: this.items[0].id,
 						},
 						query: this.$route.query,
 					})
-				} else if (this.items.size === 0) {
+				} else if (this.items.length === 0) {
 					// go to the previous page
 					if (this.listOffset > 0) {
 						this.setNewItemOffset(this.listOffset - this.listLimit)
