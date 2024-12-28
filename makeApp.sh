@@ -11,9 +11,9 @@ if ! type php > /dev/null; then
     echo "----"
 fi
 
-if [ $1 = "y" ]; then
+if [ "$1" == "y" ]; then
     composer update
 else
-    echo "Skippint composer update"
+    echo "Skipping composer update"
 fi
 make

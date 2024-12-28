@@ -8,8 +8,15 @@ cd $SCRIPT_DIR
 
 #podman start athenaeum-builder:latest
 
-podman run \
-    --volume=../:/src/ \
-    --workdir=/src \
-    athenaeum-builder:latest \
-    /src/makeApp.sh n
+if [ "$1" == "clean" ]; then
+    podman rm -f athenaeum-builder
+    podman run \
+        --volume=../:/src/ \
+        --workdir=/src \
+        --name=athenaeum-builder \
+        athenaeum-builder:latest \
+        /bin/bash -c "npm install && /src/makeApp.sh n"
+else
+    podman start athenaeum-builder
+    podman exec athenaeum-builder /bin/bash -c "/src/makeApp.sh n"
+fi

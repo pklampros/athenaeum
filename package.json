@@ -24,11 +24,11 @@
 		"@nextcloud/dialogs": "^5.3.7",
 		"@nextcloud/router": "^3.0.1",
 		"@nextcloud/vue": "^8.19.0",
+		"toastify-js": "^1.12.0",
 		"vue": "^2.7.16",
 		"vue-material-design-icons": "^5.3.1",
 		"vue-router": "^3.6.5",
-		"vue-simple-icons": "^7.5.0",
-		"toastify-js": "^1.12.0"
+		"vue-simple-icons": "^7.5.0"
 	},
 	"browserslist": [
 		"extends @nextcloud/browserslist-config"
