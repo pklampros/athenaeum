@@ -23,8 +23,8 @@ export const authorMxn = {
 	},
 	getAuthorNameData(authorTxt) {
 		const author = this.getDefaultNameDataObj()
-
-		const authorNameParts = authorTxt.trim().split(' ')
+		authorTxt = authorTxt.trim()
+		const authorNameParts = authorTxt.split(' ')
 		author.name = authorNameParts.at(-1).trim()
 		author.displayName = authorTxt
 		author.displayNameModified = authorNameParts > 1 && author.name !== ''
@@ -77,6 +77,10 @@ export const authorMxn = {
 	getContributorListFromTxt(authorTxt) {
 		let authorList = authorTxt.split(',')
 		authorList = authorList.map((author) => {
+			// remove any ellipsis
+			author = author.replace('…', '')
+			author = author.replace('...', '')
+
 			author = author.trim()
 			const authorData = this.getAuthorNameData(author)
 			authorData.isNew = true
