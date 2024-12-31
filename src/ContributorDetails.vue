@@ -47,7 +47,7 @@ import {
 import Delete from 'vue-material-design-icons/Delete.vue'
 import School from 'vue-material-design-icons/School.vue'
 
-import { showError } from '@nextcloud/dialogs'
+// import { showError } from '@nextcloud/dialogs'
 import { fetchContributorDetails, updateContributor } from './service/ContributorService.js'
 
 export default {
@@ -113,7 +113,7 @@ export default {
 				return contributorDetails
 			} catch (e) {
 				console.error(e)
-				showError(t('athenaeum', 'Could not fetch contributor details (route mounting failed)'))
+				// showError(t('athenaeum', 'Could not fetch contributor details (route mounting failed)'))
 			}
 			return null
 		},
@@ -126,7 +126,7 @@ export default {
 				return response
 			} catch (e) {
 				console.error(e)
-				showError(t('athenaeum', 'Could not fetch contributor details (route mounting failed)'))
+				// showError(t('athenaeum', 'Could not fetch contributor details (route mounting failed)'))
 			}
 			return null
 		},

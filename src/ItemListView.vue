@@ -118,7 +118,7 @@ import {
 	fetchItemSummary,
 	itemChangeFolder,
 } from './service/ItemService.js'
-import { showError } from '@nextcloud/dialogs'
+// import { showError } from '@nextcloud/dialogs'
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
 
@@ -311,7 +311,7 @@ export default {
 				this.currentItemId = response.data.id
 			} catch (e) {
 				console.error(e)
-				showError(t('athenaeum', 'Could not create the item'))
+				// showError(t('athenaeum', 'Could not create the item'))
 			}
 			this.updating = false
 		},
@@ -321,7 +321,7 @@ export default {
 				await axios.put(generateUrl(`/apps/athenaeum/res/items/${item.id}`), item)
 			} catch (e) {
 				console.error(e)
-				showError(t('athenaeum', 'Could not update the item'))
+				// showError(t('athenaeum', 'Could not update the item'))
 			}
 			this.updating = false
 		},
@@ -346,7 +346,7 @@ export default {
 					this.$set(this.items[itemIdx], 'published', sourceInfoExtra.published)
 				}
 			}).catch((error) => {
-				showError(t('athenaeum', 'Could not fetch items (' + error + ')'))
+				// showError(t('athenaeum', 'Could not fetch items (' + error + ')'))
 			})
 		},
 		async fetchData() {
@@ -377,7 +377,7 @@ export default {
 				this.goToNextAvailableItem()
 			} catch (e) {
 				console.error(e)
-				showError(t('athenaeum', 'Could not fetch items (route mounting failed)'))
+				// showError(t('athenaeum', 'Could not fetch items (route mounting failed)'))
 			}
 			this.loading = false
 		},

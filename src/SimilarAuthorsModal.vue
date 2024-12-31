@@ -45,7 +45,7 @@ import { NcModal, NcTextField, NcButton, NcListItem } from '@nextcloud/vue'
 import Magnify from 'vue-material-design-icons/Magnify.vue'
 
 import { freeSearch } from './service/ContributorService.js'
-import { showError } from '@nextcloud/dialogs'
+// import { showError } from '@nextcloud/dialogs'
 
 export default {
 	name: 'SimilarAuthorsModal',
@@ -90,7 +90,7 @@ export default {
 				this.searchError = this.foundContributors.length === 0 ? 'None found...' : ''
 			} catch (e) {
 				console.error(e)
-				showError(t('athenaeum', 'Could not fetch items (route mounting failed)'))
+				// showError(t('athenaeum', 'Could not fetch items (route mounting failed)'))
 			}
 		},
 		selectContributor(contributorData) {

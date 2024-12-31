@@ -78,7 +78,7 @@ import Delete from 'vue-material-design-icons/Delete.vue'
 import School from 'vue-material-design-icons/School.vue'
 import OpenInNew from 'vue-material-design-icons/OpenInNew.vue'
 
-import { showError } from '@nextcloud/dialogs'
+// import { showError } from '@nextcloud/dialogs'
 import { fetchSourceDetails, updateSource } from './service/SourceService.js'
 
 export default {
@@ -148,7 +148,7 @@ export default {
 				return sourceDetails
 			} catch (e) {
 				console.error(e)
-				showError(t('athenaeum', 'Could not fetch source details (route mounting failed)'))
+				// showError(t('athenaeum', 'Could not fetch source details (route mounting failed)'))
 			}
 			return null
 		},
@@ -161,7 +161,7 @@ export default {
 				return response
 			} catch (e) {
 				console.error(e)
-				showError(t('athenaeum', 'Could not fetch source details (route mounting failed)'))
+				// showError(t('athenaeum', 'Could not fetch source details (route mounting failed)'))
 			}
 			return null
 		},

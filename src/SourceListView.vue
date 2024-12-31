@@ -84,7 +84,7 @@ import SourceListItem from './SourceListItem.vue'
 import SourceDetails from './SourceDetails.vue'
 
 import { fetchSources } from './service/SourceService.js'
-import { showError } from '@nextcloud/dialogs'
+// import { showError } from '@nextcloud/dialogs'
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
 
@@ -149,7 +149,7 @@ export default {
 			this.sources = await fetchSources(this.currentFolder)
 		} catch (e) {
 			console.error(e)
-			showError(t('athenaeum', 'Could not fetch sources (route mounting failed)'))
+			// showError(t('athenaeum', 'Could not fetch sources (route mounting failed)'))
 		}
 		this.loading = false
 	},
@@ -193,7 +193,7 @@ export default {
 				this.currentSourceId = response.data.id
 			} catch (e) {
 				console.error(e)
-				showError(t('athenaeum', 'Could not create the source'))
+				// showError(t('athenaeum', 'Could not create the source'))
 			}
 			this.updating = false
 		},
@@ -203,7 +203,7 @@ export default {
 				await axios.put(generateUrl(`/apps/athenaeum/res/sources/${source.id}`), source)
 			} catch (e) {
 				console.error(e)
-				showError(t('athenaeum', 'Could not update the source'))
+				// showError(t('athenaeum', 'Could not update the source'))
 			}
 			this.updating = false
 		},
@@ -217,7 +217,7 @@ export default {
 				// showSuccess(t('athenaeum', 'Scholar Source deleted'))
 			} catch (e) {
 				console.error(e)
-				showError(t('athenaeum', 'Could not delete the source'))
+				// showError(t('athenaeum', 'Could not delete the source'))
 			}
 		},
 		setNewSourceOffset(newOffset) {

@@ -271,7 +271,7 @@ import OpenInApp from 'vue-material-design-icons/OpenInApp.vue'
 
 import AuthorEditList from './AuthorEditList.vue'
 
-import { showError } from '@nextcloud/dialogs'
+// import { showError } from '@nextcloud/dialogs'
 import {
 	fetchItemDetails,
 	scholarToFull,
@@ -396,7 +396,7 @@ export default {
 				return response
 			} catch (e) {
 				console.error(e)
-				showError(t('athenaeum', 'Could not fetch source details (route mounting failed)'))
+				// showError(t('athenaeum', 'Could not fetch source details (route mounting failed)'))
 			}
 			return null
 		},
@@ -536,7 +536,7 @@ export default {
 				return item
 			} catch (e) {
 				console.error(e)
-				showError(t('athenaeum', 'Could not fetch item details (route mounting failed)'))
+				// showError(t('athenaeum', 'Could not fetch item details (route mounting failed)'))
 			}
 			return null
 		},

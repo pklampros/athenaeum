@@ -185,7 +185,7 @@ import SimilarAuthorsModal from './SimilarAuthorsModal.vue'
 
 import { findSimilar } from './service/ContributorService.js'
 import { authorMxn } from './mixins/authors.js'
-import { showError } from '@nextcloud/dialogs'
+// import { showError } from '@nextcloud/dialogs'
 
 export default {
 	name: 'AuthorEditList',
@@ -303,7 +303,7 @@ export default {
 				this.$set(this.authorList, authorIndex, author)
 			} catch (e) {
 				console.error(e)
-				showError(t('athenaeum', 'Could not fetch items (route mounting failed)'))
+				// showError(t('athenaeum', 'Could not fetch items (route mounting failed)'))
 			}
 		},
 		dismissPotentialContributors(authorIndex) {

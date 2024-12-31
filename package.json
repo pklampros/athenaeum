@@ -9,11 +9,10 @@
 	},
 	"license": "agpl",
 	"private": true,
+	"type": "module",
 	"scripts": {
-		"build": "webpack --node-env production --progress",
-		"dev": "webpack --node-env development --progress",
-		"watch": "webpack --node-env development --progress --watch",
-		"serve": "webpack --node-env development serve --progress",
+		"build": "vite --mode production build",
+		"dev": "vite --mode development build",
 		"lint": "eslint --ext .js,.vue src",
 		"lint:fix": "eslint --ext .js,.vue src --fix",
 		"stylelint": "stylelint css/*.css css/*.scss src/**/*.scss src/**/*.vue",
@@ -21,13 +20,12 @@
 	},
 	"dependencies": {
 		"@nextcloud/axios": "^2.5.1",
-		"@nextcloud/dialogs": "^5.3.7",
 		"@nextcloud/router": "^3.0.1",
-		"@nextcloud/vue": "^8.19.0",
+		"@nextcloud/vue": "^8.22.0",
 		"toastify-js": "^1.12.0",
-		"vue": "^2.7.16",
+		"vue": "^3.5.13",
 		"vue-material-design-icons": "^5.3.1",
-		"vue-router": "^3.6.5",
+		"vue-router": "^4.5.0",
 		"vue-simple-icons": "^7.5.0"
 	},
 	"browserslist": [
@@ -41,7 +39,7 @@
 		"@nextcloud/babel-config": "^1.2.0",
 		"@nextcloud/browserslist-config": "^3.0.1",
 		"@nextcloud/eslint-config": "^8.4.1",
-		"@nextcloud/stylelint-config": "^2.3.1",
-		"@nextcloud/webpack-vue-config": "^6.1.1"
+		"@nextcloud/stylelint-config": "^3.0.1",
+		"@nextcloud/vite-config": "^2.2.2"
 	}
 }

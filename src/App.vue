@@ -89,7 +89,7 @@ import EmlImportModal from './EmlImportModal.vue'
 
 import { fetchFolders } from './service/FolderService.js'
 
-import { showError } from '@nextcloud/dialogs'
+// import { showError } from '@nextcloud/dialogs'
 
 import { ViewMode } from './enums/index.js'
 
@@ -131,12 +131,12 @@ export default {
 			this.folders = await fetchFolders()
 		} catch (e) {
 			console.error(e)
-			showError(
-				t(
-					'athenaeum',
-					'Could not fetch folders (route mounting failed)',
-				),
-			)
+			// showError(
+			// 	t(
+			// 		'athenaeum',
+			// 		'Could not fetch folders (route mounting failed)',
+			// 	),
+			// )
 		}
 		this.loading = false
 	},

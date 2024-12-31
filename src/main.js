@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-import { generateFilePath, generateUrl } from '@nextcloud/router'
+import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
 
 import Vue from 'vue'
@@ -11,14 +11,15 @@ import App from './App.vue'
 import router from './router.js'
 
 // eslint-disable-next-line
-__webpack_public_path__ = generateFilePath(appName, '', 'js/')
+// __webpack_public_path__ = generateFilePath(appName, '', 'js/')
 
 // eslint-disable-next-line
-const providedAppName = appName;
+
+const providedAppName = 'athenaeum'
 
 Vue.mixin({ methods: { t, n } })
 
-const userInitialised = await (async function() {
+const userInitialised = (async function() {
 	const url = generateUrl('/apps/{appName}/api/0.1/app_info/user_init',
 		{ appName: providedAppName })
 	let udbid = false
@@ -32,6 +33,7 @@ const userInitialised = await (async function() {
 if (!userInitialised) {
 	throw new Error('User not initialised')
 }
+
 export default new Vue({
 	el: '#content',
 	router,

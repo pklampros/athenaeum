@@ -84,7 +84,7 @@ import ContributorListItem from './ContributorListItem.vue'
 import ContributorDetails from './ContributorDetails.vue'
 
 import { fetchContributors } from './service/ContributorService.js'
-import { showError } from '@nextcloud/dialogs'
+// import { showError } from '@nextcloud/dialogs'
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
 
@@ -165,7 +165,7 @@ export default {
 
 			} catch (e) {
 				console.error(e)
-				showError(t('athenaeum', 'Could not fetch contributors (route mounting failed)'))
+				// showError(t('athenaeum', 'Could not fetch contributors (route mounting failed)'))
 			}
 			this.loading = false
 		},
@@ -207,7 +207,7 @@ export default {
 				this.currentContributorId = response.data.id
 			} catch (e) {
 				console.error(e)
-				showError(t('athenaeum', 'Could not create the contributor'))
+				// showError(t('athenaeum', 'Could not create the contributor'))
 			}
 			this.updating = false
 		},
@@ -217,7 +217,7 @@ export default {
 				await axios.put(generateUrl(`/apps/athenaeum/res/contributors/${contributor.id}`), contributor)
 			} catch (e) {
 				console.error(e)
-				showError(t('athenaeum', 'Could not update the contributor'))
+				// showError(t('athenaeum', 'Could not update the contributor'))
 			}
 			this.updating = false
 		},
@@ -231,7 +231,7 @@ export default {
 				// showSuccess(t('athenaeum', 'Scholar Contributor deleted'))
 			} catch (e) {
 				console.error(e)
-				showError(t('athenaeum', 'Could not delete the contributor'))
+				// showError(t('athenaeum', 'Could not delete the contributor'))
 			}
 		},
 		setNewContributorOffset(newOffset) {
