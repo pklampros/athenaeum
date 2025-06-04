@@ -436,6 +436,39 @@ class ItemMapper extends QBMapper {
 		];
 	}
 
+	public function getWordFrequency(int $folderId, string $userId): array {
+		$qb = $this->db->getQueryBuilder();
+		$qb->selectAlias('it.title', 'title')
+			->selectAlias($qb->func()->groupConcat('its.extra_item_data'),
+					'source_extra')
+			->from('athm_items', 'it')
+			->where($qb->expr()->eq('it.user_id',
+				$qb->createNamedParameter($userId)))
+			->andWhere($qb->expr()->eq('it.folder_id',
+				$qb->createNamedParameter($folderId)))
+			->leftJoin('it', 'athm_item_sources', 'its', 'it.id = its.item_id')
+			->leftJoin('its', 'athm_sources', 's', 's.id = its.source_id')
+			->groupBy('it.id');
+
+		$allval = [];
+		$result = $qb->executeQuery();
+		try {
+			while ($row = $result->fetch()) {
+				$tval = array_count_values(str_word_count(strtolower($row['title']), 1));
+				foreach ($tval as $key => $value) {
+					$allval[$key] += $value;
+				}
+				$sval = array_count_values(str_word_count(strtolower($row['source_extra']), 1));
+				foreach ($sval as $key => $value) {
+					$allval[$key] += $value;
+				}
+			}
+		} finally {
+			$result->closeCursor();
+		}
+		return $allval;
+	}
+
 	/**
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws DoesNotExistException

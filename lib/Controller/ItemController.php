@@ -83,6 +83,15 @@ class ItemController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 */
+	public function getWordFrequency(string $folder = 'inbox'): DataResponse {
+		return $this->handleNotFound(function () use ($folder) {
+			return $this->itemService->getWordFrequency($folder, $this->userId);
+		});
+	}
+
+	/**
+	 * @NoAdminRequired
+	 */
 	public function removeAttachment(int $attachmentId): DataResponse {
 		return $this->handleNotFound(function () use ($attachmentId) {
 			return $this->itemService->removeAttachment($attachmentId, $this->userId);

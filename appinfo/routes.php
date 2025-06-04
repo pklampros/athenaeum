@@ -70,6 +70,9 @@ return [
 		['name' => 'item#attachFromUrl',
 			'url' => '/item/attachFromUrl',
 			'verb' => 'POST'],
+		['name' => 'item#getWordFrequency',
+			'url' => '/item/getWordFrequency/{folder}',
+			'verb' => 'GET'],
 
 		['name' => 'contributor_api#findByFullFirstName',
 			'url' => '/api/0.1/contributors/firstName/{firstName}',

@@ -85,6 +85,15 @@ class ItemService {
 		}
 	}
 
+	public function getWordFrequency(string $folder, string $userId): array {
+		try {
+			return $this->mapper->getWordFrequency(
+				$this->mapper->findFolderId($folder), $userId);
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
+	}
+
 	public function removeAttachment(int $attachmentId, string $userId): bool {
 		try {
 			return $this->mapper->removeAttachment($attachmentId, $userId);

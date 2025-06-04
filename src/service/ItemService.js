@@ -287,3 +287,22 @@ export function updateItem(id, title, url,
 			throw convertAxiosError(error)
 		})
 }
+
+/**
+ *
+ * @param {string} folder Filter items by this folder
+ */
+export function getWordFrequency(folder) {
+	const url = generateUrl('/apps/athenaeum/item/getWordFrequency/' + folder)
+	const params = {
+	}
+
+	return axios
+		.get(url, {
+			params,
+		})
+		.then((resp) => resp.data)
+		.catch((error) => {
+			throw convertAxiosError(error)
+		})
+}

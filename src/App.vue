@@ -41,6 +41,11 @@
 			</template>
 			<template #footer>
 				<NcAppNavigationNew v-if="!loading"
+					:text="t('athenaeum', 'Get word frequency')"
+					:disabled="false"
+					button-class="icon-add"
+					@click="getInboxWordFrequency" />
+				<NcAppNavigationNew v-if="!loading"
 					:text="t('athenaeum', 'New inbox item')"
 					:disabled="false"
 					button-id="new-inbox-item-button"
@@ -92,6 +97,7 @@ import { fetchFolders } from './service/FolderService.js'
 import { showError } from '@nextcloud/dialogs'
 
 import { ViewMode } from './enums/index.js'
+import { getWordFrequency } from './service/ItemService.js'
 
 export default {
 	name: 'App',
@@ -164,6 +170,13 @@ export default {
 		},
 		hideSubmitEMLModal() {
 			this.emlImportModalVisible = false
+		},
+		async getInboxWordFrequency() {
+			const wfr = Object.entries(await getWordFrequency('inbox'))
+			wfr.sort(function(a, b) {
+				return b[1] - a[1]
+			})
+			console.log(wfr)
 		},
 	},
 }
