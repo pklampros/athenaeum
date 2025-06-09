@@ -15,8 +15,6 @@ use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCP\IConfig;
 use OCP\IServerContainer;
 
-include_once __DIR__ . '/../../vendor/autoload.php';
-
 class Application extends App implements IBootstrap {
 	public const APP_ID = 'athenaeum';
 
@@ -37,6 +35,9 @@ class Application extends App implements IBootstrap {
 	}
 
 	public function register(IRegistrationContext $context): void {
+
+        include_once __DIR__ . '/../../vendor/autoload.php';
+
 		$context->registerDeclarativeSettings(
 			PersonalSettingsForm::class
 		);

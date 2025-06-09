@@ -440,7 +440,7 @@ class ItemMapper extends QBMapper {
 		$qb = $this->db->getQueryBuilder();
 		$qb->selectAlias('it.title', 'title')
 			->selectAlias($qb->func()->groupConcat('its.extra_item_data'),
-					'source_extra')
+				'source_extra')
 			->from('athm_items', 'it')
 			->where($qb->expr()->eq('it.user_id',
 				$qb->createNamedParameter($userId)))

@@ -6,17 +6,16 @@
 import { generateFilePath, generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
 
-import Vue from 'vue'
+import { createApp } from 'vue'
 import App from './App.vue'
-import router from './router.js'
+import router from './router'
+import { t, n } from '@nextcloud/l10n'
 
 // eslint-disable-next-line
 __webpack_public_path__ = generateFilePath(appName, '', 'js/')
 
 // eslint-disable-next-line
 const providedAppName = appName;
-
-Vue.mixin({ methods: { t, n } })
 
 const userInitialised = await (async function() {
 	const url = generateUrl('/apps/{appName}/api/0.1/app_info/user_init',
@@ -32,8 +31,11 @@ const userInitialised = await (async function() {
 if (!userInitialised) {
 	throw new Error('User not initialised')
 }
-export default new Vue({
-	el: '#content',
-	router,
-	render: h => h(App),
-})
+
+const app = createApp(App)
+app.use(router)
+
+app.config.globalProperties.t = t
+app.config.globalProperties.n = n
+
+app.mount('#content')

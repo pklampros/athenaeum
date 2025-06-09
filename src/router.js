@@ -3,16 +3,13 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-import Vue from 'vue'
-import Router from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import { generateUrl } from '@nextcloud/router'
 
 const App = () => import('./App.vue')
 
-Vue.use(Router)
-
-export default new Router({
-	mode: 'history',
+export default createRouter({
+	history: createWebHistory(), // Use history mode
 	base: generateUrl('/apps/athenaeum/'),
 	linkActiveClass: 'active',
 	routes: [

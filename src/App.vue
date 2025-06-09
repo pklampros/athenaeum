@@ -3,74 +3,71 @@
 	SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
-	<div id="content"
-		class="app-athenaeum">
-		<NcAppNavigation>
-			<template v-if="!loading"
-				#list>
-				<NcAppNavigationItem :name="t('athenaeum', 'Sources')"
-					:disabled="false"
-					:to="'/sources'">
-					<template #icon>
-						<Earth :size="20" />
-					</template>
-				</NcAppNavigationItem>
-				<NcAppNavigationItem :name="t('athenaeum', 'Contributors')"
-					:disabled="false"
-					:to="'/contributors'">
-					<template #icon>
-						<AccountGroup :size="20" />
-					</template>
-				</NcAppNavigationItem>
-				<NcAppNavigationItem v-for="folder in folders"
-					:key="folder.id"
-					:name="t('athenaeum', folder.name)"
-					:disabled="false"
-					:to="'/items/' + folder.path">
-					<template #icon>
-						<Inbox v-if="folder.path === 'inbox'"
-							:size="20" />
-						<InboxMultiple v-else-if="folder.path === 'inbox:decide_later'"
-							:size="20" />
-						<Delete v-else-if="folder.path === 'wastebasket'"
-							:size="20" />
-						<Bookshelf v-else
-							:size="20" />
-					</template>
-				</NcAppNavigationItem>
-			</template>
-			<template #footer>
-				<NcAppNavigationNew v-if="!loading"
-					:text="t('athenaeum', 'Get word frequency')"
-					:disabled="false"
-					button-class="icon-add"
-					@click="getInboxWordFrequency" />
-				<NcAppNavigationNew v-if="!loading"
-					:text="t('athenaeum', 'New inbox item')"
-					:disabled="false"
-					button-id="new-inbox-item-button"
-					button-class="icon-add"
-					@click="newInboxItem" />
-				<NcAppNavigationNew v-if="!loading"
-					:text="t('athenaeum', 'New item')"
-					:disabled="false"
-					button-id="new-item-button"
-					button-class="icon-add"
-					@click="newItem" />
-				<NcAppNavigationNew :text="t('athenaeum', 'Import EML')"
-					button-id="toggle-eml-import-modal"
-					@click="showSubmitEMLModal" />
-			</template>
-		</NcAppNavigation>
+	<NcAppNavigation>
+		<template v-if="!loading"
+			#list>
+			<NcAppNavigationItem :name="t('athenaeum', 'Sources')"
+				:disabled="false"
+				:to="'/sources'">
+				<template #icon>
+					<Earth :size="20" />
+				</template>
+			</NcAppNavigationItem>
+			<NcAppNavigationItem :name="t('athenaeum', 'Contributors')"
+				:disabled="false"
+				:to="'/contributors'">
+				<template #icon>
+					<AccountGroup :size="20" />
+				</template>
+			</NcAppNavigationItem>
+			<NcAppNavigationItem v-for="folder in folders"
+				:key="folder.id"
+				:name="t('athenaeum', folder.name)"
+				:disabled="false"
+				:to="'/items/' + folder.path">
+				<template #icon>
+					<Inbox v-if="folder.path === 'inbox'"
+						:size="20" />
+					<InboxMultiple v-else-if="folder.path === 'inbox:decide_later'"
+						:size="20" />
+					<Delete v-else-if="folder.path === 'wastebasket'"
+						:size="20" />
+					<Bookshelf v-else
+						:size="20" />
+				</template>
+			</NcAppNavigationItem>
+		</template>
+		<template #footer>
+			<NcAppNavigationNew v-if="!loading"
+				:text="t('athenaeum', 'Get word frequency')"
+				:disabled="false"
+				button-class="icon-add"
+				@click="getInboxWordFrequency" />
+			<NcAppNavigationNew v-if="!loading"
+				:text="t('athenaeum', 'New inbox item')"
+				:disabled="false"
+				button-id="new-inbox-item-button"
+				button-class="icon-add"
+				@click="newInboxItem" />
+			<NcAppNavigationNew v-if="!loading"
+				:text="t('athenaeum', 'New item')"
+				:disabled="false"
+				button-id="new-item-button"
+				button-class="icon-add"
+				@click="newItem" />
+			<NcAppNavigationNew :text="t('athenaeum', 'Import EML')"
+				button-id="toggle-eml-import-modal"
+				@click="showSubmitEMLModal" />
+		</template>
+	</NcAppNavigation>
 
-		<ItemListView v-if="isItemListView()"
-			:key="$route.params.folder" />
-		<SourceListView v-if="isSourceListView()" />
-		<ContributorListView v-if="isContributorListView()" />
+	<ItemListView v-if="isItemListView()"
+		:key="$route.params.folder" />
+	<SourceListView v-if="isSourceListView()" />
+	<ContributorListView v-if="isContributorListView()" />
 
-		<EmlImportModal :visible.sync="emlImportModalVisible"
-			@modal-closed="hideSubmitEMLModal" />
-	</div>
+	<EmlImportModal :visible.sync="emlImportModalVisible"
+		@modal-closed="hideSubmitEMLModal" />
 </template>
 
 <script>

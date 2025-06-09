@@ -163,7 +163,8 @@ export default {
 		toggleItemsVisible(fi) {
 			const fo = this.files[fi]
 			fo.itemsVisible = !fo.itemsVisible
-			this.$set(this.files, fi, fo)
+			// this.$set(this.files, fi, fo)
+			this.files[fi] = fo
 		},
 		filesSelected(event) {
 			this.files = []
@@ -199,7 +200,8 @@ export default {
 				const fo = this.files[i]
 				fo.state = 'saving'
 				fo.id = i
-				this.$set(this.files, i, fo)
+				// this.$set(this.files, i, fo)
+				this.files[i] = fo
 				const newFileName = '' + i + '.eml'
 				formData.append(formDataIdx, fo, newFileName)
 				formDataIdx++
@@ -228,13 +230,15 @@ export default {
 							break
 						}
 					}
-					this.$set(this.files, i, fo)
+					// this.$set(this.files, i, fo)
+					this.files[i] = fo
 				}
 			}).catch(() => {
 				for (const i of indices) {
 					const fo = this.files[i]
 					fo.state = 'error'
-					this.$set(this.files, i, fo)
+					// this.$set(this.files, i, fo)
+					this.files[i] = fo
 				}
 			}).finally(() => {
 				this.uploading = false
