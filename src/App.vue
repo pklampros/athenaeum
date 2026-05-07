@@ -65,8 +65,7 @@
 		:key="$route.params.folder" />
 	<SourceListView v-if="isSourceListView()" />
 	<ContributorListView v-if="isContributorListView()" />
-
-	<EmlImportModal :visible.sync="emlImportModalVisible"
+	<EmlImportModal v-model:visible="emlImportModalVisible"
 		@modal-closed="hideSubmitEMLModal" />
 </template>
 

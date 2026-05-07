@@ -7,7 +7,7 @@
 		<div style="max-width: 900px; margin: 0 auto;">
 			<div style="position: sticky; padding: 30px 18px;">
 				<div style="display:flex; flex-direction: column">
-					<h2 :title="item.title"
+					<h2 :name="item.title"
 						:class="{ toedit: visible.itemEditButton }"
 						style="display: flex; align-items: center; justify-content: space-between;">
 						<NcHighlight :text="item.title"
@@ -45,7 +45,7 @@
 						<NcRichContenteditable v-if="item && item.title"
 							placeholder="Title"
 							:error="hasEllipsis(item.title)"
-							:value.sync="item.title"
+							v-model:value="item.title"
 							@update:value="setItemDataModified()" />
 						<div class="field-label">
 							<h3>URL</h3>
@@ -53,7 +53,7 @@
 						<div style="display:flex">
 							<NcRichContenteditable style="flex-grow:1"
 								placeholder="URL"
-								:value.sync="item.url"
+								v-model:value="item.url"
 								@update:value="setItemDataModified()" />
 							<NcButton aria-label="Add"
 								@click="attachFromUrl">
@@ -68,7 +68,7 @@
 						<NcRichContenteditable v-if="item && item.journal"
 							placeholder="Journal"
 							:error="hasEllipsis(item.journal)"
-							:value.sync="item.journal"
+							v-model:value="item.journal"
 							@update:value="setItemDataModified()" />
 						&nbsp;
 						<div style="display:flex; flex-direction: row-reverse">
@@ -232,16 +232,16 @@
 				</NcButton>
 			</div>
 		</div>
-		<AttachmentUploadModal :visible.sync="attachmentModalVisible"
-			:item-id.sync="item.id"
+		<AttachmentUploadModal v-model:visible="attachmentModalVisible"
+			v-model:item-id="item.id"
 			@modal-closed="hideAttachmentModal" />
-		<ApproveDialog :visible.sync="hasAttachmentRemoveId"
+		<ApproveDialog v-model:visible="hasAttachmentRemoveId"
 			name="Confirmation"
 			message="Are you sure you want to remove this attachment?"
 			@dialog-ok="okToRemoveAttachment" />
 	</NcAppContentDetails>
 	<NcAppContentDetails v-else>
-		<NcEmptyContent :title="t('athenaeum', 'No item selected')">
+		<NcEmptyContent :name="t('athenaeum', 'No item selected')">
 			<template #icon>
 				<School :size="65" />
 			</template>

@@ -4,99 +4,102 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
 	<NcAppContent>
-		<div slot="list"
-			class="items-list">
-			<div id="toptitle">
-				<h2 style="flex-grow:1">
-					Item ({{ listOffset }} - {{ listOffset + items.length }} /
-					{{ totalCount }})
-				</h2>
-				<NcButton aria-label="Tune"
-					style="flex:1"
-					@click="tuning = !tuning">
-					<template #icon>
-						<Tune :size="18" />
-					</template>
-				</NcButton>
-			</div>
-			<div v-if="tuning"
-				class="list-controls tuner">
-				<NcSelect v-bind="orderOptions"
-					v-model="orderOptions.value" />
-				<NcTextField label="Search in title"
-					:value.sync="listQuery" />
-				<div class="button-row-right">
-					<NcButton aria-label="Apply filters"
-						@click="applyFilters">
-						Apply
+		<template #list>
+			<div class="items-list">
+				<div id="toptitle">
+					<h2 style="flex-grow:1">
+						Item ({{ listOffset }} - {{ listOffset + items.length }} /
+						{{ totalCount }})
+					</h2>
+					<NcButton aria-label="Tune"
+						style="flex:1"
+						@click="tuning = !tuning">
+						<template #icon>
+							<Tune :size="18" />
+						</template>
 					</NcButton>
-					<NcButton aria-label="Cancel filter selection"
-						@click="cancelFilters">
-						Cancel
+				</div>
+				<div v-if="tuning"
+					class="list-controls tuner">
+					<NcSelect v-bind="orderOptions"
+						v-model="orderOptions.value" />
+					<NcTextField label="Search in title"
+						v-model:value="listQuery" />
+					<div class="button-row-right">
+						<NcButton aria-label="Apply filters"
+							@click="applyFilters">
+							Apply
+						</NcButton>
+						<NcButton aria-label="Cancel filter selection"
+							@click="cancelFilters">
+							Cancel
+						</NcButton>
+					</div>
+				</div>
+				<NcAppContentList class="main-items-list"
+					:show-details="true">
+					<ItemListItem v-for="item in items"
+						:key="item.id"
+						:item="item"
+						@item-change-folder="itemSendToFolder" />
+				</NcAppContentList>
+				<div class="list-controls items-footer">
+					<NcButton aria-label="First page"
+						style="flex:1"
+						:disabled="listOffset == 0"
+						@click="firstPage">
+						<template #icon>
+							<PageFirst :size="18" />
+						</template>
+					</NcButton>
+					<NcButton aria-label="Back multiple pages"
+						style="flex:1"
+						:disabled="listOffset == 0"
+						@click="backMultiplePages">
+						<template #icon>
+							<ChevronDoubleLeft :size="18" />
+						</template>
+					</NcButton>
+					<NcButton aria-label="Previous page"
+						style="flex:1"
+						:disabled="listOffset == 0"
+						@click="prevPage">
+						<template #icon>
+							<ChevronLeft :size="18" />
+						</template>
+					</NcButton>
+					<NcButton aria-label="Next page"
+						style="flex:1"
+						:disabled="(listOffset + items.length) >= totalCount"
+						@click="nextPage">
+						<template #icon>
+							<ChevronRight :size="18" />
+						</template>
+					</NcButton>
+					<NcButton aria-label="Forward multiple pages"
+						style="flex:1"
+						:disabled="(listOffset + items.length) >= totalCount"
+						@click="forwardMultiplePages">
+						<template #icon>
+							<ChevronDoubleRight :size="18" />
+						</template>
+					</NcButton>
+					<NcButton aria-label="Last page"
+						style="flex:1"
+						:disabled="(listOffset + items.length) >= totalCount"
+						@click="lastPage">
+						<template #icon>
+							<PageLast :size="18" />
+						</template>
 					</NcButton>
 				</div>
 			</div>
-			<NcAppContentList class="main-items-list"
-				:show-details="true">
-				<ItemListItem v-for="item in items"
-					:key="item.id"
-					:item="item"
-					@item-change-folder="itemSendToFolder" />
-			</NcAppContentList>
-			<div class="list-controls items-footer">
-				<NcButton aria-label="First page"
-					style="flex:1"
-					:disabled="listOffset == 0"
-					@click="firstPage">
-					<template #icon>
-						<PageFirst :size="18" />
-					</template>
-				</NcButton>
-				<NcButton aria-label="Back multiple pages"
-					style="flex:1"
-					:disabled="listOffset == 0"
-					@click="backMultiplePages">
-					<template #icon>
-						<ChevronDoubleLeft :size="18" />
-					</template>
-				</NcButton>
-				<NcButton aria-label="Previous page"
-					style="flex:1"
-					:disabled="listOffset == 0"
-					@click="prevPage">
-					<template #icon>
-						<ChevronLeft :size="18" />
-					</template>
-				</NcButton>
-				<NcButton aria-label="Next page"
-					style="flex:1"
-					:disabled="(listOffset + items.length) >= totalCount"
-					@click="nextPage">
-					<template #icon>
-						<ChevronRight :size="18" />
-					</template>
-				</NcButton>
-				<NcButton aria-label="Forward multiple pages"
-					style="flex:1"
-					:disabled="(listOffset + items.length) >= totalCount"
-					@click="forwardMultiplePages">
-					<template #icon>
-						<ChevronDoubleRight :size="18" />
-					</template>
-				</NcButton>
-				<NcButton aria-label="Last page"
-					style="flex:1"
-					:disabled="(listOffset + items.length) >= totalCount"
-					@click="lastPage">
-					<template #icon>
-						<PageLast :size="18" />
-					</template>
-				</NcButton>
-			</div>
-		</div>
-		<ItemDetails slot="default"
-			:item-summary.sync="currentItemSummary"
-			@item-change-folder="itemSendToFolder" />
+		</template>
+		<template #default>
+			<ItemDetails
+				v-model:item-summary="currentItemSummary"
+				@item-change-folder="itemSendToFolder" />
+		</template>
 	</NcAppContent>
 </template>
 

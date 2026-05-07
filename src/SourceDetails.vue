@@ -6,7 +6,7 @@
 	<NcAppContentDetails v-if="source">
 		<div style="max-width: 900px; margin: 0 auto;">
 			<div style="position: sticky; padding: 30px 18px;">
-				<h2 :title="source.title"
+				<h2 :name="source.title"
 					style="display: flex; align-items: center; justify-content: space-between;">
 					{{ source.title }}
 					<a :href="source.url"
@@ -25,13 +25,13 @@
 				</div>
 				<NcTextField placeholder="Title"
 					label-outside="true"
-					:value.sync="source.title"
+					v-model:value="source.title"
 					@update:value="setDataModified()" />
 				<div class="field-label">
 					<h3>Description</h3>
 				</div>
 				<NcRichContenteditable placeholder="Description"
-					:value.sync="source.description"
+					v-model:value="source.description"
 					@update:value="setDataModified()" />
 				<div class="field-label">
 					<h3 title="This is useful for sorting items in the inbox">
@@ -41,7 +41,7 @@
 				<NcInputField placeholder="Importance"
 					label-outside="true"
 					type="number"
-					:value.sync="source.importance"
+					v-model:value="source.importance"
 					@update:value="setDataModified()" />
 				&nbsp;
 			</div>
@@ -63,7 +63,7 @@
 		</div>
 	</NcAppContentDetails>
 	<NcAppContentDetails v-else>
-		<NcEmptyContent :title="t('athenaeum', 'No source selected')">
+		<NcEmptyContent :name="t('athenaeum', 'No source selected')">
 			<template #icon>
 				<School :size="65" />
 			</template>

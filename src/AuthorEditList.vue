@@ -25,18 +25,18 @@
 									class="flex-row">
 									<NcTextField label="First"
 										:error="emptyOrHasEllipsis(author.firstName)"
-										:value.sync="author.firstName"
+										v-model:value="author.firstName"
 										@update:value="updateDisplayName(index)" />
 									&nbsp;
 									<NcTextField :label="'Last'"
 										:error="emptyOrHasEllipsis(author.name)"
-										:value.sync="author.name"
+										v-model:value="author.name"
 										@update:value="updateDisplayName(index)" />
 								</div>
 								<NcTextField v-else
 									:label="'Name'"
 									:error="emptyOrHasEllipsis(author.name)"
-									:value.sync="author.name"
+									v-model:value="author.name"
 									@update:value="updateDisplayName(index)" />
 							</div>
 							<div v-else>
@@ -48,7 +48,7 @@
 							<NcTextField id="displayNameField"
 								:error="emptyOrHasEllipsis(author.displayName)"
 								:label-outside="true"
-								:value.sync="author.displayName"
+								v-model:value="author.displayName"
 								@update:value="displayNameSet(index)" />
 						</div>
 					</div>
@@ -95,7 +95,7 @@
 					</NcButton>
 					<div style="flex: 1; display:flex">
 						<NcCheckboxRadioSwitch :button-variant="true"
-							:checked.sync="author.isNew"
+							v-model:checked="author.isNew"
 							:value="false"
 							:name="'existing_new_radio_' + index"
 							type="radio"
@@ -139,7 +139,7 @@
 							</NcPopover>
 						</NcCheckboxRadioSwitch>
 						<NcCheckboxRadioSwitch :button-variant="true"
-							:checked.sync="author.isNew"
+							v-model:checked="author.isNew"
 							:value="true"
 							:name="'existing_new_radio_' + index"
 							type="radio"
@@ -158,7 +158,7 @@
 				</div>
 			</li>
 		</ul>
-		<SimilarAuthorsModal :contributor-search-term.sync="contributorSearchTerm"
+		<SimilarAuthorsModal v-model:contributor-search-term="contributorSearchTerm"
 			:author-index="modalAuthorIndex"
 			@selectContributor="selectContributor" />
 	</div>

@@ -6,7 +6,7 @@
 	<NcAppContentDetails v-if="contributor">
 		<div style="max-width: 900px; margin: 0 auto;">
 			<div style="position: sticky; padding: 30px 18px;">
-				<h2 :title="getName(contributor)"
+				<h2 :name="getName(contributor)"
 					style="display: flex; align-items: center; justify-content: space-between;">
 					{{ getName(contributor) }}
 				</h2>
@@ -29,7 +29,7 @@
 		</div>
 	</NcAppContentDetails>
 	<NcAppContentDetails v-else>
-		<NcEmptyContent :title="t('athenaeum', 'No contributor selected')">
+		<NcEmptyContent :name="t('athenaeum', 'No contributor selected')">
 			<template #icon>
 				<School :size="65" />
 			</template>

@@ -4,71 +4,74 @@
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
 	<NcAppContent>
-		<div slot="list"
-			class="contributors-list">
-			<div id="toptitle">
-				<h2>Contributor</h2>
-			</div>
-			<NcAppContentList class="main-contributors-list"
-				:show-details="true">
-				<ContributorListItem v-for="contributor in contributors"
-					:key="contributor.id"
-					:contributor="contributor" />
-			</NcAppContentList>
+		<template #list>
+			<div class="contributors-list">
+				<div id="toptitle">
+					<h2>Contributor</h2>
+				</div>
+				<NcAppContentList class="main-contributors-list"
+					:show-details="true">
+					<ContributorListItem v-for="contributor in contributors"
+						:key="contributor.id"
+						:contributor="contributor" />
+				</NcAppContentList>
 
-			<div class="contributors-footer">
-				<NcButton aria-label="First page"
-					style="flex:1"
-					:disabled="listOffset == 0"
-					@click="firstPage">
-					<template #icon>
-						<PageFirst :size="18" />
-					</template>
-				</NcButton>
-				<NcButton aria-label="Back multiple pages"
-					style="flex:1"
-					:disabled="listOffset == 0"
-					@click="backMultiplePages">
-					<template #icon>
-						<ChevronDoubleLeft :size="18" />
-					</template>
-				</NcButton>
-				<NcButton aria-label="Previous page"
-					style="flex:1"
-					:disabled="listOffset == 0"
-					@click="prevPage">
-					<template #icon>
-						<ChevronLeft :size="18" />
-					</template>
-				</NcButton>
-				<NcButton aria-label="Next page"
-					style="flex:1"
-					:disabled="(listOffset + contributors.length) >= totalCount"
-					@click="nextPage">
-					<template #icon>
-						<ChevronRight :size="18" />
-					</template>
-				</NcButton>
-				<NcButton aria-label="Forward multiple pages"
-					style="flex:1"
-					:disabled="(listOffset + contributors.length) >= totalCount"
-					@click="forwardMultiplePages">
-					<template #icon>
-						<ChevronDoubleRight :size="18" />
-					</template>
-				</NcButton>
-				<NcButton aria-label="Last page"
-					style="flex:1"
-					:disabled="(listOffset + contributors.length) >= totalCount"
-					@click="lastPage">
-					<template #icon>
-						<PageLast :size="18" />
-					</template>
-				</NcButton>
+				<div class="contributors-footer">
+					<NcButton aria-label="First page"
+						style="flex:1"
+						:disabled="listOffset == 0"
+						@click="firstPage">
+						<template #icon>
+							<PageFirst :size="18" />
+						</template>
+					</NcButton>
+					<NcButton aria-label="Back multiple pages"
+						style="flex:1"
+						:disabled="listOffset == 0"
+						@click="backMultiplePages">
+						<template #icon>
+							<ChevronDoubleLeft :size="18" />
+						</template>
+					</NcButton>
+					<NcButton aria-label="Previous page"
+						style="flex:1"
+						:disabled="listOffset == 0"
+						@click="prevPage">
+						<template #icon>
+							<ChevronLeft :size="18" />
+						</template>
+					</NcButton>
+					<NcButton aria-label="Next page"
+						style="flex:1"
+						:disabled="(listOffset + contributors.length) >= totalCount"
+						@click="nextPage">
+						<template #icon>
+							<ChevronRight :size="18" />
+						</template>
+					</NcButton>
+					<NcButton aria-label="Forward multiple pages"
+						style="flex:1"
+						:disabled="(listOffset + contributors.length) >= totalCount"
+						@click="forwardMultiplePages">
+						<template #icon>
+							<ChevronDoubleRight :size="18" />
+						</template>
+					</NcButton>
+					<NcButton aria-label="Last page"
+						style="flex:1"
+						:disabled="(listOffset + contributors.length) >= totalCount"
+						@click="lastPage">
+						<template #icon>
+							<PageLast :size="18" />
+						</template>
+					</NcButton>
+				</div>
 			</div>
-		</div>
-		<ContributorDetails slot="default"
-			:contributor-id="currentContributorId" />
+		</template>
+		<template #default>
+			<ContributorDetails
+				:contributor-id="currentContributorId" />
+		</template>
 	</NcAppContent>
 </template>
 
