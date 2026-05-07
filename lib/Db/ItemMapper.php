@@ -335,7 +335,7 @@ class ItemMapper extends QBMapper {
 					$qb->createNamedParameter($userId)))
 				->andWhere($qb->expr()->eq('it.folder_id',
 					$qb->createNamedParameter($folderId)));
-			$cursor = $qb->execute();
+			$cursor = $qb->executeQuery();
 			$row = $cursor->fetch();
 			$cursor->closeCursor();
 			$totalCount = $row['count'];
@@ -562,7 +562,7 @@ class ItemMapper extends QBMapper {
 					->eq('field_id',
 						$qb->createNamedParameter($fieldId,
 							IQueryBuilder::PARAM_INT)));
-			$cursor = $qb->execute();
+			$cursor = $qb->executeQuery();
 			$row = $cursor->fetch();
 			$cursor->closeCursor();
 			return $row['max_order'] + 1;

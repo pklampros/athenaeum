@@ -248,12 +248,12 @@ export default {
 			author.displayName = author.firstName.trim()
 				+ (nameComponents === 2 ? ' ' : '')
 				+ author.name.trim()
-			this.$set(this.authorList, authorIndex, author)
+			this.authorList[authorIndex] = author
 		},
 		displayNameSet(authorIndex) {
 			const author = this.authorList[authorIndex]
 			author.displayNameModified = (author.displayName !== '')
-			this.$set(this.authorList, authorIndex, author)
+			this.authorList[authorIndex] = author
 		},
 		toggleOnlyLastName(authorIndex) {
 			let author = this.authorList[authorIndex]
@@ -272,19 +272,19 @@ export default {
 				author.isNew = authorMarkedNew
 				author.onlyLastName = false
 			}
-			this.$set(this.authorList, authorIndex, author)
+			this.authorList[authorIndex] = author
 		},
 		moveDown(authorIndex) {
 			if (authorIndex < 0 || authorIndex > this.authorList.length - 1) return
-			this.$set(this.authorList, authorIndex,
+			this.authorList[authorIndex] =
 				this.authorList.splice(authorIndex + 1, 1,
-					this.authorList[authorIndex])[0])
+					this.authorList[authorIndex])[0]
 		},
 		moveUp(authorIndex) {
 			if (authorIndex < 1 || authorIndex > this.authorList.length) return
-			this.$set(this.authorList, authorIndex,
+			this.authorList[authorIndex] =
 				this.authorList.splice(authorIndex - 1, 1,
-					this.authorList[authorIndex])[0])
+					this.authorList[authorIndex])[0]
 		},
 		removeAuthor(authorIndex) {
 			if (authorIndex < 0 || authorIndex > this.authorList.length) return
@@ -295,12 +295,12 @@ export default {
 			author.potentialContributors.popoverVisible = true
 			author.potentialContributors.loading = true
 			author.potentialContributors.error = ''
-			this.$set(this.authorList, authorIndex, author)
+			this.authorList[authorIndex] = author
 			try {
 				author.potentialContributors.found = await findSimilar(author.firstName, author.name, author.displayName)
 				author.potentialContributors.loading = false
 				author.potentialContributors.error = author.potentialContributors.found.length === 0 ? 'None Found...' : ''
-				this.$set(this.authorList, authorIndex, author)
+				this.authorList[authorIndex] = author
 			} catch (e) {
 				console.error(e)
 				showError(t('athenaeum', 'Could not fetch items (route mounting failed)'))
@@ -312,12 +312,12 @@ export default {
 			author.potentialContributors.popoverVisible = false
 			author.potentialContributors.error = ''
 			author.isNew = author.existingContributor === null
-			this.$set(this.authorList, authorIndex, author)
+			this.authorList[authorIndex] = author
 		},
 		selectContributor(authorIndex, contributorData) {
 			const author = this.authorList[authorIndex]
 			author.existingContributor = contributorData
-			this.$set(this.authorList, authorIndex, author)
+			this.authorList[authorIndex] = author
 			this.dismissPotentialContributors(authorIndex)
 			this.contributorSearchTerm = null
 		},
@@ -325,7 +325,7 @@ export default {
 			const author = this.authorList[authorIndex]
 			author.existingContributor = null
 			author.isNew = true
-			this.$set(this.authorList, authorIndex, author)
+			this.authorList[authorIndex] = author
 		},
 		addAuthor() {
 			const authorData = authorMxn.getAuthorNameData('')

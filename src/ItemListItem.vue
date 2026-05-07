@@ -49,7 +49,7 @@
 
 import { NcListItem, NcActionButton } from '@nextcloud/vue'
 
-import { GoogleScholarIcon } from 'vue-simple-icons'
+import { GoogleScholarIcon } from 'vue3-simple-icons'
 
 import Attachment from 'vue-material-design-icons/Attachment.vue'
 

@@ -3,6 +3,7 @@
 .idea
 *.iml
 /vendor/
+/vendor.prod/
 /build/
 node_modules/
 /.php_cs.cache

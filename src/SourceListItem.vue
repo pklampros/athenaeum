@@ -39,7 +39,7 @@
 
 import { NcListItem, NcActionButton } from '@nextcloud/vue'
 
-import { GoogleScholarIcon } from 'vue-simple-icons'
+import { GoogleScholarIcon } from 'vue3-simple-icons'
 
 export default {
 	name: 'SourceListItem',

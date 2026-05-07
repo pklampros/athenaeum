@@ -189,7 +189,7 @@ export default {
 			try {
 				const response = await axios.post(generateUrl('/apps/athenaeum/res/sources'), source)
 				const index = this.sources.findIndex((match) => match.id === this.currentSourceId)
-				this.$set(this.sources, index, response.data)
+				this.sources[index] = response.data
 				this.currentSourceId = response.data.id
 			} catch (e) {
 				console.error(e)

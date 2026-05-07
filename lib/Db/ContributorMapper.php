@@ -141,7 +141,7 @@ class ContributorMapper extends QBMapper {
 		$qb->selectAlias($qb->createFunction('COUNT(*)'), 'count')
 			->from('athm_contributors')
 			->where($qb->expr()->eq('user_id', $qb->createNamedParameter($userId)));
-		$cursor = $qb->execute();
+		$cursor = $qb->executeQuery();
 		$row = $cursor->fetch();
 		$cursor->closeCursor();
 		$totalCount = $row['count'];

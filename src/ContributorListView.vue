@@ -203,7 +203,7 @@ export default {
 			try {
 				const response = await axios.post(generateUrl('/apps/athenaeum/res/contributors'), contributor)
 				const index = this.contributors.findIndex((match) => match.id === this.currentContributorId)
-				this.$set(this.contributors, index, response.data)
+				this.contributors[index] = response.data
 				this.currentContributorId = response.data.id
 			} catch (e) {
 				console.error(e)

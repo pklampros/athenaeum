@@ -115,7 +115,7 @@ export default {
 		toggleItemsVisible(fi) {
 			const fo = this.files[fi]
 			fo.itemsVisible = !fo.itemsVisible
-			this.$set(this.files, fi, fo)
+			this.files[fi] = fo
 		},
 		filesSelected(event) {
 			this.files = []
@@ -139,13 +139,13 @@ export default {
 			for (const fidx in this.files) {
 				const file = this.files[fidx]
 				file.state = 'saving'
-				this.$set(this.files, fidx, file)
+				this.files[fidx] = file
 			}
 			const result = await attachFiles(this.files, this.itemId)
 			for (const fidx in result) {
 				const file = this.files[fidx]
 				file.state = result[fidx].state
-				this.$set(this.files, fidx, file)
+				this.files[fidx] = file
 			}
 			this.uploading = false
 		},

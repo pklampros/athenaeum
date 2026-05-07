@@ -3,7 +3,7 @@
 	SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
-	<NcAppContentDetails v-if="item && !itemSummary.id >= 0">
+	<NcAppContentDetails v-if="item && itemSummary?.id >= 0">
 		<div style="max-width: 900px; margin: 0 auto;">
 			<div style="position: sticky; padding: 30px 18px;">
 				<div style="display:flex; flex-direction: column">

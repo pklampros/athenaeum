@@ -157,3 +157,8 @@ appstore:
 test: composer
 	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.xml
 	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml
+
+.PHONY: deps
+deps:
+	composer install
+	COMPOSER_VENDOR_DIR=vendor.prod composer install --no-dev --optimize-autoloader

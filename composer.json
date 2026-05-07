@@ -9,12 +9,11 @@
 		}
 	],
 	"require-dev": {
-		"php": "^8.2",
-		"phpunit/phpunit": "^9.5",
-		"sabre/dav": "^4.1",
-		"sabre/xml": "^2.2",
-		"symfony/event-dispatcher": "^5.3.11",
-		"nextcloud/ocp": "^31.0",
+		"phpunit/phpunit": "^11.5",
+		"sabre/dav": "^4",
+		"sabre/xml": "^2",
+		"symfony/event-dispatcher": "^7.4.9",
+		"nextcloud/ocp": "^33.0",
 		"psalm/phar": "^6.12",
 		"nextcloud/coding-standard": "^1.0"
 	},
@@ -41,12 +40,7 @@
 	},
 	"require": {
 		"ext-mailparse": "*",
-		"php-mime-mail-parser/php-mime-mail-parser": "^9.0",
+		"php-mime-mail-parser/php-mime-mail-parser": "^10.0",
 		"shanept/mime-sniffer": "^2.0"
-	},
-	"autoload-dev": {
-		"psr-4": {
-			"OCP\\": "vendor/nextcloud/ocp/OCP"
-		}
 	}
 }

@@ -9,8 +9,7 @@ import { generateUrl } from '@nextcloud/router'
 const App = () => import('./App.vue')
 
 export default createRouter({
-	history: createWebHistory(), // Use history mode
-	base: generateUrl('/apps/athenaeum/'),
+	history: createWebHistory(generateUrl('/apps/athenaeum/')),
 	linkActiveClass: 'active',
 	routes: [
 		{

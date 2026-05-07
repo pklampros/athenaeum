@@ -163,7 +163,6 @@ export default {
 		toggleItemsVisible(fi) {
 			const fo = this.files[fi]
 			fo.itemsVisible = !fo.itemsVisible
-			// this.$set(this.files, fi, fo)
 			this.files[fi] = fo
 		},
 		filesSelected(event) {
@@ -200,7 +199,6 @@ export default {
 				const fo = this.files[i]
 				fo.state = 'saving'
 				fo.id = i
-				// this.$set(this.files, i, fo)
 				this.files[i] = fo
 				const newFileName = '' + i + '.eml'
 				formData.append(formDataIdx, fo, newFileName)
@@ -210,6 +208,7 @@ export default {
 				}
 				fo.sentFilename = newFileName
 			}
+			console.log(fileMetadata)
 			formData.set('fileMetadata', JSON.stringify(fileMetadata))
 			formData.set('fileCount', indices.length)
 			await axios.post(
@@ -230,14 +229,12 @@ export default {
 							break
 						}
 					}
-					// this.$set(this.files, i, fo)
 					this.files[i] = fo
 				}
 			}).catch(() => {
 				for (const i of indices) {
 					const fo = this.files[i]
 					fo.state = 'error'
-					// this.$set(this.files, i, fo)
 					this.files[i] = fo
 				}
 			}).finally(() => {

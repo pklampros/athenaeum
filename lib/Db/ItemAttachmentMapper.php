@@ -115,7 +115,7 @@ class ItemAttachmentMapper extends QBMapper {
 				$qb->createNamedParameter($itemId, IQueryBuilder::PARAM_INT)))
 			->andWhere($qb->expr()->eq('path',
 				$qb->createNamedParameter($path)));
-		$cursor = $qb->execute();
+		$cursor = $qb->executeQuery();
 		$row = $cursor->fetch();
 		$cursor->closeCursor();
 		return $row['count'] == 1;

@@ -307,7 +307,7 @@ export default {
 			try {
 				const response = await axios.post(generateUrl('/apps/athenaeum/res/items'), item)
 				const index = this.items.findIndex((match) => match.id === this.currentItemId)
-				this.$set(this.items, index, response.data)
+				this.items[index] = response.data
 				this.currentItemId = response.data.id
 			} catch (e) {
 				console.error(e)
@@ -335,15 +335,15 @@ export default {
 				const itemIdx = this.items.findIndex((match) => match.id === itemId)
 				if (itemIdx === -1) return
 				if (contributions.length !== 0) {
-					this.$set(this.items[itemIdx], 'authors', contributions.map(c => c.contributor_name_display).join(','))
+					this.items[itemIdx].authors = contributions.map(c => c.contributor_name_display).join(',')
 				} else if ('authors' in sourceInfoExtra) {
-					this.$set(this.items[itemIdx], 'authors', sourceInfoExtra.authors)
+					this.items[itemIdx].authors = sourceInfoExtra.authors
 				}
 				if ('journal' in sourceInfoExtra) {
-					this.$set(this.items[itemIdx], 'journal', sourceInfoExtra.journal)
+					this.items[itemIdx].journal = sourceInfoExtra.journal
 				}
 				if ('published' in sourceInfoExtra) {
-					this.$set(this.items[itemIdx], 'published', sourceInfoExtra.published)
+					this.items[itemIdx].published = sourceInfoExtra.published
 				}
 			}).catch((error) => {
 				showError(t('athenaeum', 'Could not fetch items (' + error + ')'))
