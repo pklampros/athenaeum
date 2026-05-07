@@ -3,7 +3,7 @@
 	SPDX-FileCopyrightText: Petros Koutsolampros <commits@pklampros.io>
 	SPDX-License-Identifier: AGPL-3.0-or-later
 	-->
-	<NcModal :show="visible"
+	<NcModal :show="visible" :size="'large'"
 		@close="closeModal">
 		<div ref="modalContent"
 			class="modal__content">
@@ -16,24 +16,20 @@
 					<h3>No files selected</h3>
 					<h3>Press Browse to select some from the filesystem</h3>
 				</div>
-				<ul v-else>
+				<div v-else>
 					<div v-for="(file, index) in files"
-						:key="file">
+						:key="file.sentFilename">
 						<NcListItem :name="file.name"
 							@click="toggleItemsVisible(index)">
 							<template #indicator>
-								<CheckboxBlankCircle v-if="file.state == 'local'"
-									v-model="file.state"
+								<CheckboxBlankCircle v-if="file.state === 'local'"
 									:size="20" />
-								<NcLoadingIcon v-else-if="file.state == 'saving'"
-									v-model="file.state"
+								<NcLoadingIcon v-else-if="file.state === 'saving'"
 									:size="20" />
-								<CheckCircle v-else-if="file.state == 'saved'"
-									v-model="file.state"
+								<CheckCircle v-else-if="file.state === 'saved'"
 									:size="20"
 									fill-color="green" />
-								<CheckCircle v-else-if="file.state == 'exists'"
-									v-model="file.state"
+								<CheckCircle v-else-if="file.state === 'exists'"
 									:size="20"
 									fill-color="yellow" />
 							</template>
@@ -41,54 +37,50 @@
 						<ul v-show="file.itemsVisible && file.items.length != 0"
 							style="padding-left: 2em">
 							<NcListItem v-for="item in file.items"
-								:key="item"
+								:key="item.id"
 								:name="item.title"
-								compact="true"
+								compact
 								:href="goToItem(item)"
 								target="_blank">
 								<template #indicator>
 									<div style="display:flex;">
 										<CheckCircle v-if="item.item_new"
-											v-model="item.item_new"
 											:size="18"
 											title="New item created"
 											aria-label="New item created"
 											fill-color="green" />
 										<CheckCircle v-else
-											v-model="item.item_new"
 											:size="18"
 											title="Item already exists"
 											aria-label="Item already exists"
 											fill-color="yellow" />
 
 										<CheckCircle v-if="item.item_source_new"
-											v-model="item.item_source_new"
 											:size="18"
 											title="Item in new source"
-											arialabel="Item in new source"
+											aria-label="Item in new source"
 											fill-color="green" />
 										<CheckCircle v-else
-											v-model="item.item_source_new"
 											:size="18"
 											title="Item in existing source"
-											arialabel="Item in existing source"
+											aria-label="Item in existing source"
 											fill-color="yellow" />
 										&nbsp;
-										<OpenInNew v-model="item.item_source_new"
+										<OpenInNew
 											:size="18"
 											title="Open item"
-											arialabel="Click to open item" />
+											aria-label="Click to open item" />
 									</div>
 								</template>
 							</NcListItem>
 						</ul>
 					</div>
-				</ul>
+				</div>
 			</div>
 			<div style="display:flex; justify-content: right; align-items: center;">
 				<!-- This button clicks the input below it. Not an ideal solution but
 				adding a label inside the button (to use with "for") did not work -->
-				<NcButton arialabel="Browse for EML files to import"
+				<NcButton aria-label="Browse for EML files to import"
 					type="primary"
 					@click="$refs.emlUploadInput.click();">
 					Browse...
@@ -163,24 +155,21 @@ export default {
 		toggleItemsVisible(fi) {
 			const fo = this.files[fi]
 			fo.itemsVisible = !fo.itemsVisible
-			this.files[fi] = fo
 		},
 		filesSelected(event) {
-			this.files = []
 			const selectedFiles = []
 			for (let i = 0; i < event.target.files.length; i++) {
 				const fo = event.target.files[i]
-				fo.state = 'local'
-				fo.items = []
-				fo.itemsVisible = false
-				selectedFiles.push(fo)
+				selectedFiles.push({
+					file: fo,
+					sentFilename: null,
+					name: fo.name,
+					items: [],
+					itemsVisible: false,
+					state: 'local',
+				})
 			}
 			this.files = selectedFiles
-
-			// this ugly hack is required because it is not possible
-			// to address the parent node of the modal through CSS
-			// directly as it's a different component
-			this.$refs.modalContent.parentNode.style.display = 'flex'
 		},
 		async submitFiles() {
 			const maxFileUploads = await getMaxFileUploads()
@@ -199,16 +188,14 @@ export default {
 				const fo = this.files[i]
 				fo.state = 'saving'
 				fo.id = i
-				this.files[i] = fo
 				const newFileName = '' + i + '.eml'
-				formData.append(formDataIdx, fo, newFileName)
+				formData.append(formDataIdx, fo.file, newFileName)
 				formDataIdx++
 				fileMetadata[newFileName] = {
 					name: fo.name,
 				}
 				fo.sentFilename = newFileName
 			}
-			console.log(fileMetadata)
 			formData.set('fileMetadata', JSON.stringify(fileMetadata))
 			formData.set('fileCount', indices.length)
 			await axios.post(
@@ -229,13 +216,11 @@ export default {
 							break
 						}
 					}
-					this.files[i] = fo
 				}
 			}).catch(() => {
 				for (const i of indices) {
 					const fo = this.files[i]
 					fo.state = 'error'
-					this.files[i] = fo
 				}
 			}).finally(() => {
 				this.uploading = false

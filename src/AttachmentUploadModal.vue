@@ -22,18 +22,14 @@
 						<NcListItem :name="file.name"
 							@click="toggleItemsVisible(index)">
 							<template #indicator>
-								<CheckboxBlankCircle v-if="file.state == 'local'"
-									v-model="file.state"
+								<CheckboxBlankCircle v-if="file.state === 'local'"
 									:size="20" />
-								<NcLoadingIcon v-else-if="file.state == 'saving'"
-									v-model="file.state"
+								<NcLoadingIcon v-else-if="file.state === 'saving'"
 									:size="20" />
-								<CheckCircle v-else-if="file.state == 'saved'"
-									v-model="file.state"
+								<CheckCircle v-else-if="file.state === 'saved'"
 									:size="20"
 									fill-color="green" />
-								<CheckCircle v-else-if="file.state == 'exists'"
-									v-model="file.state"
+								<CheckCircle v-else-if="file.state === 'exists'"
 									:size="20"
 									fill-color="yellow" />
 							</template>
@@ -44,7 +40,7 @@
 			<div style="display:flex; justify-content: right; align-items: center;">
 				<!-- This button clicks the input below it. Not an ideal solution but
 				adding a label inside the button (to use with "for") did not work -->
-				<NcButton arialabel="Browse for files to import"
+				<NcButton aria-label="Browse for files to import"
 					type="primary"
 					@click="$refs.attachmentUploadInput.click();">
 					Browse...
@@ -118,14 +114,17 @@ export default {
 			this.files[fi] = fo
 		},
 		filesSelected(event) {
-			this.files = []
 			const selectedFiles = []
 			for (let i = 0; i < event.target.files.length; i++) {
 				const fo = event.target.files[i]
-				fo.state = 'local'
-				fo.items = []
-				fo.itemsVisible = false
-				selectedFiles.push(fo)
+				selectedFiles.push({
+					file: fo,
+					sentFilename: null,
+					name: fo.name,
+					items: [],
+					itemsVisible: false,
+					state: 'local',
+				})
 			}
 			this.files = selectedFiles
 

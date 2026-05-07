@@ -211,7 +211,7 @@ export async function attachFiles(files, itemId) {
 			fo.state = 'saving'
 			fo.id = i
 			files[i] = fo
-			formData.append(formDataIdx, fo, fo.name)
+			formData.append(formDataIdx, fo.file, fo.name)
 			formDataIdx++
 			fileMetadata[fo.name] = {
 				name: fo.name,
