@@ -41,7 +41,7 @@
 								:name="item.title"
 								compact
 								:href="goToItem(item)"
-								target="_blank">
+								target="_blank" rel="noopener noreferrer">
 								<template #indicator>
 									<div style="display:flex;">
 										<CheckCircle v-if="item.item_new"

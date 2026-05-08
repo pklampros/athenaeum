@@ -13,7 +13,7 @@
 						<NcHighlight :text="item.title"
 							:search="queryText" />
 						<a :href="item.url"
-							target="_blank">
+							target="_blank" rel="noopener noreferrer">
 							<OpenInNew />
 						</a>
 					</h2>
@@ -179,16 +179,16 @@
 						:force-display-actions="true">
 						<template #extra-actions>
 							<NcButton v-if="canOpenAttachment(attachment)"
-								v-tooltip="'Open attachment'"
-								aria-label="Open attachment"
+								:title="t('athenaeum', 'Open attachment')"
+								:aria-label="t('athenaeum', 'Open attachment')"
 								type="tertiary"
 								:href="attachment.openPath"
-								target="_blank">
+								target="_blank" rel="noopener noreferrer">
 								<template #icon>
 									<OpenInApp :size="20" />
 								</template>
 							</NcButton>
-							<NcButton v-tooltip="'Download attachment'"
+							<NcButton :title="t('athenaeum', 'Download attachment')"
 								aria-label="Download attachment"
 								type="tertiary"
 								:href="attachment.downloadPath"
@@ -197,7 +197,7 @@
 									<DownloadCircle :size="20" />
 								</template>
 							</NcButton>
-							<NcButton v-tooltip="'Remove attachment'"
+							<NcButton :title="t('athenaeum', 'Remove attachment')"
 								aria-label="Remove attachment"
 								type="tertiary"
 								@click="removeAttachment(attachment.itemAttachment.id)">

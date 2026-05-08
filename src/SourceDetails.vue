@@ -10,7 +10,7 @@
 					style="display: flex; align-items: center; justify-content: space-between;">
 					{{ source.title }}
 					<a :href="source.url"
-						target="_blank">
+						target="_blank" rel="noopener noreferrer">
 						<OpenInNew />
 					</a>
 				</h2>
