@@ -27,7 +27,7 @@ export const authorMxn = {
 		const authorNameParts = authorTxt.split(' ')
 		author.name = authorNameParts.at(-1).trim()
 		author.displayName = authorTxt
-		author.displayNameModified = authorNameParts > 1 && author.name !== ''
+		author.displayNameModified = authorNameParts.length > 1 && author.name !== ''
 		author.onlyLastName = authorNameParts.length === 1
 
 		if (authorNameParts.length > 1) {

@@ -19,7 +19,7 @@
 				<div class="contributors-footer">
 					<NcButton aria-label="First page"
 						style="flex:1"
-						:disabled="listOffset == 0"
+						:disabled="listOffset === 0"
 						@click="firstPage">
 						<template #icon>
 							<PageFirst :size="18" />
@@ -27,7 +27,7 @@
 					</NcButton>
 					<NcButton aria-label="Back multiple pages"
 						style="flex:1"
-						:disabled="listOffset == 0"
+						:disabled="listOffset === 0"
 						@click="backMultiplePages">
 						<template #icon>
 							<ChevronDoubleLeft :size="18" />
@@ -35,7 +35,7 @@
 					</NcButton>
 					<NcButton aria-label="Previous page"
 						style="flex:1"
-						:disabled="listOffset == 0"
+						:disabled="listOffset === 0"
 						@click="prevPage">
 						<template #icon>
 							<ChevronLeft :size="18" />

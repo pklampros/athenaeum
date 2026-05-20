@@ -7,7 +7,7 @@
 		<div class="field-label">
 			<h3>Authors</h3>
 			<NcButton aria-label="Add"
-				type="tertiary"
+				variant="tertiary"
 				@click="addAuthor()">
 				<template #icon>
 					<PlusCircle :size="20" />
@@ -16,7 +16,7 @@
 		</div>
 		<ul style="list-style: inherit; padding: 4px 0 4px 44px;">
 			<li v-for="(author, index) in authorList"
-				:key="author">
+				:key="index">
 				<div class="flex-row">
 					<div>
 						<div class="first-row">
@@ -25,36 +25,36 @@
 									class="flex-row">
 									<NcTextField label="First"
 										:error="emptyOrHasEllipsis(author.firstName)"
-										v-model:value="author.firstName"
-										@update:value="updateDisplayName(index)" />
+										v-model="author.firstName"
+										@update:modelValue="updateDisplayName(index)" />
 									&nbsp;
 									<NcTextField :label="'Last'"
 										:error="emptyOrHasEllipsis(author.name)"
-										v-model:value="author.name"
-										@update:value="updateDisplayName(index)" />
+										v-model="author.name"
+										@update:modelValue="updateDisplayName(index)" />
 								</div>
 								<NcTextField v-else
 									:label="'Name'"
 									:error="emptyOrHasEllipsis(author.name)"
-									v-model:value="author.name"
-									@update:value="updateDisplayName(index)" />
+									v-model="author.name"
+									@update:modelValue="updateDisplayName(index)" />
 							</div>
 							<div v-else>
 								{{ author.existingContributor.firstName + " " + author.existingContributor.lastName }}
 							</div>
 						</div>
 						<div class="flex-row last-row">
-							<label for="displayNameField">Displayed&nbsp;as&nbsp;&nbsp;</label>
-							<NcTextField id="displayNameField"
+							<label for="displayNameField-${index}">Displayed&nbsp;as&nbsp;&nbsp;</label>
+							<NcTextField id="displayNameField-${index}"
 								:error="emptyOrHasEllipsis(author.displayName)"
 								:label-outside="true"
-								v-model:value="author.displayName"
-								@update:value="displayNameSet(index)" />
+								v-model="author.displayName"
+								@update:modelValue="displayNameSet(index)" />
 						</div>
 					</div>
 					<NcButton v-if="author.onlyLastName"
 						aria-label="Single-field name?"
-						type="tertiary"
+						variant="tertiary"
 						@click="toggleOnlyLastName(index)">
 						<template #icon>
 							<TextBox :size="20" />
@@ -71,15 +71,15 @@
 					</NcButton>
 					<NcButton v-else
 						aria-label="Single-field name?"
-						type="tertiary"
+						variant="tertiary"
 						@click="toggleOnlyLastName(index)">
 						<template #icon>
 							<TextBoxMultiple :size="20" />
 						</template>
 					</NcButton>
-					<NcButton v-if="index == 0"
+					<NcButton v-if="index === 0"
 						aria-label="Move down"
-						type="tertiary"
+						variant="tertiary"
 						@click="moveDown(index)">
 						<template #icon>
 							<ChevronDown :size="20" />
@@ -87,7 +87,7 @@
 					</NcButton>
 					<NcButton v-else
 						aria-label="Move up"
-						type="tertiary"
+						variant="tertiary"
 						@click="moveUp(index)">
 						<template #icon>
 							<ChevronUp :size="20" />
@@ -149,7 +149,7 @@
 						</NcCheckboxRadioSwitch>
 					</div>
 					<NcButton aria-label="Remove"
-						type="tertiary"
+						variant="tertiary"
 						@click="removeAuthor(index)">
 						<template #icon>
 							<MinusCircle :size="20" />
@@ -211,29 +211,48 @@ export default {
 		SimilarAuthorsModal,
 	},
 	mixins: [authorMxn],
+	props: {
+		contributorData: {
+			type: Object,
+			default: null,
+		},
+	},
 	data() {
 		return {
 			authorList: null,
 			contributorSearchTerm: null,
 			modalAuthorIndex: null,
+			_updatingFromProp: false,
 		}
 	},
 	watch: {
-		authorList(newAuthorList) {
-			// eslint-disable-next-line vue/custom-event-name-casing
-			this.$emit('authorListUpdated', newAuthorList)
+		contributorData: {
+			handler(newData) {
+				this._updatingFromProp = true
+				if (!newData) {
+					this.authorList = null
+				} else if (newData.type === 'text') {
+					this.authorList = authorMxn.getContributorListFromTxt(newData.text)
+				} else {
+					this.authorList = authorMxn.getContributorList(newData.contributors, true)
+				}
+				this.$nextTick(() => { this._updatingFromProp = false })
+			},
+			immediate: true,
 		},
-	},
-	mounted() {
-		this.emitInterface()
+		authorList: {
+			handler(newList) {
+				if (this._updatingFromProp) return  // ← skip during external-driven updates
+				if (!newList) return
+        		this.$emit('update:contributor-data', {
+					type: 'list',
+					contributors: newList,
+				})
+			},
+			deep: true,
+		},
 	},
 	methods: {
-		setAuthorList(authors) {
-			this.authorList = authorMxn.getContributorList(authors, true)
-		},
-		setAuthorListFromText(text) {
-			this.authorList = authorMxn.getContributorListFromTxt(text)
-		},
 		markInboxItemDeleted() {
 			this.inboxItemBeingFiled = null
 			this.authorList = null
@@ -248,12 +267,10 @@ export default {
 			author.displayName = author.firstName.trim()
 				+ (nameComponents === 2 ? ' ' : '')
 				+ author.name.trim()
-			this.authorList[authorIndex] = author
 		},
 		displayNameSet(authorIndex) {
 			const author = this.authorList[authorIndex]
 			author.displayNameModified = (author.displayName !== '')
-			this.authorList[authorIndex] = author
 		},
 		toggleOnlyLastName(authorIndex) {
 			let author = this.authorList[authorIndex]
@@ -272,10 +289,9 @@ export default {
 				author.isNew = authorMarkedNew
 				author.onlyLastName = false
 			}
-			this.authorList[authorIndex] = author
 		},
 		moveDown(authorIndex) {
-			if (authorIndex < 0 || authorIndex > this.authorList.length - 1) return
+			if (authorIndex < 0 || authorIndex >= this.authorList.length - 1) return
 			this.authorList[authorIndex] =
 				this.authorList.splice(authorIndex + 1, 1,
 					this.authorList[authorIndex])[0]
@@ -295,12 +311,10 @@ export default {
 			author.potentialContributors.popoverVisible = true
 			author.potentialContributors.loading = true
 			author.potentialContributors.error = ''
-			this.authorList[authorIndex] = author
 			try {
 				author.potentialContributors.found = await findSimilar(author.firstName, author.name, author.displayName)
 				author.potentialContributors.loading = false
 				author.potentialContributors.error = author.potentialContributors.found.length === 0 ? 'None Found...' : ''
-				this.authorList[authorIndex] = author
 			} catch (e) {
 				console.error(e)
 				showError(t('athenaeum', 'Could not fetch items (route mounting failed)'))
@@ -312,12 +326,10 @@ export default {
 			author.potentialContributors.popoverVisible = false
 			author.potentialContributors.error = ''
 			author.isNew = author.existingContributor === null
-			this.authorList[authorIndex] = author
 		},
 		selectContributor(authorIndex, contributorData) {
 			const author = this.authorList[authorIndex]
 			author.existingContributor = contributorData
-			this.authorList[authorIndex] = author
 			this.dismissPotentialContributors(authorIndex)
 			this.contributorSearchTerm = null
 		},
@@ -325,7 +337,6 @@ export default {
 			const author = this.authorList[authorIndex]
 			author.existingContributor = null
 			author.isNew = true
-			this.authorList[authorIndex] = author
 		},
 		addAuthor() {
 			const authorData = authorMxn.getAuthorNameData('')
@@ -333,12 +344,6 @@ export default {
 			authorData.isNew = true
 			authorData.existingContributor = null
 			this.authorList.push(authorData)
-		},
-		emitInterface() {
-			this.$emit('interface', {
-				setAuthorList: (authors) => this.setAuthorList(authors),
-				setAuthorListFromText: (authors) => this.setAuthorListFromText(authors),
-			})
 		},
 		hasEllipsis(text) {
 			return text.includes('…') || text.includes('...')
@@ -394,9 +399,6 @@ export default {
 	justify-content: space-between;
 	align-items: center;
 	padding: 10px 1px 0px 0px;
-}
-
-:deep(.field-label h3) {
 	font-weight: bold;
 	margin: 8px 0px 8px 12px;
 	text-align: start;

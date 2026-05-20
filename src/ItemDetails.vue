@@ -7,7 +7,7 @@
 		<div style="max-width: 900px; margin: 0 auto;">
 			<div style="position: sticky; padding: 30px 18px;">
 				<div style="display:flex; flex-direction: column">
-					<h2 :name="item.title"
+					<h2 :title="item.title"
 						:class="{ toedit: visible.itemEditButton }"
 						style="display: flex; align-items: center; justify-content: space-between;">
 						<NcHighlight :text="item.title"
@@ -26,7 +26,6 @@
 							<NcButton aria-label="Edit item data"
 								size="small"
 								:type="editButtonType(visible.itemEditButton)"
-								:disabled="!visible.itemEditButton"
 								@click="editing.item = !editing.item"
 								@mouseover="visible.itemEditButton = true"
 								@mouseleave="visible.itemEditButton = false">
@@ -38,42 +37,46 @@
 					</div>
 
 					<div v-show="editing.item"
-						class="details-group">
-						<div class="field-label">
-							<h3>Title</h3>
-						</div>
-						<NcRichContenteditable v-if="item && item.title"
+						class="details-group"
+						v-if="item">
+						<span id="item-title-label"
+							class="field-label">
+							{{ t('athenaeum', 'Title') }}
+						</span>
+						<NcRichContenteditable
+						 	aria-labelledby="item-title-label"
 							placeholder="Title"
 							:error="hasEllipsis(item.title)"
-							v-model:value="item.title"
-							@update:value="setItemDataModified()" />
-						<div class="field-label">
-							<h3>URL</h3>
-						</div>
-						<div style="display:flex">
-							<NcRichContenteditable style="flex-grow:1"
+							v-model="item.title"/>
+						<span id="item-url-label"
+							class="field-label">
+							{{ t('athenaeum', 'URL') }}
+						</span>
+						<div class="url-row">
+							<NcRichContenteditable
+						 		aria-labelledby="item-url-label"
 								placeholder="URL"
-								v-model:value="item.url"
-								@update:value="setItemDataModified()" />
+								v-model="item.url"/>
 							<NcButton aria-label="Add"
+								:name="t('athenaeum', 'Attach file from URL')"
 								@click="attachFromUrl">
 								<template #icon>
 									<PlusCircle :size="25" />
 								</template>
 							</NcButton>
 						</div>
-						<div class="field-label">
-							<h3>Journal</h3>
-						</div>
-						<NcRichContenteditable v-if="item && item.journal"
+						<span id="item-journal-label"
+							class="field-label">
+							{{ t('athenaeum', 'Journal') }}
+						</span>
+						<NcRichContenteditable
+						 	aria-labelledby="item-journal-label"
 							placeholder="Journal"
 							:error="hasEllipsis(item.journal)"
-							v-model:value="item.journal"
-							@update:value="setItemDataModified()" />
-						&nbsp;
-						<div style="display:flex; flex-direction: row-reverse">
-							<NcButton :disabled="!itemDataModified"
-								type="primary"
+							v-model="item.journal"/>
+						<div class="save-row">
+							<NcButton :disabled="!dataModified"
+								variant="primary"
 								@click="saveChanges">
 								Save
 							</NcButton>
@@ -81,13 +84,10 @@
 					</div>
 				</div>
 
-				<h3 v-if="item.contributorData && item.contributorData.type === 'text'">
-					{{ item.contributorData.text }}
-				</h3>
-				<div v-else-if="item.contributorData && item.contributorData.contributors"
-					style="display: flex; height: 44px; align-items: center;">
+				<div v-if="item.contributorData?.contributors?.length"
+					style="display: flex; height: 44px; align-items: center; flex-wrap: wrap;">
 					<span v-for="(contributor, index) in item.contributorData.contributors"
-						:key="contributor"
+						:key="contributor.id ?? index"
 						style="display: flex;">
 						<span v-if="index !== 0">,&nbsp;</span>
 						<span v-if="contributor.displayName.includes('…')">…</span>
@@ -105,7 +105,6 @@
 						<NcButton aria-label="Edit authors"
 							size="small"
 							:type="editButtonType(visible.cbButton)"
-							:disabled="!visible.cbButton"
 							@click="editing.contributors = !editing.contributors"
 							@mouseover="visible.cbButton = true"
 							@mouseleave="visible.cbButton = false">
@@ -115,11 +114,14 @@
 						</NcButton>
 					</div>
 				</div>
+				<h3 v-else-if="item.contributorData?.type === 'text'">
+					{{ item.contributorData.text }}
+				</h3>
 				<!-- Enabling but hiding this so that the processing works -->
 				<div v-show="editing.contributors"
 					style="padding:0px 10px; border-radius: 16px; border: 2px solid var(--color-border);">
-					<AuthorEditList @interface="setAuthorListInterface"
-						@authorListUpdated="authorListUpdated" />
+					<AuthorEditList :contributor-data="item.contributorData"
+                		@update:contributor-data="onContributorDataUpdated" />
 				</div>
 
 				<h3 style="font-weight: bold;">
@@ -127,7 +129,7 @@
 				</h3>
 				<ul style="list-style: inherit; padding: 4px 0 4px 44px;">
 					<li v-for="sourceInfoPoint in item.sourceInfo"
-						:key="sourceInfoPoint">
+						:key="sourceInfoPoint.id ?? sourceInfoPoint.extra_item_data.excerpt">
 						<div>
 							<span style="color: var(--color-main-text);font-weight: bold;">
 								<NcHighlight :text="sourceInfoPoint.extra_item_data.excerpt"
@@ -143,7 +145,7 @@
 									Received: {{
 										new Date(Date.parse(
 											sourceInfoPoint.extra_source_data.emailReceived.date
-										)).toLocaleDateString('en-uk',
+										)).toLocaleDateString(undefined,
 											{
 												year: "numeric",
 												month: "short",
@@ -163,7 +165,7 @@
 					<h3>Attachments ({{ (item && item.attachments) ? item.attachments.length : 0 }})</h3>
 					<div class="list-plus-button-wrap">
 						<NcButton aria-label="Add"
-							type="tertiary"
+							variant="tertiary"
 							@click="showAttachmentModal">
 							<template #icon>
 								<PlusCircle :size="20" />
@@ -175,31 +177,31 @@
 					<NcListItem v-for="attachment in item.attachments"
 						:key="attachment.itemAttachment.id"
 						:name="attachment.itemAttachment.path"
-						:compact="true"
+						compact
 						:force-display-actions="true">
 						<template #extra-actions>
 							<NcButton v-if="canOpenAttachment(attachment)"
-								:title="t('athenaeum', 'Open attachment')"
+								:name="t('athenaeum', 'Open attachment')"
 								:aria-label="t('athenaeum', 'Open attachment')"
-								type="tertiary"
+								variant="tertiary"
 								:href="attachment.openPath"
 								target="_blank" rel="noopener noreferrer">
 								<template #icon>
 									<OpenInApp :size="20" />
 								</template>
 							</NcButton>
-							<NcButton :title="t('athenaeum', 'Download attachment')"
+							<NcButton :name="t('athenaeum', 'Download attachment')"
 								aria-label="Download attachment"
-								type="tertiary"
+								variant="tertiary"
 								:href="attachment.downloadPath"
 								download>
 								<template #icon>
 									<DownloadCircle :size="20" />
 								</template>
 							</NcButton>
-							<NcButton :title="t('athenaeum', 'Remove attachment')"
+							<NcButton :name="t('athenaeum', 'Remove attachment')"
 								aria-label="Remove attachment"
-								type="tertiary"
+								variant="tertiary"
 								@click="removeAttachment(attachment.itemAttachment.id)">
 								<template #icon>
 									<MinusCircle :size="20" />
@@ -212,7 +214,7 @@
 			<div class="details-footer">
 				<NcButton aria-label="Remove item"
 					:disabled="!item.title || !item.url"
-					type="primary"
+					variant="primary"
 					@click="markItemDeleted">
 					<template #icon>
 						<Delete :size="20" />
@@ -220,13 +222,13 @@
 				</NcButton>
 				&nbsp;
 				<NcButton :disabled="!item.title || !item.url"
-					type="primary"
+					variant="primary"
 					@click="decideLater">
 					Decide later
 				</NcButton>
 				&nbsp;
 				<NcButton :disabled="!item.title || !item.url"
-					type="primary"
+					variant="primary"
 					@click="addToLibrary">
 					Add to Library
 				</NcButton>
@@ -281,6 +283,8 @@ import {
 	updateItem,
 } from './service/ItemService.js'
 
+import { authorMxn } from './mixins/authors.js'
+
 import AttachmentUploadModal from './AttachmentUploadModal.vue'
 import ApproveDialog from './ApproveDialog.vue'
 
@@ -317,7 +321,7 @@ export default {
 	},
 	props: {
 		itemSummary: {
-			type: Number,
+			type: Object,
 			required: true,
 		},
 	},
@@ -336,6 +340,7 @@ export default {
 			},
 			attachmentModalVisible: false,
 			attachmentRemoveId: null,
+			_fetchId: 0,
 		}
 	},
 	computed: {
@@ -355,16 +360,22 @@ export default {
 			// itemSummary is updated (does not work the first time i.e. through the route)
 			this.fetchDetails(itemSummary)
 		},
-		async item(item) {
-			if (!item || !this.$options || !this.$options.authorListInterface) return
-
-			if (item.contributorData) {
-				if (item.contributorData.type === 'text') {
-					this.$options.authorListInterface.setAuthorListFromText(item.contributorData.text)
-				} else {
-					this.$options.authorListInterface.setAuthorList(item.contributorData.contributors)
-				}
-			}
+		item: {
+			handler(newItem, oldItem) {
+				// Detect real user edits (not loads or switches)
+				if (this._itemLoading) return
+				if (!oldItem || !newItem) return
+				if (oldItem.id !== newItem.id) return
+				this.dataModified = true
+			},
+			deep: true,
+			immediate: true,
+		},
+		// When a new item arrives, suppress the watcher until it settles
+		'item.id'() {
+			this._itemLoading = true
+			this.dataModified = false
+			this.$nextTick(() => { this._itemLoading = false })
 		},
 	},
 	async mounted() {
@@ -380,12 +391,6 @@ export default {
 		reset() {
 			this.editing.contributors = false
 			this.editing.item = false
-		},
-		setItemDataModified() {
-			this.itemDataModified = true
-		},
-		setAuthorDataModified() {
-			this.authorDataModified = true
 		},
 		async saveChanges() {
 			try {
@@ -403,21 +408,8 @@ export default {
 		editButtonType(changeOn) {
 			return changeOn ? 'primary' : 'tertiary-no-background'
 		},
-		// Setting the interface when emitted from child
-		setAuthorListInterface(authorListInterface) {
-			this.$options.authorListInterface = authorListInterface
-			if (this.item.contributorData) {
-				if (this.item.contributorData.type === 'text') {
-					this.$options.authorListInterface.setAuthorListFromText(this.item.contributorData.text)
-				} else {
-					this.$options.authorListInterface.setAuthorList(this.item.contributorData.contributors)
-				}
-			}
-		},
-		authorListUpdated(newAuthorList) {
-			this.item.contributorData.contributors = newAuthorList
-			this.item.contributorData.type = 'list'
-			this.setAuthorDataModified()
+		onContributorDataUpdated(newData) {
+			this.item.contributorData = newData
 		},
 		async addToLibrary() {
 			const detailedItem = this.item
@@ -467,12 +459,9 @@ export default {
 			return itemFieldData
 		},
 		getContributorData(itemDetails, itemFieldData, sourceData) {
-			const contributorData = {
-				type: 'list',
-			}
+			const contributorData = { type: 'list' }
 			if (itemDetails.contributions) {
 				contributorData.contributors = []
-				// contributor
 				for (const contributor of itemDetails.contributions) {
 					contributorData.contributors.push({
 						name: contributor.last_name,
@@ -482,19 +471,33 @@ export default {
 				}
 			}
 			if (!contributorData.contributors || contributorData.contributors.length === 0) {
-				// not found as contributors, look elsewhere
-				contributorData.type = 'text'
-				contributorData.text = ''
+				// No backend contributions — try to parse from text sources
+				let authorsText = ''
 				if (itemFieldData.authors) {
-					// found as a field
-					contributorData.text = itemFieldData.authors
+					authorsText = itemFieldData.authors
 				} else {
-					// look into the sources
 					for (const source of sourceData) {
 						if (source.authors) {
-							contributorData.text = source.authors
+							authorsText = source.authors
 						}
 					}
+				}
+				if (authorsText) {
+					// Use the mixin's text parser
+					const parsed = authorMxn.getContributorListFromTxt(authorsText)
+					if (parsed && parsed.length > 0) {
+						contributorData.contributors = parsed
+					} else {
+						// Couldn't parse — fall back to text mode
+						delete contributorData.contributors
+						contributorData.type = 'text'
+						contributorData.text = authorsText
+					}
+				} else {
+					// No text either — empty
+					delete contributorData.contributors
+					contributorData.type = 'text'
+					contributorData.text = ''
 				}
 			}
 			return contributorData
@@ -540,26 +543,23 @@ export default {
 			}
 			return null
 		},
-		fetchDetails(itemSummary) {
+		async fetchDetails(itemSummary) {
 			if (!itemSummary || !itemSummary.id) return
 			if (this.item && itemSummary.id === this.item.id) return
-			if (itemSummary.title) {
-				this.item = {
-					id: itemSummary.id,
-					title: itemSummary.title,
-					url: '',
-					journal: '',
-					contributorData: {
-						type: 'text',
-						text: '',
-					},
-					attachments: [],
-				}
-			} else {
-				this.item = null
-			}
-			this.getItem(itemSummary.id)
-				.then((itemFull) => { this.item = itemFull })
+
+			const fetchId = ++this._fetchId
+			this.item = itemSummary.title ? {
+				id: itemSummary.id,
+				title: itemSummary.title,
+				url: '',
+				journal: '',
+				contributorData: { type: 'text', text: '' },
+				attachments: [],
+			} : null
+
+			const itemFull = await this.getItem(itemSummary.id)
+			if (fetchId !== this._fetchId) return  // a newer fetch took over
+			this.item = itemFull
 		},
 		async attachFromUrl() {
 			await attachFromUrl(this.item.id, this.item.url)
@@ -630,12 +630,6 @@ export default {
 	background-image: linear-gradient(to top, var(--gradient-main-background));
 }
 
-.details-group {
-	padding: 0px 10px 10px 10px;
-	border-radius: 16px;
-	border: 2px solid var(--color-border);
-}
-
 .input-field {
 	margin: 8px 0px;
 }
@@ -652,18 +646,42 @@ export default {
 	position: inherit;
 }
 
-:deep(.field-label) {
+.details-group {
+	border-radius: 16px;
+	border: 2px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--default-grid-baseline) * 2);
+    padding: calc(var(--default-grid-baseline) * 3);
+}
+
+.field-label {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding: 10px 1px 0px 0px;
-}
-
-:deep(.field-label h3) {
 	font-weight: bold;
-	margin: 8px 0px 8px 12px;
+	font-size: 1.17em;
 	text-align: start;
 }
+
+.field-label + .rich-contenteditable,
+.field-label + .url-row {
+    margin-top: calc(var(--default-grid-baseline) * 0.5);
+}
+
+.save-row {
+    display: flex;
+    flex-direction: row-reverse;
+    margin-top: calc(var(--default-grid-baseline) * 4);
+}
+
+.url-row {
+    display: flex;
+    gap: var(--default-grid-baseline);
+    align-items: flex-start;
+}
+.url-row__input { flex-grow: 1; }
+
 
 .list-plus-button-wrap {
 	// This is the .list-item__wrapper padding (4px), along with

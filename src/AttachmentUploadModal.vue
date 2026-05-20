@@ -41,7 +41,7 @@
 				<!-- This button clicks the input below it. Not an ideal solution but
 				adding a label inside the button (to use with "for") did not work -->
 				<NcButton aria-label="Browse for files to import"
-					type="primary"
+					variant="primary"
 					@click="$refs.attachmentUploadInput.click();">
 					Browse...
 				</NcButton>
@@ -54,12 +54,12 @@
 
 				<div style="flex-grow: 1;" />
 				<NcButton :disabled="files.length === 0"
-					type="primary"
+					variant="primary"
 					@click="submitFiles">
 					Upload
 				</NcButton>
 				&nbsp;
-				<NcButton type="primary"
+				<NcButton variant="primary"
 					@click="closeModal">
 					Close
 				</NcButton>

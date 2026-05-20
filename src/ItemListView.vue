@@ -24,7 +24,7 @@
 					<NcSelect v-bind="orderOptions"
 						v-model="orderOptions.value" />
 					<NcTextField label="Search in title"
-						v-model:value="listQuery" />
+						v-model="listQuery" />
 					<div class="button-row-right">
 						<NcButton aria-label="Apply filters"
 							@click="applyFilters">
@@ -46,7 +46,7 @@
 				<div class="list-controls items-footer">
 					<NcButton aria-label="First page"
 						style="flex:1"
-						:disabled="listOffset == 0"
+						:disabled="listOffset === 0"
 						@click="firstPage">
 						<template #icon>
 							<PageFirst :size="18" />
@@ -54,7 +54,7 @@
 					</NcButton>
 					<NcButton aria-label="Back multiple pages"
 						style="flex:1"
-						:disabled="listOffset == 0"
+						:disabled="listOffset === 0"
 						@click="backMultiplePages">
 						<template #icon>
 							<ChevronDoubleLeft :size="18" />
@@ -62,7 +62,7 @@
 					</NcButton>
 					<NcButton aria-label="Previous page"
 						style="flex:1"
-						:disabled="listOffset == 0"
+						:disabled="listOffset === 0"
 						@click="prevPage">
 						<template #icon>
 							<ChevronLeft :size="18" />

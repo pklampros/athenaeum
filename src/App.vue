@@ -7,14 +7,12 @@
 		<template v-if="!loading"
 			#list>
 			<NcAppNavigationItem :name="t('athenaeum', 'Sources')"
-				:disabled="false"
 				:to="'/sources'">
 				<template #icon>
 					<Earth :size="20" />
 				</template>
 			</NcAppNavigationItem>
 			<NcAppNavigationItem :name="t('athenaeum', 'Contributors')"
-				:disabled="false"
 				:to="'/contributors'">
 				<template #icon>
 					<AccountGroup :size="20" />
@@ -23,7 +21,6 @@
 			<NcAppNavigationItem v-for="folder in folders"
 				:key="folder.id"
 				:name="t('athenaeum', folder.name)"
-				:disabled="false"
 				:to="'/items/' + folder.path">
 				<template #icon>
 					<Inbox v-if="folder.path === 'inbox'"
@@ -40,18 +37,15 @@
 		<template #footer>
 			<NcAppNavigationNew v-if="!loading"
 				:text="t('athenaeum', 'Get word frequency')"
-				:disabled="false"
 				button-class="icon-add"
 				@click="getInboxWordFrequency" />
 			<NcAppNavigationNew v-if="!loading"
 				:text="t('athenaeum', 'New inbox item')"
-				:disabled="false"
 				button-id="new-inbox-item-button"
 				button-class="icon-add"
 				@click="newInboxItem" />
 			<NcAppNavigationNew v-if="!loading"
 				:text="t('athenaeum', 'New item')"
-				:disabled="false"
 				button-id="new-item-button"
 				button-class="icon-add"
 				@click="newItem" />

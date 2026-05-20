@@ -9,7 +9,7 @@
 	<name>Athenaeum</name>
 	<summary>Atheneaum is a library app for Nextcloud</summary>
 	<description><![CDATA[library type thing]]></description>
-	<version>0.8.0</version>
+	<version>0.9.0</version>
 	<licence>agpl</licence>
 	<author mail="commits@pklampros.io" >Petros Koutsolampros</author>
 	<namespace>Athenaeum</namespace>
@@ -27,6 +27,7 @@
 		</navigation>
 	</navigations>
 	<settings>
-    	<personal-section>OCA\Athenaeum\Settings\PersonalSection</personal-section>
+		<personal-section>OCA\Athenaeum\Settings\PersonalSection</personal-section>
+		<personal>OCA\Athenaeum\Settings\FeedSettings</personal>
 	</settings>
 </info>

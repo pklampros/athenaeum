@@ -12,6 +12,7 @@ use OCA\Athenaeum\Service\ItemService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
+use OCP\AppFramework\Http\TemplateResponse;
 use OCP\IRequest;
 
 class ItemController extends Controller {
@@ -130,7 +131,7 @@ class ItemController extends Controller {
 		$fileCount = $this->request->post['fileCount'];
 		$itemId = $this->request->post['item_id'];
 
-		if ($fileCount == 0) {
+		if ($fileCount === 0) {
 			return new DataResponse('No file sent', Http::STATUS_NOT_FOUND);
 		}
 		if (!$itemId) {
@@ -201,10 +202,25 @@ class ItemController extends Controller {
 	}
 
 	/**
+	 * @NoCSRFRequired
+	 * @NoAdminRequired
+	 */
+	public function changeFolderConfirm(int $itemId, string $folder): TemplateResponse {
+		$item = $this->itemService->find($itemId, $this->userId);
+		if ($item === null || $item->getUserId() !== $this->userId) {
+			throw new NotFoundException();
+		}
+		return new TemplateResponse('athenaeum', 'change-folder-confirm', [
+			'item' => $item,
+			'folder' => $folder
+		]);
+	}
+
+	/**
 	 * @NoAdminRequired
 	 */
 	public function changeFolder(): DataResponse {
-		$id = $this->request->post['id'];
+		$id = (int) $this->request->post['id'];
 		$folder = $this->request->post['folder'];
 		return $this->handleNotFound(function () use ($id, $folder) {
 			return $this->itemService->changeFolder($id, $folder, $this->userId);

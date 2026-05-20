@@ -6,14 +6,14 @@
 	<NcAppContentDetails v-if="contributor">
 		<div style="max-width: 900px; margin: 0 auto;">
 			<div style="position: sticky; padding: 30px 18px;">
-				<h2 :name="getName(contributor)"
+				<h2 :title="getName(contributor)"
 					style="display: flex; align-items: center; justify-content: space-between;">
 					{{ getName(contributor) }}
 				</h2>
 			</div>
 			<div style="display: flex; justify-content: right; align-items: center; padding: 16px;">
 				<NcButton aria-label="Remove contributor"
-					type="primary"
+					variant="primary"
 					@click="markContributorDeleted">
 					<template #icon>
 						<Delete :size="20" />
@@ -21,7 +21,7 @@
 				</NcButton>
 				&nbsp;
 				<NcButton :disabled="!dataModified"
-					type="primary"
+					variant="primary"
 					@click="saveChanges">
 					Save
 				</NcButton>
@@ -160,18 +160,5 @@ export default {
 
 .rich-contenteditable__input--empty:before {
 	position: inherit;
-}
-
-:deep(.field-label) {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 10px 1px 0px 0px;
-}
-
-:deep(.field-label h3) {
-	font-weight: bold;
-	margin: 8px 0px 8px 12px;
-	text-align: start;
 }
 </style>

@@ -34,11 +34,17 @@ return [
 			'url' => '/api/0.1/items/{itemId}/setField/{fieldName}/{fieldValue}',
 			'verb' => 'GET', 'escape' => false],
 
+		['name' => 'item_feed_api#feed',
+			'url' => '/itemfeed/{token}',
+			'verb' => 'GET'],
 
 		['name' => 'source_api#findByUid',
 			'url' => '/api/0.1/sources/uid/{uid}',
 			'verb' => 'GET'],
 
+		['name' => 'item#changeFolderConfirm',
+			'url' => '/confirm/items/folder/{itemId}/{folder}',
+			'verb' => 'GET'],
 		['name' => 'item#changeFolder',
 			'url' => '/mod/items/folder',
 			'verb' => 'POST'],

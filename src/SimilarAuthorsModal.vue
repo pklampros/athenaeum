@@ -11,7 +11,7 @@
 				<NcTextField label="SearchTerm"
 					:value="contributorSearchTerm" />
 				<NcButton aria-label="Search"
-					type="tertiary"
+					variant="tertiary"
 					@click="contributorSearch()">
 					<template #icon>
 						<Magnify :size="20" />

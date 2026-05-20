@@ -8,6 +8,7 @@ namespace OCA\Athenaeum\AppInfo;
 
 use OCA\Athenaeum\Service\UserInfoService;
 use OCA\Athenaeum\Settings\PersonalSettingsForm;
+use OCA\Athenaeum\Settings\FeedSettingsForm;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;

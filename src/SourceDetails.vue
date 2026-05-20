@@ -6,7 +6,7 @@
 	<NcAppContentDetails v-if="source">
 		<div style="max-width: 900px; margin: 0 auto;">
 			<div style="position: sticky; padding: 30px 18px;">
-				<h2 :name="source.title"
+				<h2 :title="source.title"
 					style="display: flex; align-items: center; justify-content: space-between;">
 					{{ source.title }}
 					<a :href="source.url"
@@ -19,35 +19,36 @@
 				<h3> Type: {{ source.sourceType }} </h3>
 				<h3> Importance: {{ source.importance }} </h3>
 			</div>
-			<div style="padding:0px 10px; border-radius: 16px; border: 2px solid var(--color-border);">
-				<div class="field-label">
-					<h3>Title</h3>
-				</div>
-				<NcTextField placeholder="Title"
-					label-outside="true"
-					v-model:value="source.title"
-					@update:value="setDataModified()" />
-				<div class="field-label">
-					<h3>Description</h3>
-				</div>
+			<div class="details-group" v-if="source">
+				<span id="item-title-label"
+					class="field-label">
+					{{ t('athenaeum', 'Title') }}
+				</span>
+				<NcRichContenteditable
+					aria-labelledby="item-title-label"
+					placeholder="Title"
+					v-model="source.title" />
+				<span id="item-description-label"
+					class="field-label">
+					{{ t('athenaeum', 'Description') }}
+				</span>
 				<NcRichContenteditable placeholder="Description"
-					v-model:value="source.description"
-					@update:value="setDataModified()" />
-				<div class="field-label">
-					<h3 title="This is useful for sorting items in the inbox">
-						Importance
-					</h3>
-				</div>
+					aria-labelledby="item-description-label"
+					v-model="source.description"/>
+				<span id="item-importance-label"
+					title="This is useful for sorting items in the inbox"
+					class="field-label">
+					{{ t('athenaeum', 'Importance') }}
+				</span>
 				<NcInputField placeholder="Importance"
-					label-outside="true"
+					aria-labelledby="item-importance-label"
 					type="number"
-					v-model:value="source.importance"
-					@update:value="setDataModified()" />
+					v-model="source.importance"/>
 				&nbsp;
 			</div>
-			<div style="display: flex; justify-content: right; align-items: center; padding: 16px;">
+			<div class="save-row">
 				<NcButton aria-label="Remove source"
-					type="primary"
+					variant="primary"
 					@click="markSourceDeleted">
 					<template #icon>
 						<Delete :size="20" />
@@ -55,7 +56,7 @@
 				</NcButton>
 				&nbsp;
 				<NcButton :disabled="!dataModified"
-					type="primary"
+					variant="primary"
 					@click="saveChanges">
 					Save
 				</NcButton>
@@ -128,6 +129,18 @@ export default {
 				this.$options.authorListInterface.setAuthorList(source.contributorData.contributors)
 			}
 		},
+		source: {
+			handler() {
+				if (this._suppressWatcher) return
+				this.dataModified = true
+			},
+			deep: true,
+		},
+		'source.id'() {
+			this._suppressWatcher = true
+			this.dataModified = false
+			this.$nextTick(() => { this._suppressWatcher = false })
+		},
 	},
 	async mounted() {
 		this.loading = true
@@ -191,16 +204,30 @@ export default {
 	position: inherit;
 }
 
-:deep(.field-label) {
+.details-group {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--default-grid-baseline) * 2);
+    padding: calc(var(--default-grid-baseline) * 3);
+}
+
+.field-label {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding: 10px 1px 0px 0px;
+	font-weight: bold;
+	font-size: 1.17em;
+	text-align: start;
 }
 
-:deep(.field-label h3) {
-	font-weight: bold;
-	margin: 8px 0px 8px 12px;
-	text-align: start;
+.field-label + .rich-contenteditable,
+.field-label + .url-row {
+    margin-top: calc(var(--default-grid-baseline) * 0.5);
+}
+
+.save-row {
+    display: flex;
+    flex-direction: row-reverse;
+    margin-top: calc(var(--default-grid-baseline) * 4);
 }
 </style>

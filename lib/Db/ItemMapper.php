@@ -494,8 +494,8 @@ class ItemMapper extends QBMapper {
 		} finally {
 			$result->closeCursor();
 		}
-		if ($resultId == 0) {
-			throw new DoesNotExistException();
+		if ($resultId === 0) {
+			throw new DoesNotExistException('');
 		}
 		return $resultId;
 	}
