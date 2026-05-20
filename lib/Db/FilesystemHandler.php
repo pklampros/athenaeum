@@ -32,9 +32,36 @@ class FilesystemHandler {
 		return $this->getOrCreateSubFolder($mainFolder, 'itemdata');
 	}
 
+	private function shardComponents(int $itemId): array {
+		$level1 = sprintf('%02d', intdiv($itemId, 1000) % 100);
+		$level2 = sprintf('%02d', intdiv($itemId, 10) % 100);
+		return [$level1, $level2];
+	}
+
 	public function getItemDataFolder($userId, $itemId) : Folder {
 		$allItemDataFolder = $this->getAllItemDataFolder($userId);
-		return $this->getOrCreateSubFolder($allItemDataFolder, $itemId);
+    	[$level1, $level2] = $this->shardComponents((int)$itemId);
+
+		// New layout: itemdata/XX/YY/<id>/
+		if ($allItemDataFolder->nodeExists("$level1/$level2/$itemId")) {
+			$node = $allItemDataFolder->get("$level1/$level2/$itemId");
+			if ($node instanceof Folder) {
+				return $node;
+			}
+		}
+
+		// Old (flat) layout: itemdata/<id>/  — read-only, don't create here
+		if ($allItemDataFolder->nodeExists((string)$itemId)) {
+			$node = $allItemDataFolder->get((string)$itemId);
+			if ($node instanceof Folder) {
+				return $node;
+			}
+		}
+		
+    	// Doesn't exist anywhere — create in new layout
+		$level1Folder = $this->getOrCreateSubFolder($allItemDataFolder, $level1);
+		$level2Folder = $this->getOrCreateSubFolder($level1Folder, $level2);
+		return $this->getOrCreateSubFolder($level2Folder, (string)$itemId);
 	}
 
 	private function getAllContributorsDataFolder($userId) : Folder {
